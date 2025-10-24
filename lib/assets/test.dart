@@ -1,1 +1,0 @@
-// hình ảnh, fort, icon
