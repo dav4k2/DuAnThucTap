@@ -1,79 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
-import 'screens/sign_in/widgets/sign_in_tabs.dart';
 import 'screens/sign_in/widgets/sign_in_form.dart';
-import 'screens/sign_in/sign_in_screen.dart';
+import 'screens/sign_in/widgets/sign_in_tabs.dart';
 import 'screens/sign_in/widgets/sign_in_social_buttons.dart';
-
+import 'screens/sign_in/sign_in_screen.dart';
 
 void main() {
-  runApp(
-    Widgetbook.material(
+  runApp(const WidgetBookApp());
+}
+
+class WidgetBookApp extends StatelessWidget {
+  const WidgetBookApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Widgetbook.material(
+      // ✅ Bắt buộc có 'directories' trong Widgetbook 3.x
       directories: [
         WidgetbookFolder(
-          name: 'Welcome',
+          name: 'Sign In',
           children: [
-            //text đăng nhập đăng ký
             WidgetbookComponent(
-              name: 'signin',
+              name: 'SignInScreen',
               useCases: [
                 WidgetbookUseCase(
                   name: 'Default',
-                  builder: (context) => Scaffold(
-                    body: Center(
-                      child: SignInTabs(
-                        onTabChanged: (isSignIn) {
-                          // ở đây tạm thời chỉ in ra log cho widgetbook test
-                          print('Tab changed: $isSignIn');
-                        },
-                      ),
-                    ),
+                  builder: (context) => const SignInScreen(),
+                ),
+              ],
+            ),
+            WidgetbookComponent(
+              name: 'SignInForm',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Default',
+                  builder: (context) => const SignInForm(),
+                ),
+              ],
+            ),
+            WidgetbookComponent(
+              name: 'SignInTabs',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Default',
+                  builder: (context) => SignInTabs(
+                    onTabChanged: (isSignIn) {
+                      debugPrint('Tab changed: $isSignIn');
+                    },
                   ),
                 ),
               ],
             ),
-
             WidgetbookComponent(
-              name: 'SignInBackground',
+              name: 'SignInSocialButtons',
               useCases: [
                 WidgetbookUseCase(
                   name: 'Default',
-                  builder: (context) => const Scaffold(
-                    body: Center(child: SignInForm()),
-                  ),
+                  builder: (context) => const SignInSocialButtons(),
                 ),
               ],
             ),
-
-            WidgetbookComponent(
-              name: 'aa',
-              useCases: [
-                WidgetbookUseCase(
-                  name: 'Default',
-                  builder: (context) => const Scaffold(
-                    body: Center(child: SignInScreen()),
-                  ),
-                ),
-              ],
-            ),
-
-            WidgetbookComponent(
-              name: 'social',
-              useCases: [
-                WidgetbookUseCase(
-                  name: 'Default',
-                  builder: (context) => const Scaffold(
-                    body: Center(child: SignInSocialButtons()),
-                  ),
-                ),
-              ],
-            ),
-
-            
           ],
-          
         ),
       ],
-    ),
-  );
+    );
+  }
 }

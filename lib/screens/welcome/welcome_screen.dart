@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'widgets/welcome_background.dart';
 import 'widgets/welcome_logo.dart';
 import 'widgets/welcome_texts.dart';
 import 'widgets/welcome_buttons.dart';
@@ -9,58 +8,69 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: 402,
-        height: 874,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFB901),
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: Stack(
-          children: [
-            const WelcomeBackground(),
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
 
-            // logo
-            const Positioned(
-              top: 120,
-              left: 15,
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFB901), // nền vàng cho phần trên
+      body: Column(
+        children: [
+          // Phần trên: logo (vàng)
+          Expanded(
+            flex: 5,
+            child: Center(
               child: WelcomeLogo(),
             ),
+          ),
 
-            // texts
-            const Positioned(
-              left: 26,
-              top: 520,
-              child: WelcomeTexts(),
-            ),
+          // Phần dưới: nền xám, bo góc trên
+          Expanded(
+            flex: 5,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F3F3),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(width * 0.12),
+                  topRight: Radius.circular(width * 0.12),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: height * 0.04),
 
-            // buttons
-            const Positioned(
-              top: 742,
-              left: 12,
-              child: WelcomeButtons(),
-            ),
+                    // Texts
+                    const WelcomeTexts(),
+                    SizedBox(height: height * 0.04),
 
-            // dòng “tiếp tục với tư cách khách”
-            const Positioned(
-              left: 80,
-              top: 831,
-              child: Text(
-                'Tiếp tục với tư cách Khách',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontFamily: 'SF Pro Rounded',
-                  fontWeight: FontWeight.w400,
-                  decoration: TextDecoration.underline,
-                  height: 1.5,
+                    // Buttons
+                    const WelcomeButtons(),
+                    const Spacer(),
+
+                    // “Tiếp tục với tư cách Khách”
+                    Center(
+                      child: Text(
+                        'Tiếp tục với tư cách Khách',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontFamily: 'SF Pro Rounded',
+                          fontWeight: FontWeight.w400,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: height * 0.03),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -24,21 +24,24 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size; // Lấy kích thước màn hình
+    final height = size.height;
+    final width = size.width;
+
     return Scaffold(
       body: SignInBackground(
         child: Stack(
           children: [
-            // Nội dung chính
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: EdgeInsets.symmetric(horizontal: width * 0.08), // responsive padding
                 child: Column(
                   children: [
-                    const SizedBox(height: 50),
+                    SizedBox(height: height * 0.06), // thay cho 50px
                     SignInTabs(
                       onTabChanged: (val) => setState(() => isSignIn = val),
                     ),
-                    const SizedBox(height: 60),
+                    SizedBox(height: height * 0.08), // thay cho 60px
                     Expanded(
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
@@ -52,14 +55,17 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
 
-            // Social buttons luôn sát đáy màn hình, tôn trọng SafeArea
+            // Social buttons luôn sát đáy, tự co giãn theo màn hình
             Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
+              left: width * 0.05,
+              right: width * 0.05,
+              bottom: height * 0.02,
               child: SafeArea(
-                top: false, // bỏ padding trên
-                child: const SignInSocialButtons(),
+                top: false,
+                child: FractionallySizedBox(
+                  widthFactor: 1,
+                  child: const SignInSocialButtons(),
+                ),
               ),
             ),
           ],

@@ -10,7 +10,7 @@ class WelcomeBackground extends StatelessWidget {
       height: 874,
       decoration: BoxDecoration(
         color: const Color(0xFFFFB901),
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: BorderRadius.circular(0),
       ),
       child: Stack(
         children: [
