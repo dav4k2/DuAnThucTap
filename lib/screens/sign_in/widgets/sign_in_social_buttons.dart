@@ -3,27 +3,35 @@ import 'package:flutter/material.dart';
 class SignInSocialButtons extends StatelessWidget {
   const SignInSocialButtons({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      top: false, // bỏ padding trên
-      bottom: true, // giữ padding dưới
-      child: Container(
-        width: double.infinity,
-        color: const Color(0xFFEBEBEB),
-        padding: const EdgeInsets.symmetric(vertical: 25),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _SocialButton(iconPath: 'image/google_icon.png', text: 'Đăng nhập bằng Google'),
-            const SizedBox(height: 25),
-            _SocialButton(iconPath: 'image/apple_logo.png', text: 'Tiếp tục với iCloud'),
-          ],
+@override
+Widget build(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final verticalPadding = size.height * 0.035; 
+
+  return Container(
+    width: double.infinity,
+    color: const Color(0xFFEBEBEB),
+    padding: EdgeInsets.symmetric(vertical: verticalPadding),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _SocialButton(
+          iconPath: 'image/google_icon.png',
+          text: 'Đăng nhập bằng Google',
         ),
-      ),
-    );
-  }
+        SizedBox(height: size.height * 0.025), 
+        _SocialButton(
+          iconPath: 'image/apple_logo.png',
+          text: 'Tiếp tục với iCloud',
+        ),
+      ],
+    ),
+  );
 }
+}
+
+
+
 
 class _SocialButton extends StatelessWidget {
   final String iconPath;

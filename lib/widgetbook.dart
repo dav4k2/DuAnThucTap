@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'screens/sign_in/widgets/sign_in_form.dart';
-import 'screens/sign_in/widgets/sign_in_tabs.dart';
 import 'screens/sign_in/widgets/sign_in_social_buttons.dart';
+import 'screens/sign_in/widgets/sign_in_background.dart';
 import 'screens/sign_in/sign_in_screen.dart';
 
 void main() {
@@ -25,28 +25,15 @@ class WidgetBookApp extends StatelessWidget {
               useCases: [
                 WidgetbookUseCase(
                   name: 'Default',
-                  builder: (context) => const SignInScreen(),
-                ),
-              ],
-            ),
-            WidgetbookComponent(
-              name: 'SignInForm',
-              useCases: [
-                WidgetbookUseCase(
-                  name: 'Default',
-                  builder: (context) => const SignInForm(),
-                ),
-              ],
-            ),
-            WidgetbookComponent(
-              name: 'SignInTabs',
-              useCases: [
-                WidgetbookUseCase(
-                  name: 'Default',
-                  builder: (context) => SignInTabs(
-                    onTabChanged: (isSignIn) {
-                      debugPrint('Tab changed: $isSignIn');
-                    },
+                  builder: (context) => Scaffold(
+                    body: Center(
+                      child: SignInTabs(
+                        onTabChanged: (isSignIn) {
+                          // ở đây tạm thời chỉ in ra log cho widgetbook test
+                          print('Tab changed: $isSignIn');
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -56,7 +43,45 @@ class WidgetBookApp extends StatelessWidget {
               useCases: [
                 WidgetbookUseCase(
                   name: 'Default',
-                  builder: (context) => const SignInSocialButtons(),
+                  builder: (context) =>
+                      const Scaffold(body: Center(child: SignInForm())),
+                ),
+              ],
+            ),
+            WidgetbookComponent(
+              name: 'test1',
+              useCases: [
+                WidgetbookUseCase(
+                  name: '123',
+                  builder: (context) => const Scaffold(
+                    body: Center(child: SignInSocialButtons()),
+                  ),
+                ),
+              ],
+            ),
+            WidgetbookComponent(
+              name: 'test',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Default',
+                  builder: (context) => Scaffold(
+                    body: SignInBackground(
+                      child: Center(child: SignInForm()),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            WidgetbookComponent(
+              name: 'SignInBackground',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Default',
+                  builder: (context) => Scaffold(
+                    body: SignInBackground(
+                      child: Center(child: SignInScreen()),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -66,3 +91,4 @@ class WidgetBookApp extends StatelessWidget {
     );
   }
 }
+*/

@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+
+class TermsPage extends StatelessWidget {
+  const TermsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final horizontalPadding = size.width * 0.05;
+    final verticalPadding = size.height * 0.03;
+    final titleFontSize = size.width * 0.065;
+    final subtitleFontSize = size.width * 0.05;
+    final bodyFontSize = size.width * 0.04;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Điều khoản & dịch vụ',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: titleFontSize,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'SF Pro Rounded',
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding,
+          vertical: verticalPadding,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Điều khoản',
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.6),
+                fontSize: subtitleFontSize,
+                fontFamily: 'SF Pro',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: size.height * 0.015),
+            Text(
+              'APP NÀY DO CODER LỎ NHẤT CÁI VIỆT NAM LÀM RA, NÊN MỌI NGƯỜI SỬ DỤNG ỨNG DỤNG NÀY PHẢI CHỊU TRÁCH NHIỆM VỀ MỌI HÀNH ĐỘNG CỦA MÌNH KHI SỬ DỤNG ỨNG DỤNG. CODER LỎ KHÔNG CHỊU BẤT CỨ TRÁCH NHIỆM NÀO VỀ MỌI THIỆT HẠI PHÁT SINH TỪ VIỆC SỬ DỤNG ỨNG DỤNG NÀY.',
+              style: TextStyle(
+                color: Colors.black.withOpacity(0.6),
+                fontSize: bodyFontSize,
+                fontFamily: 'SF Pro',
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
 
 class SignInTabs extends StatefulWidget {
-  const SignInTabs({super.key, required this.onTabChanged});
-
+  final bool initialTab; // ✅ thêm trạng thái tab ban đầu
   final Function(bool isSignIn) onTabChanged;
+
+  const SignInTabs({
+    super.key,
+    required this.onTabChanged,
+    this.initialTab = true, // true = đăng nhập, false = đăng ký
+  });
 
   @override
   State<SignInTabs> createState() => _SignInTabsState();
 }
 
 class _SignInTabsState extends State<SignInTabs> {
-  bool isSignIn = true;
+  late bool isSignIn;
+
+  @override
+  void initState() {
+    super.initState();
+    isSignIn = widget.initialTab; // ✅ khởi tạo theo giá trị truyền từ màn hình cha
+  }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final textSize = size.width * 0.075; // responsive theo chiều rộng
+    final underlineThickness = size.height * 0.0025;
+    final spacing = size.width * 0.05; // khoảng cách giữa 2 tab
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -27,17 +44,15 @@ class _SignInTabsState extends State<SignInTabs> {
               child: Text(
                 'Đăng nhập',
                 style: TextStyle(
-                  color: isSignIn
-                      ? Colors.black
-                      : Colors.black.withOpacity(0.15),
-                  fontSize: 32,
+                  color:
+                      isSignIn ? Colors.black : Colors.black.withOpacity(0.15),
+                  fontSize: textSize,
                   fontFamily: 'SF Pro Rounded',
                   fontWeight: FontWeight.w700,
-                  height: 0.61,
                 ),
               ),
             ),
-            const SizedBox(width: 20),
+            SizedBox(width: spacing),
             GestureDetector(
               onTap: () {
                 setState(() => isSignIn = false);
@@ -46,27 +61,27 @@ class _SignInTabsState extends State<SignInTabs> {
               child: Text(
                 'Đăng ký',
                 style: TextStyle(
-                  color: isSignIn
-                      ? Colors.black.withOpacity(0.15)
-                      : Colors.black,
-                  fontSize: 32,
+                  color:
+                      isSignIn ? Colors.black.withOpacity(0.15) : Colors.black,
+                  fontSize: textSize,
                   fontFamily: 'SF Pro Rounded',
                   fontWeight: FontWeight.w700,
-                  height: 0.61,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: size.height * 0.00002),
         AnimatedAlign(
           duration: const Duration(milliseconds: 300),
           alignment: isSignIn ? Alignment.centerLeft : Alignment.centerRight,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            margin: const EdgeInsets.symmetric(horizontal: 10),
-            width: isSignIn ? 170 : 125, // 👈 chỉnh tay theo độ dài chữ
-            height: 2,
+            margin: EdgeInsets.symmetric(horizontal: size.width * 0.039),
+            width: isSignIn
+                ? size.width * 0.41 // Đăng nhập
+                : size.width * 0.3, // Đăng ký
+            height: underlineThickness,
             color: Colors.black,
           ),
         ),
