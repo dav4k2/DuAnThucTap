@@ -8,7 +8,7 @@ class ExploreUserItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 70,
+      width: 150,
       margin: const EdgeInsets.only(right: 16),
       child: Column(
         children: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../explore/explore_screen.dart';
 
 class SignInForm extends StatelessWidget {
   const SignInForm({super.key});
@@ -20,12 +21,12 @@ class SignInForm extends StatelessWidget {
       ),
       const SizedBox(height: 30),
       GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen())),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExploreScreen())),
         child: _buildButton('Đăng nhập', isPrimary: true),
       ),
       const SizedBox(height: 20),
       GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => GuestHomeScreen())),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExploreScreen())),
         child: const Text('Đăng nhập với tư cách khách', textAlign: TextAlign.center, style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'SF Pro Rounded', fontWeight: FontWeight.w600, decoration: TextDecoration.underline)),
       ),
     ]);

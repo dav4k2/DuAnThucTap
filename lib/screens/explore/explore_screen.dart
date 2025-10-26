@@ -81,9 +81,9 @@ class ExploreScreen extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: const [
-                  ExploreUserItem(imagePath: 'assets/img/bean.jpeg', name: 'Mr.Dean'),
-                  ExploreUserItem(imagePath: 'assets/img/vit.jpeg', name: 'Donald D.'),
-                  ExploreUserItem(imagePath: 'assets/img/a7.jpeg', name: 'Cristiano M.'),
+                  ExploreUserItem(imagePath: 'image/bean.png', name: 'Mr.Dean'),
+                  ExploreUserItem(imagePath: 'image/vit.png', name: 'Donald D.'),
+                  ExploreUserItem(imagePath: 'image/a7.png', name: 'Cristiano M.'),
                 ],
               ),
             ),
@@ -118,12 +118,12 @@ class ExploreScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 children: const [
                   ExploreRecipeCard(
-                    imagePath: 'assets/img/garan.jpeg',
+                    imagePath: 'image/garan.png',
                     title: 'Gà rán sốt Hàn Quốc',
                     rating: '4.8 (1k+ Đánh giá)',
                   ),
                   ExploreRecipeCard(
-                    imagePath: 'assets/img/my_y.jpg',
+                    imagePath: 'image/my_y.png',
                     title: 'Mỳ Ý sốt Bolognese',
                     rating: '4.8 (1k+ Đánh giá)',
                   ),

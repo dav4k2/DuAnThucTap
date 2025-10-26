@@ -1,4 +1,4 @@
-/*
+
 import 'package:flutter/material.dart';
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/welcome/widgets/splash_page.dart';
@@ -35,9 +35,9 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-*/
 
-import 'package:flutter/material.dart';
+
+/*import 'package:flutter/material.dart';
 import 'screens/explore/explore_screen.dart';
 
 void main() => runApp(const MyApp());
@@ -61,3 +61,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+*/
