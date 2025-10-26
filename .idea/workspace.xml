@@ -5,14 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="76453bad-4f73-4297-b52a-45dd6650a8b6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/explore_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_keyword_chip.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_recipe_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_section_header.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_user_item.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fontend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/fontend.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/sign_in/sign_in_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sign_in/sign_in_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/welcome_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/welcome_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/widgets/welcome_background.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/widgets/welcome_background.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgetbook.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgetbook.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
