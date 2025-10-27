@@ -9,17 +9,29 @@ class SignInForm extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       _buildInput('Tài khoản'), const SizedBox(height: 20),
       _buildInput('Mật khẩu', obscure: true), const SizedBox(height: 10),
+      // quên mât khẩu
       Padding(
         padding: const EdgeInsets.only(right: 10),
         child: Align(
           alignment: Alignment.centerRight,
           child: GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ForgotPasswordScreen())),
-            child: const Text('Quên mật khẩu ?', style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'SF Pro Rounded', fontWeight: FontWeight.w600, decoration: TextDecoration.underline)),
+            onTap: () => Navigator.pushNamed(context, '/reset'),
+            child: const Text(
+              'Quên mật khẩu ?',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontFamily: 'SF Pro Rounded',
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ),
         ),
       ),
+
       const SizedBox(height: 30),
+
       GestureDetector(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExploreScreen())),
         child: _buildButton('Đăng nhập', isPrimary: true),
