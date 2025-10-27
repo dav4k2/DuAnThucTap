@@ -11,11 +11,11 @@ class HighlightRecipes extends StatelessWidget {
     final recipes = [
       {
         'name': 'Gà rán sốt Hàn Quốc',
-        'image': 'image/garan.png',
+        'image': 'image/my_y.png',
       },
       {
         'name': 'Mỳ Ý sốt Bolognese',
-        'image': 'image/my_y.png',
+        'image': 'image/garan.png',
       },
     ];
 
