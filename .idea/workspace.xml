@@ -4,6 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true" id="76453bad-4f73-4297-b52a-45dd6650a8b6" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/lib/screens/explore/explore_provider.dart" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_appbar.dart" afterDir="false" />
@@ -25,6 +26,9 @@
       <change beforePath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_user_item.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
+=======
+    <list default="true" id="0ccd08f2-7919-48f2-a6e2-c733d795c52d" name="Changes" comment="" />
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,6 +37,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+<<<<<<< Updated upstream
   <component name="FileEditorManager">
     <leaf>
       <file leaf-file-name="main.dart" pinned="false" current-in-tab="true">
@@ -81,21 +86,48 @@
       </pane>
     </panes>
   </component>
+=======
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "SonhocCodee"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/dav4k2/DuAnThucTap.git",
+    "accountId": "471604ad-1dc5-4ee7-875e-0256c3aafd12"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="34efuprKb1BF78O2MZeN3euHGi8" />
+>>>>>>> Stashed changes
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+<<<<<<< Updated upstream
     "Flutter.main.dart.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+=======
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+>>>>>>> Stashed changes
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
+<<<<<<< Updated upstream
     "git-widget-placeholder": "frontend",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
@@ -121,4 +153,20 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
   </component>
+=======
+    "git-widget-placeholder": "master",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0ccd08f2-7919-48f2-a6e2-c733d795c52d" name="Changes" comment="" />
+      <created>1761579183806</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1761579183806</updated>
+    </task>
+    <servers />
+  </component>
+>>>>>>> Stashed changes
 </project>

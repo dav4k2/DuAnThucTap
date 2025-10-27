@@ -6,20 +6,27 @@ import 'widgets/explore_keyword_section.dart';
 import 'widgets/explore_highlight_recipes.dart';
 import '../../screens/navbar.dart';
 
-class ExploreScreen extends ConsumerWidget {
+class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends ConsumerState<ExploreScreen> {
+  int currentIndex = 1; // ví dụ mặc định đang ở Explore/Search
+
+  @override
+  Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white, // ⚪ Nền trắng toàn bộ
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          // 🟨 AppBar (nền vàng) - bo tròn góc dưới
+          // 🟨 AppBar
           Container(
             decoration: const BoxDecoration(
               color: Color(0xFFFFB901),
@@ -34,7 +41,7 @@ class ExploreScreen extends ConsumerWidget {
             ),
           ),
 
-          // ⚪ Nội dung trên nền trắng
+          // ⚪ Nội dung
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -54,6 +61,20 @@ class ExploreScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+
+      // 🔵 NavBar ở dưới
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0), // cách đáy 1 chút
+        child: CustomNavBar(
+          currentIndex: currentIndex,
+          onTap: (index) {
+            setState(() {
+              currentIndex = index;
+              // TODO: xử lý navigation khi nhấn navbar
+            });
+          },
+        ),
       ),
     );
   }
