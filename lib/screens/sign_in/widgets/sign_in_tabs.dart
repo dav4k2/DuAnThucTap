@@ -20,7 +20,7 @@ class _SignInTabsState extends State<SignInTabs> {
   @override
   void initState() {
     super.initState();
-    isSignIn = widget.initialTab; // ✅ khởi tạo theo giá trị truyền từ màn hình cha
+    isSignIn = widget.initialTab; //
   }
 
   @override

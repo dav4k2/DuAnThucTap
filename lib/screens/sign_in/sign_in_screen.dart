@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widgets/sign_in_background.dart';
 import 'widgets/sign_in_tabs.dart';
 import 'widgets/sign_in_form.dart';
@@ -6,74 +7,79 @@ import 'widgets/sign_in_social_buttons.dart';
 import 'widgets/sign_up_form.dart';
 import '../welcome/welcome_screen.dart';
 
-class SignInScreen extends StatefulWidget {
-  final bool initialTab; // true = đăng nhập, false = đăng ký
+class SignInScreen extends ConsumerStatefulWidget { // 👈 đổi từ StatefulWidget
+  final bool initialTab;
   const SignInScreen({super.key, this.initialTab = true});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  ConsumerState<SignInScreen> createState() => _SignInScreenState(); // 👈 đổi type
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignInScreenState extends ConsumerState<SignInScreen> {
   late bool isSignIn;
 
   @override
   void initState() {
     super.initState();
-    isSignIn = widget.initialTab; // khởi tạo trạng thái ban đầu đúng
+    isSignIn = widget.initialTab;
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
-    // phần form
     final horizontalPadding = size.width * 0.08;
-    final topSpacing = size.height * 0.06;
-    final tabToFormSpacing = size.height * 0.05;
-    final formHeight = size.height * 0.6;
 
-    // nút back
-    final backButtonTopSpacing = size.height * 0.006;
-    final backButtonLeftPadding = size.width * 0.014;
+    // 👇 Ví dụ nếu sau này backend có provider authProvider:
+    // final authState = ref.watch(authProvider);
 
     return Scaffold(
       body: SignInBackground(
         child: Stack(
           children: [
             SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: Column(
-                  children: [
-                    SizedBox(height: topSpacing),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: size.height * 0.07),
 
-                    // ✅ Tabs đăng nhập / đăng ký — có initialTab
-                    SignInTabs(
-                      initialTab: widget.initialTab, // <— truyền trạng thái ban đầu
-                      onTabChanged: (val) => setState(() => isSignIn = val),
-                    ),
+                            // Tab đăng nhập / đăng ký
+                            SignInTabs(
+                              initialTab: widget.initialTab,
+                              onTabChanged: (val) => setState(() => isSignIn = val),
+                            ),
 
-                    SizedBox(height: tabToFormSpacing),
+                            SizedBox(height: size.height * 0.04),
 
-                    // ✅ Form đăng nhập / đăng ký
-                    SizedBox(
-                      height: formHeight,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child:
-                            isSignIn ? const SignInForm() : const SignUpForm(),
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 300),
+                              child: isSignIn
+                                  ? const SignInForm()
+                                  : const SignUpForm(),
+                            ),
+
+                            SizedBox(height: size.height * 0.05),
+                          ],
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
 
-            // ✅ Nút back
+            // Nút back
             Positioned(
-              top: backButtonTopSpacing,
-              left: backButtonLeftPadding,
+              top: size.height * 0.006,
+              left: size.width * 0.014,
               child: SafeArea(
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back,
@@ -90,11 +96,11 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
 
-            // ✅ Social buttons
+            // Nút social login
             Positioned(
-              left: size.width * 0,
-              right: size.width * 0,
-              bottom: size.height * 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
               child: SafeArea(
                 top: false,
                 bottom: false,

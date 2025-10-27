@@ -5,14 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="76453bad-4f73-4297-b52a-45dd6650a8b6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/screens/explore/explore_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_keyword_chip.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_recipe_card.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_section_header.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_user_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/fontend_android.iml" beforeDir="false" afterPath="$PROJECT_DIR$/android/fontend_android.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fontend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/fontend.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/sign_in/sign_in_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sign_in/sign_in_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_in_tabs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_in_tabs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_up_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_up_form.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/welcome_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/welcome_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/widgets/splash_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/widgets/splash_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/widgets/welcome_background.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/widgets/welcome_background.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgetbook.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgetbook.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Runner.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +64,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/dav4k2/DuAnThucTap.git&quot;,
-    &quot;accountId&quot;: &quot;4909604e-366c-4708-bb38-be639f835437&quot;
+    &quot;accountId&quot;: &quot;471604ad-1dc5-4ee7-875e-0256c3aafd12&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -74,22 +84,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;frontend&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "frontend",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/mac/User/Son/Flutter/DuAnThucTap",
+    "settings.editor.selected.configurable": "dart.settings",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

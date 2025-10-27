@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../dieu_khoan/dkhoan.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -14,10 +13,12 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isSmallScreen = size.height < 700;
 
-    // 📏 Biến responsive dễ chỉnh
+    //responsive theo MediaQuery
+
+    final size = MediaQuery.of(context).size;
+
+    final isSmallScreen = size.height < 700;
     final topPadding = size.height * 0.00;
     final bottomPadding = size.height * 0.03;
     final fieldSpacing = size.height * 0.03;
@@ -25,31 +26,31 @@ class _SignUpFormState extends State<SignUpForm> {
     final fieldHeight = size.height * 0.075;
     final checkBoxSpacing = size.height * 0.02;
 
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding, bottom: bottomPadding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _buildInput('Tài khoản', fieldWidth, fieldHeight),
-          SizedBox(height: fieldSpacing),
-          _buildInput('Mật khẩu', fieldWidth, fieldHeight),
-          SizedBox(height: fieldSpacing),
-          _buildInput('Nhập lại mật khẩu', fieldWidth, fieldHeight),
 
-          SizedBox(height: checkBoxSpacing),
-
-          _buildCheckbox(context, fieldWidth),
-
-          SizedBox(height: isSmallScreen ? 15 : fieldSpacing * 0.8),
-
-          _buildButton('Đăng ký', fieldWidth, fieldHeight, isPrimary: true),
-        ],
+    //bọc trong scrollview
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Padding(
+        padding: EdgeInsets.only(top: topPadding, bottom: bottomPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildInput('Tài khoản', fieldWidth, fieldHeight),
+            SizedBox(height: fieldSpacing),
+            _buildInput('Mật khẩu', fieldWidth, fieldHeight),
+            SizedBox(height: fieldSpacing),
+            _buildInput('Nhập lại mật khẩu', fieldWidth, fieldHeight),
+            SizedBox(height: checkBoxSpacing),
+            _buildCheckbox(context, fieldWidth),
+            SizedBox(height: isSmallScreen ? 15 : fieldSpacing * 0.8),
+            _buildButton('Đăng ký', fieldWidth, fieldHeight, isPrimary: true),
+          ],
+        ),
       ),
     );
   }
 
-  // 🔹 Ô nhập liệu
+  // Kích thước textbox
   Widget _buildInput(String placeholder, double width, double height) {
     return Container(
       width: width,
@@ -73,24 +74,25 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  // Checkbox
+  // Checkbox ,  điều khoản
   Widget _buildCheckbox(BuildContext context, double width) {
     return GestureDetector(
       onTap: () => setState(() => isChecked = !isChecked),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: width * 0.03), 
+        padding: EdgeInsets.symmetric(horizontal: width * 0.03),
         child: SizedBox(
           width: width,
           height: 40,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-         
               Container(
                 width: 22,
                 height: 22,
                 decoration: BoxDecoration(
-                  color: isChecked ? const Color(0xFFFFB901) : const Color(0xFFD7D7D7),
+                  color: isChecked
+                      ? const Color(0xFFFFB901)
+                      : const Color(0xFFD7D7D7),
                   borderRadius: BorderRadius.circular(3),
                   border: Border.all(color: Colors.black.withOpacity(0.3)),
                 ),
@@ -120,7 +122,7 @@ class _SignUpFormState extends State<SignUpForm> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const TermsPage(), // Thay class trang điều khoản tại đây
+                                builder: (_) => const TermsPage(),
                               ),
                             );
                           },
@@ -154,7 +156,7 @@ class _SignUpFormState extends State<SignUpForm> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const TermsPage(), // Thay class trang điều kiện tại đây
+                                builder: (_) => const TermsPage(),
                               ),
                             );
                           },
@@ -182,37 +184,40 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  // Nút đăng ký
-  Widget _buildButton(String text, double width, double height, {bool isPrimary = false}) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: isPrimary ? Colors.black : Colors.white,
-        borderRadius: BorderRadius.circular(height / 2),
-        border: Border.all(color: Colors.black.withOpacity(0.4)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+  //  Nút đăng ký
+  Widget _buildButton(String text, double width, double height,
+      {bool isPrimary = false}) {
+    return GestureDetector(
+      onTap: () {
+        // Khi ấn nút → điều hướng sang trang welcome
+        Navigator.pushNamed(context, '/welcome');
+      },
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: isPrimary ? Colors.black : Colors.white,
+          borderRadius: BorderRadius.circular(height / 2),
+          border: Border.all(color: Colors.black.withOpacity(0.4)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isPrimary ? Colors.white : Colors.black,
+            fontSize: width * 0.055,
+            fontFamily: 'SF Pro Rounded',
+            fontWeight: FontWeight.w700,
           ),
-        ],
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: isPrimary ? Colors.white : Colors.black,
-          fontSize: width * 0.055,
-          fontFamily: 'SF Pro Rounded',
-          fontWeight: FontWeight.w700,
         ),
       ),
     );
   }
 }
-
-// Tạo tạm trang mẫu để chạy được 
-
-

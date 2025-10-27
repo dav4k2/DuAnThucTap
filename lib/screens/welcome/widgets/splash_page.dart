@@ -7,37 +7,29 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
+//Thời gian delay chuyển qua trang welcome
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(const Duration(seconds: 2), () {
-      // ✅ Kiểm tra widget còn mounted không
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
-
-      // ✅ Sau khi đảm bảo widget vẫn tồn tại, mới chuyển trang
       Navigator.pushReplacementNamed(context, '/welcome');
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFB901),
+      backgroundColor: const Color(0xFFFEB903),
       body: SafeArea(
         child: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 36),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              image: const DecorationImage(
-                image: AssetImage("image/logo.png"),
-                fit: BoxFit.cover,
-              ),
-            ),
-            width: 300,
-            height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('image/logo.png'),
+            ],
           ),
         ),
       ),

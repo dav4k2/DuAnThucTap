@@ -9,8 +9,7 @@ class WelcomeBackground extends StatelessWidget {
     final height = size.height;
     final width = size.width;
 
-    // tỷ lệ "đường chia" giữa phần vàng và phần trắng
-    // ví dụ: phần trắng bắt đầu từ ~55% chiều cao màn hình
+
     final topWhite = height * 0.55;
 
     return Container(

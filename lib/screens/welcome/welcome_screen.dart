@@ -19,7 +19,8 @@ class WelcomeScreen extends StatelessWidget {
         height: double.infinity,
         child: Stack(
           children: [
-            /// Nền
+
+
             const WelcomeBackground(),
 
             /// Logo — khoảng cách từ top khoảng 13% chiều cao
