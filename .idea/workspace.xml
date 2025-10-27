@@ -5,23 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="76453bad-4f73-4297-b52a-45dd6650a8b6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/explore_provider.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_appbar.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_bottom_indicator.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_highlight_recipes.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_keyword_section.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_popular_user.section.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/screens/navbar.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/fontend_android.iml" beforeDir="false" afterPath="$PROJECT_DIR$/android/fontend_android.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fontend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/fontend.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/sign_in/sign_in_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sign_in/sign_in_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_in_tabs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_in_tabs.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_up_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sign_in/widgets/sign_up_form.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/welcome_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/welcome_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/widgets/splash_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/widgets/splash_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/welcome/widgets/welcome_background.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/welcome/widgets/welcome_background.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgetbook.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgetbook.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/macos/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Runner.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/explore/explore_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/explore/explore_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_keyword_chip.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_recipe_card.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_section_header.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/explore/widgets/explore_user_item.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

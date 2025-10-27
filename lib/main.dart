@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/welcome/widgets/splash_page.dart';
 import 'screens/sign_in/sign_in_screen.dart';
-import 'screens/explore/explore_screen.dart';
+import 'screens/explore/explore_screen.dart'; // 👈 vẫn giữ nguyên
 
 void main() {
   runApp(
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
         '/splash': (context) => const SplashPage(),
         '/welcome': (context) => const WelcomeScreen(),
         '/signin': (context) => const SignInScreen(),
-        '/explore': (context) => const ExploreScreen(),
+        '/explore': (context) => const ExploreScreen(), // ✅ Giữ nguyên route
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),

@@ -1,148 +1,58 @@
 import 'package:flutter/material.dart';
-import 'widgets/explore_user_item.dart';
-import 'widgets/explore_keyword_chip.dart';
-import 'widgets/explore_recipe_card.dart';
-import 'widgets/explore_section_header.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'widgets/explore_appbar.dart';
+import 'widgets/explore_popular_user.section.dart';
+import 'widgets/explore_keyword_section.dart';
+import 'widgets/explore_highlight_recipes.dart';
+import '../../screens/navbar.dart';
 
-class ExploreScreen extends StatelessWidget {
+class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-
-      // AppBar tuỳ chỉnh gồm tiêu đề + thanh tìm kiếm
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(150),
-        child: Container(
-          color: const Color(0xFFFFC107),
-          padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Hàng tiêu đề
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        'Khám phá',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
+      backgroundColor: Colors.white, // ⚪ Nền trắng toàn bộ
+      body: Column(
+        children: [
+          // 🟨 AppBar (nền vàng) - bo tròn góc dưới
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFB901),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
               ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: ExploreAppBar(width: width),
+            ),
+          ),
 
-              const SizedBox(height: 8),
-
-              // Ô tìm kiếm
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Nhập tên món ăn hoặc nguyên liệu...',
-                  prefixIcon: const Icon(Icons.search),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
-                  ),
+          // ⚪ Nội dung trên nền trắng
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: height * 0.02,
+                ),
+                child: Column(
+                  children: [
+                    PopularUsersSection(width: width),
+                    SizedBox(height: height * 0.02),
+                    KeywordsSection(width: width),
+                    SizedBox(height: height * 0.02),
+                    HighlightRecipes(width: width),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-
-            // Người dùng phổ biến
-            const ExploreSectionHeader(title: 'Người dùng phổ biến'),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 90,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: const [
-                  ExploreUserItem(imagePath: 'image/bean.png', name: 'Mr.Dean'),
-                  ExploreUserItem(imagePath: 'image/vit.png', name: 'Donald D.'),
-                  ExploreUserItem(imagePath: 'image/a7.png', name: 'Cristiano M.'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Từ khóa nổi bật
-            const ExploreSectionHeader(title: 'Từ khóa nổi bật'),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: const [
-                ExploreKeywordChip('Healthy'),
-                ExploreKeywordChip('Đồ cay'),
-                ExploreKeywordChip('Ngọt'),
-                ExploreKeywordChip('Đồ ăn nhanh'),
-                ExploreKeywordChip('Mỳ sốt'),
-                ExploreKeywordChip('Ăn sáng'),
-                ExploreKeywordChip('Bánh'),
-                ExploreKeywordChip('Súp'),
-                ExploreKeywordChip('Đồ chay'),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Công thức nổi bật
-            const ExploreSectionHeader(title: 'Công thức nổi bật'),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 180,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: const [
-                  ExploreRecipeCard(
-                    imagePath: 'image/garan.png',
-                    title: 'Gà rán sốt Hàn Quốc',
-                    rating: '4.8 (1k+ Đánh giá)',
-                  ),
-                  ExploreRecipeCard(
-                    imagePath: 'image/my_y.png',
-                    title: 'Mỳ Ý sốt Bolognese',
-                    rating: '4.8 (1k+ Đánh giá)',
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.amber,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.add_box), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
       ),
     );
