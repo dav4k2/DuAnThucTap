@@ -1,3 +1,4 @@
+//Cho phép nhập email hoặc số điện thoại
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../reset_provider.dart';

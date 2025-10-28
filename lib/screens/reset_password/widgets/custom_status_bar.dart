@@ -1,3 +1,4 @@
+//Hiển thị thời gian, sóng, wifi, pin
 import 'package:flutter/material.dart';
 
 class CustomStatusBar extends StatelessWidget {

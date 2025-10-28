@@ -1,3 +1,4 @@
+//Giải thích chức năng và hướng dẫn nhập email
 import 'package:flutter/material.dart';
 
 class ResetHeader extends StatelessWidget {

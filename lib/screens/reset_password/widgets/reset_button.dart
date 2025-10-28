@@ -1,3 +1,4 @@
+//Gửi yêu cầu xác minh hoặc chuyển bước tiếp theo
 import 'package:flutter/material.dart';
 
 class ResetButton extends StatelessWidget {
