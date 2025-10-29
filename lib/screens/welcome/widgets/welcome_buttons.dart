@@ -1,3 +1,5 @@
+///Sơn
+///Nút đăng nhập đăng ký
 import 'package:flutter/material.dart';
 import '../../sign_in/sign_in_screen.dart';
 
@@ -9,19 +11,20 @@ class WelcomeButtons extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final width = size.width;
 
-    // ✅ responsive font và chiều cao
-    final buttonHeight = width * 0.16; // 16% chiều rộng
-    final fontSize = width * 0.06; // 6% chiều rộng (vd iPhone 390px → ~23.4)
-    final spacing = width * 0.04; // 4% khoảng cách giữa 2 nút
-    final borderRadius = width * 0.12; // bo góc tỉ lệ
+    // responsive font và chiều cao
+    final buttonHeight = width * 0.16;
+    final fontSize = width * 0.06;
+    final spacing = width * 0.04;
+    final borderRadius = width * 0.12;
 
     return SizedBox(
-      width: width * 0.9, // chiếm 90% màn hình
+      width: width * 0.9,
       height: buttonHeight,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 🔹 Nút Đăng nhập
+
+          /// Nút Đăng nhập
           Expanded(
             child: ElevatedButton(
               onPressed: () => Navigator.push(
@@ -57,7 +60,7 @@ class WelcomeButtons extends StatelessWidget {
 
           SizedBox(width: spacing),
 
-          // 🔹 Nút Đăng ký
+          /// Nút Đăng ký
           Expanded(
             child: ElevatedButton(
               onPressed: () => Navigator.push(

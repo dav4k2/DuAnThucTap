@@ -1,3 +1,5 @@
+///Sơn
+///Logo
 import 'package:flutter/material.dart';
 
 class WelcomeLogo extends StatelessWidget {
@@ -12,7 +14,7 @@ class WelcomeLogo extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
         image: const DecorationImage(
-          image: AssetImage("image/logo.png"), // logo của bạn
+          image: AssetImage("image/logo.png"),
           fit: BoxFit.cover,
         ),
       ),

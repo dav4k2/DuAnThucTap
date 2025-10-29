@@ -1,3 +1,6 @@
+///Sơn
+///Trang Splash mở đầu
+
 import 'package:flutter/material.dart';
 
 class SplashPage extends StatefulWidget {
@@ -7,9 +10,10 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-//Thời gian delay chuyển qua trang welcome
+
 class _SplashPageState extends State<SplashPage> {
   @override
+  ///Thời gian delay chuyển qua trang welcome
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
@@ -18,7 +22,7 @@ class _SplashPageState extends State<SplashPage> {
     });
   }
 
-
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(

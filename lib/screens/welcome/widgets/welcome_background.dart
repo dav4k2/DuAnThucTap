@@ -1,3 +1,5 @@
+///Sơn
+///Background
 import 'package:flutter/material.dart';
 
 class WelcomeBackground extends StatelessWidget {
@@ -9,15 +11,19 @@ class WelcomeBackground extends StatelessWidget {
     final height = size.height;
     final width = size.width;
 
-
+    ///Chiều cao phần nền welcome text và nút ĐN/ĐK
     final topWhite = height * 0.55;
 
     return Container(
       width: double.infinity,
       height: double.infinity,
+
+      /// nền vàng
       decoration: const BoxDecoration(
-        color: Color(0xFFFFB901), // nền vàng
+        color: Color(0xFFFFB901),
       ),
+
+      ///Phần nền trắng
       child: Stack(
         children: [
           // Phần trắng bên dưới

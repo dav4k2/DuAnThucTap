@@ -1,5 +1,9 @@
+/// Sơn
+/// Trang Sign in và Sign up
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widgets/sign_in_background.dart';
 import 'widgets/sign_in_tabs.dart';
 import 'widgets/sign_in_form.dart';
@@ -7,12 +11,12 @@ import 'widgets/sign_in_social_buttons.dart';
 import 'widgets/sign_up_form.dart';
 import '../welcome/welcome_screen.dart';
 
-class SignInScreen extends ConsumerStatefulWidget { // 👈 đổi từ StatefulWidget
+class SignInScreen extends ConsumerStatefulWidget {
   final bool initialTab;
   const SignInScreen({super.key, this.initialTab = true});
 
   @override
-  ConsumerState<SignInScreen> createState() => _SignInScreenState(); // 👈 đổi type
+  ConsumerState<SignInScreen> createState() => _SignInScreenState();
 }
 
 class _SignInScreenState extends ConsumerState<SignInScreen> {
@@ -26,18 +30,19 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final horizontalPadding = size.width * 0.08;
-
-    // 👇 Ví dụ nếu sau này backend có provider authProvider:
-    // final authState = ref.watch(authProvider);
+    final horizontalPadding = 30.w;
 
     return Scaffold(
-      body: SignInBackground(
-        child: Stack(
-          children: [
-            SafeArea(
-              child: LayoutBuilder(
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: SignInBackground(
+          child: Stack(
+            children: [
+
+
+              /// Tab và form dn/dky
+              LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
                     child: ConstrainedBox(
@@ -45,19 +50,21 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         minHeight: constraints.maxHeight,
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                        padding:
+                        EdgeInsets.symmetric(horizontal: horizontalPadding),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(height: size.height * 0.07),
+                            SizedBox(height: 107.h),
 
-                            // Tab đăng nhập / đăng ký
+                            /// Tab đăng nhập / đăng ký
                             SignInTabs(
                               initialTab: widget.initialTab,
-                              onTabChanged: (val) => setState(() => isSignIn = val),
+                              onTabChanged: (val) =>
+                                  setState(() => isSignIn = val),
                             ),
 
-                            SizedBox(height: size.height * 0.04),
+                            SizedBox(height: 63.h),
 
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),
@@ -66,7 +73,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                                   : const SignUpForm(),
                             ),
 
-                            SizedBox(height: size.height * 0.05),
+                            SizedBox(height: 60.h),
                           ],
                         ),
                       ),
@@ -74,40 +81,36 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   );
                 },
               ),
-            ),
 
-            // Nút back
-            Positioned(
-              top: size.height * 0.006,
-              left: size.width * 0.014,
-              child: SafeArea(
+              /// Nút social login
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: const SignInSocialButtons(),
+                ),
+              ),
+              /// Nút back
+              Positioned(
+                top: 61.h,
+                left: 8.w,
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back,
                       color: Colors.black, size: 33),
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const WelcomeScreen(),
-                      ),
-                    );
+                    Navigator.popUntil(context, ModalRoute.withName('/welcome'));
                   },
+
+
+
+
                 ),
               ),
-            ),
-
-            // Nút social login
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SafeArea(
-                top: false,
-                bottom: false,
-                child: const SignInSocialButtons(),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

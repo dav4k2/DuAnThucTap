@@ -1,3 +1,5 @@
+///Sơn
+///Text chào mừng
 import 'package:flutter/material.dart';
 
 class WelcomeTexts extends StatelessWidget {
@@ -8,6 +10,7 @@ class WelcomeTexts extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
+        ///Xin chào
         SizedBox(
           width: 264,
           child: Text(
@@ -21,7 +24,10 @@ class WelcomeTexts extends StatelessWidget {
             ),
           ),
         ),
+
         SizedBox(height: 20),
+
+        ///Text chào mừng
         SizedBox(
           width: 370,
           child: Text(

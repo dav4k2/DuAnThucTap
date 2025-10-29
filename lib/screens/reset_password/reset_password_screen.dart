@@ -17,57 +17,54 @@ class ResetPasswordScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              // 🟡 Toàn bộ nội dung màn hình
-              Container(
-                width: size.width,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const CustomStatusBar(),
-                    SizedBox(height: size.height * 0.01),
-                    const ResetHeader(),
-                    SizedBox(height: size.height * 0.05),
-                    const ResetForm(),
-                    ResetButton(
-                      onPressed: () {
-                        final email = ref.watch(emailProvider);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đã gửi mã xác minh tới: $email')),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              // 🔙 Nút quay lại đè trên nền vàng
-              Positioned(
-                top: size.height * 0.045,
-                left: size.width * 0.03,
-                child: SafeArea(
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
-                      size: 30,
-                    ),
+        child: Stack(
+          children: [
+            // 🟡 Toàn bộ nội dung màn hình
+            Container(
+              width: size.width,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: size.height * 0.08),
+                  const ResetHeader(),
+                  SizedBox(height: size.height * 0.05),
+                  const ResetForm(),
+                  ResetButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SignInScreen(),
-                        ),
+                      final email = ref.watch(emailProvider);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Đã gửi mã xác minh tới: $email')),
                       );
                     },
                   ),
+                ],
+              ),
+            ),
+
+            // 🔙 Nút quay lại đè trên nền vàng
+            Positioned(
+              top: size.height * 0.006,
+              left: size.width * 0.014,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SignInScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,7 +1,11 @@
+/// Sơn
+/// Trang Tab ĐN/ĐK
+
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignInTabs extends StatefulWidget {
-  final bool initialTab; // ✅ thêm trạng thái tab ban đầu
+  final bool initialTab;
   final Function(bool isSignIn) onTabChanged;
 
   const SignInTabs({
@@ -20,19 +24,19 @@ class _SignInTabsState extends State<SignInTabs> {
   @override
   void initState() {
     super.initState();
-    isSignIn = widget.initialTab; //
+    isSignIn = widget.initialTab;
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final textSize = size.width * 0.075; // responsive theo chiều rộng
-    final underlineThickness = size.height * 0.0025;
-    final spacing = size.width * 0.05; // khoảng cách giữa 2 tab
+    final textSize = 30.sp;
+    final underlineThickness = 2.3.h;
+    final spacing = 20.w;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        /// Tab đăng nhập / đăng ký
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -45,7 +49,7 @@ class _SignInTabsState extends State<SignInTabs> {
                 'Đăng nhập',
                 style: TextStyle(
                   color:
-                      isSignIn ? Colors.black : Colors.black.withOpacity(0.15),
+                  isSignIn ? Colors.black : Colors.black.withOpacity(0.15),
                   fontSize: textSize,
                   fontFamily: 'SF Pro Rounded',
                   fontWeight: FontWeight.w700,
@@ -62,7 +66,7 @@ class _SignInTabsState extends State<SignInTabs> {
                 'Đăng ký',
                 style: TextStyle(
                   color:
-                      isSignIn ? Colors.black.withOpacity(0.15) : Colors.black,
+                  isSignIn ? Colors.black.withOpacity(0.15) : Colors.black,
                   fontSize: textSize,
                   fontFamily: 'SF Pro Rounded',
                   fontWeight: FontWeight.w700,
@@ -71,16 +75,16 @@ class _SignInTabsState extends State<SignInTabs> {
             ),
           ],
         ),
-        SizedBox(height: size.height * 0.00002),
+
+
+        /// Thanh trượt (gạch đen dưới tab)
         AnimatedAlign(
           duration: const Duration(milliseconds: 300),
           alignment: isSignIn ? Alignment.centerLeft : Alignment.centerRight,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            margin: EdgeInsets.symmetric(horizontal: size.width * 0.039),
-            width: isSignIn
-                ? size.width * 0.41 // Đăng nhập
-                : size.width * 0.3, // Đăng ký
+            margin: EdgeInsets.symmetric(horizontal: 15.w),
+            width: isSignIn ? 160.w : 120.w,
             height: underlineThickness,
             color: Colors.black,
           ),

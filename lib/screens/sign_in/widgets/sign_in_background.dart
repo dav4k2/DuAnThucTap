@@ -1,3 +1,6 @@
+///Sơn
+///Trang background
+
 import 'package:flutter/material.dart';
 
 class SignInBackground extends StatelessWidget {
@@ -32,7 +35,6 @@ class SignInBackground extends StatelessWidget {
             ),
           ),
 
-          // child ở trên hết, để SignInScreen tự bố trí
           child,
         ],
       ),

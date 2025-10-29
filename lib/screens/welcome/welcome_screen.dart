@@ -1,3 +1,6 @@
+///Sơn
+///Trang welcome
+
 import 'package:flutter/material.dart';
 import 'widgets/welcome_logo.dart';
 import 'widgets/welcome_texts.dart';
@@ -20,17 +23,17 @@ class WelcomeScreen extends StatelessWidget {
         child: Stack(
           children: [
 
-
+            ///Back ground
             const WelcomeBackground(),
 
-            /// Logo — khoảng cách từ top khoảng 13% chiều cao
+            /// Logo
             Positioned(
               top: height * 0.15,
               left: width * 0.075,
               child: const WelcomeLogo(),
             ),
 
-            /// Texts — khoảng 55% chiều cao
+            /// Texts
             Positioned(
               top: height * 0.6,
               left: width * 0.07,
@@ -38,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
               child: const WelcomeTexts(),
             ),
 
-            /// Buttons — khoảng 73% chiều cao
+            /// Buttons ĐN/ĐK
             Positioned(
               top: height * 0.84,
               left: width * 0.05,
@@ -46,7 +49,7 @@ class WelcomeScreen extends StatelessWidget {
               child: const WelcomeButtons(),
             ),
 
-            /// “Tiếp tục với tư cách Khách” — khoảng 87% chiều cao
+            /// “Tiếp tục với tư cách Khách”
             Positioned(
               top: height * 0.95,
               left: 0,
