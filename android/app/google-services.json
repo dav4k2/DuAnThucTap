@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "682485604915",
+    "project_id": "datt-eda89",
+    "storage_bucket": "datt-eda89.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682485604915:android:288b3f1c529aa405f37946",
+        "android_client_info": {
+          "package_name": "com.datt.cooking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZOS56mMlFvHXC9UfovUs6TqdrYoqEiw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
