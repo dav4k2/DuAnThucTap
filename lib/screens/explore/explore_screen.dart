@@ -64,7 +64,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       ),
 
       // 🔵 NavBar ở dưới
-      bottomNavigationBar: Padding(
+      /*bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 10.0), // cách đáy 1 chút
         child: CustomNavBar(
           currentIndex: currentIndex,
@@ -75,7 +75,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             });
           },
         ),
-      ),
+      ),*/
     );
   }
 }

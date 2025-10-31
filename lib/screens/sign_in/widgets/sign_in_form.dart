@@ -251,14 +251,14 @@ class PrimaryButton extends StatelessWidget {
       height: 65.h,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: const Color(0xFFFFB901),
         borderRadius: BorderRadius.circular(50.r),
-        border: Border.all(color: Colors.black.withOpacity(0.4)),
+        border: Border.all(color: Colors.black, width: 2.w),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: 24.sp,
           fontFamily: 'SF Pro Rounded',
           fontWeight: FontWeight.w700,
