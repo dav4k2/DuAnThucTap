@@ -1,205 +1,220 @@
 /// Sơn
-/// Form đăng ký (Responsive + Gọn)
-
+/// Form đăng ký
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../dieu_khoan/dkhoan.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../logic/auth_provider.dart';
+import '../../explore/explore_screen.dart';
 
-class SignUpForm extends StatefulWidget {
+class SignUpForm extends ConsumerStatefulWidget {
   const SignUpForm({super.key});
 
   @override
-  State<SignUpForm> createState() => _SignUpFormState();
+  ConsumerState<SignUpForm> createState() => _SignUpFormState();
 }
 
-    /// Xử lý sign up ở đây
-class _SignUpFormState extends State<SignUpForm> {
-  final TextEditingController accountController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmController = TextEditingController();
+class _SignUpFormState extends ConsumerState<SignUpForm> {
+  final TextEditingController _accountController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmController = TextEditingController();
 
-  bool isChecked = false;
-  bool showPassword = false;
-  bool showConfirmPassword = false;
-  String? errorMessage;
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(authProvider.notifier).setError(null);
+    });
+  }
 
-  void _handleSignUp() {
-    final account = accountController.text.trim();
-    final password = passwordController.text.trim();
-    final confirm = confirmController.text.trim();
+  void _register() {
+    final auth = ref.read(authProvider.notifier);
+    final acc = _accountController.text.trim();
+    final pass = _passwordController.text.trim();
+    final confirm = _confirmController.text.trim();
 
+    /// Gọi logic signup test trong provider
+    final result = auth.signup(acc, pass, confirm);
 
-    /// Thông báo lỗi ---------//
-    setState(() => errorMessage = null);
-
-    if (account.isEmpty || password.isEmpty || confirm.isEmpty) {
-      setState(() => errorMessage = 'Vui lòng điền đầy đủ thông tin!');
-      return;
+    if (result == null) {
+      // Thành công
+      auth.setError(null);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ExploreScreen()),
+      );
+    } else {
+      // Có lỗi
+      auth.setError(result);
     }
-    if (password != confirm) {
-      setState(() => errorMessage = 'Mật khẩu nhập lại không khớp!');
-      return;
-    }
-    if (!isChecked) {
-      setState(() => errorMessage = 'Vui lòng đồng ý với điều khoản!');
-      return;
-    }
-    ///-----------------------------///
-
-    ///test
-    Navigator.pushNamed(context, '/welcome'); // Test route
   }
 
 
-  /// Quản lý widget
+  ///Widget
   @override
   Widget build(BuildContext context) {
-    final fieldWidth = 0.85.sw;
-    final fieldHeight = 65.h;
+    final inputWidth = 0.85.sw;
+    final errorWidth = 0.75.sw;
+    final state = ref.watch(authProvider);
+    final auth = ref.read(authProvider.notifier);
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 0.h),
-        child: Column(
-          children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 10.h),
 
-            /// Textbox tài khoản
-            InputField(
-              hintText: 'Tài khoản',
-              controller: accountController,
-              width: fieldWidth,
-              height: fieldHeight,
-            ),
-
-            SizedBox(height: 33.h),
-
-            ///Textbox mật khẩu
-            InputField(
-              hintText: 'Mật khẩu',
-              controller: passwordController,
-              width: fieldWidth,
-              height: fieldHeight,
-              isPassword: true,
-              show: showPassword,
-              toggle: () => setState(() => showPassword = !showPassword),
-            ),
-
-            SizedBox(height: 33.h),
-
-            ///Text box nhập lại mật khẩu
-            InputField(
-              hintText: 'Nhập lại mật khẩu',
-              controller: confirmController,
-              width: fieldWidth,
-              height: fieldHeight,
-              isPassword: true,
-              show: showConfirmPassword,
-              toggle: () =>
-                  setState(() => showConfirmPassword = !showConfirmPassword),
-            ),
-
-            SizedBox(height: 15.h),
-
-            ///Checkbox
-            CheckBoxTerms(
-              isChecked: isChecked,
-              onChanged: () => setState(() => isChecked = !isChecked),
-            ),
-            if (errorMessage != null) ...[
-              SizedBox(height: 16.h),
-              ErrorBox(message: errorMessage!, width: fieldWidth),
-            ],
-
-            SizedBox(height: 20.h),
-
-            ///Nút đăng ký
-            PrimaryButton(
-              text: 'Đăng ký',
-              width: fieldWidth,
-              height: fieldHeight,
-              onTap: _handleSignUp,
-            ),
-          ],
+        /// Tài khoản
+        Center(
+          child: InputField(
+            hintText: "Tài khoản",
+            controller: _accountController,
+            width: inputWidth,
+          ),
         ),
-      ),
+        SizedBox(height: 25.h),
+
+        /// Mật khẩu
+        Center(
+          child: InputField(
+            hintText: "Mật khẩu",
+            controller: _passwordController,
+            obscure: !state.showPassword,
+            width: inputWidth,
+            suffixIcon: IconButton(
+              icon: Icon(
+                state.showPassword ? Icons.visibility_off : Icons.visibility,
+                color: Colors.black.withOpacity(0.5),
+                size: 26.sp,
+              ),
+              onPressed: () => auth.togglePassword(),
+            ),
+          ),
+        ),
+        SizedBox(height: 25.h),
+
+        /// Nhập lại mật khẩu
+        Center(
+          child: InputField(
+            hintText: "Nhập lại mật khẩu",
+            controller: _confirmController,
+            obscure: !state.showConfirmPassword,
+            width: inputWidth,
+            suffixIcon: IconButton(
+              icon: Icon(
+                state.showConfirmPassword
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.black.withOpacity(0.5),
+                size: 26.sp,
+              ),
+              onPressed: () => auth.toggleConfirmPassword(),
+            ),
+          ),
+        ),
+        SizedBox(height: 15.h),
+
+        /// Điều khoản
+        Padding(
+          padding: EdgeInsets.only(left: 0.01.sw),
+          child: TermsCheckbox(
+            isChecked: state.agreeTerms,
+            onChanged: (_) => auth.toggleTerms(),
+          ),
+        ),
+        SizedBox(height: 15.h),
+
+        /// Lỗi
+        if (state.errorMessage != null)
+          Center(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 20.h),
+              child: ErrorMessage(
+                message: state.errorMessage!,
+                width: errorWidth,
+              ),
+            ),
+          ),
+
+        /// Nút đăng ký
+        Center(
+          child: GestureDetector(
+            onTap: _register,
+            child: PrimaryButton(
+              text: "Đăng ký",
+              width: inputWidth,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
-/// ------------------- Widgets -------------------
+////////////////////////////////////////////
+/// --------- WIDGET PHỤ ------------------
+////////////////////////////////////////////
 
-/// Ô nhập tài khoản / mật khẩu
+/// Textbox TK,MK
 class InputField extends StatelessWidget {
   final String hintText;
+  final bool obscure;
   final TextEditingController controller;
   final double width;
-  final double height;
-  final bool isPassword;
-  final bool show;
-  final VoidCallback? toggle;
+  final Widget? suffixIcon;
 
   const InputField({
     super.key,
     required this.hintText,
     required this.controller,
     required this.width,
-    required this.height,
-    this.isPassword = false,
-    this.show = false,
-    this.toggle,
+    this.obscure = false,
+    this.suffixIcon,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: height,
+      height: 65.h,
+      alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
         color: const Color(0xFFEBEBEB),
-        borderRadius: BorderRadius.circular(50.r),
         border: Border.all(color: Colors.black.withOpacity(0.4)),
+        borderRadius: BorderRadius.circular(50.r),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: controller,
-              obscureText: isPassword && !show,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: hintText,
-                hintStyle: TextStyle(
-                  color: Colors.black.withOpacity(0.3),
-                  fontSize: 24.sp,
-                  fontFamily: 'SF Pro Rounded',
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        cursorColor: Colors.black,
+        decoration: InputDecoration(
+          isDense: true,
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: TextStyle(
+            color: Colors.black.withOpacity(0.3),
+            fontSize: 24.sp,
+            fontFamily: 'SF Pro Rounded',
+            fontWeight: FontWeight.w700,
           ),
-          if (isPassword)
-            GestureDetector(
-              onTap: toggle,
-              child: Icon(
-                show ? Icons.visibility_off : Icons.visibility,
-                color: Colors.black.withOpacity(0.6),
-                size: 24.sp,
-              ),
-            ),
-        ],
+          suffixIcon: suffixIcon,
+        ),
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 24.sp,
+          fontFamily: 'SF Pro Rounded',
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
 }
 
-/// Checkbox điều khoản
-class CheckBoxTerms extends StatelessWidget {
+///Checkbox DK
+class TermsCheckbox extends StatelessWidget {
   final bool isChecked;
-  final VoidCallback onChanged;
+  final ValueChanged<bool> onChanged;
 
-  const CheckBoxTerms({
+  const TermsCheckbox({
     super.key,
     required this.isChecked,
     required this.onChanged,
@@ -207,65 +222,65 @@ class CheckBoxTerms extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onChanged,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 22.w,
-              height: 22.w,
-              decoration: BoxDecoration(
-                color: isChecked
-                    ? const Color(0xFFFFB901)
-                    : const Color(0xFFD7D7D7),
-                borderRadius: BorderRadius.circular(3.r),
-                border: Border.all(color: Colors.black.withOpacity(0.3)),
-              ),
-              child: isChecked
-                  ? const Icon(Icons.check, size: 16, color: Colors.white)
-                  : null,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 22.w,
+          height: 22.h,
+          child: Checkbox(
+            value: isChecked,
+            onChanged: (val) => onChanged(val ?? false),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6.r),
             ),
-            SizedBox(width: 10.w),
-            Expanded(
-              child: Wrap(
-                children: [
-                  Text(
-                    'Đồng ý với ',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.black),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const TermsPage()),
-                    ),
-                    child: Text(
-                      'điều khoản và điều kiện',
-                      style: TextStyle(
-                        color: const Color(0xFFFFB901),
-                        decoration: TextDecoration.underline,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            side: BorderSide(color: Colors.black.withOpacity(0.6)),
+            activeColor: Colors.amber,
+          ),
         ),
-      ),
+        SizedBox(width: 10.w),
+        Expanded(
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                "Tôi đồng ý với ",
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontFamily: "SF Pro Rounded",
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/terms');
+                },
+                child: Text(
+                  "điều khoản và điều kiện",
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontFamily: "SF Pro Rounded",
+                    fontWeight: FontWeight.w700,
+                    color: Colors.blueAccent,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
 
-/// Thông báo lỗi
-class ErrorBox extends StatelessWidget {
+///TB lỗi
+class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;
 
-  const ErrorBox({
+  const ErrorMessage({
     super.key,
     required this.message,
     required this.width,
@@ -275,26 +290,29 @@ class ErrorBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(50.r),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      decoration: ShapeDecoration(
+        color: const Color(0xA8F0A4A4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50.r),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.warning_amber_rounded,
-              color: Colors.red.shade700, size: 20.sp),
-          SizedBox(width: 8.w),
+              color: const Color(0xFFF01E1E), size: 22.sp),
+          SizedBox(width: 19.w),
           Flexible(
             child: Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.red.shade700,
-                fontSize: 15.sp,
+                color: const Color(0xFFF01E1E),
+                fontSize: 13.sp,
                 fontFamily: 'SF Pro Rounded',
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
+                height: 1.4,
               ),
             ),
           ),
@@ -304,49 +322,35 @@ class ErrorBox extends StatelessWidget {
   }
 }
 
-/// Nút đăng ký
+///Nút đăng ký
 class PrimaryButton extends StatelessWidget {
   final String text;
   final double width;
-  final double height;
-  final VoidCallback onTap;
 
   const PrimaryButton({
     super.key,
     required this.text,
     required this.width,
-    required this.height,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: width,
-        height: height,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
+    return Container(
+      width: width,
+      height: 65.h,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFB901),
+        borderRadius: BorderRadius.circular(50.r),
+        border: Border.all(color: Colors.black, width: 2.w),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
           color: Colors.black,
-          borderRadius: BorderRadius.circular(50.r),
-          border: Border.all(color: Colors.black.withOpacity(0.4)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24.sp,
-            fontFamily: 'SF Pro Rounded',
-            fontWeight: FontWeight.w700,
-          ),
+          fontSize: 24.sp,
+          fontFamily: 'SF Pro Rounded',
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

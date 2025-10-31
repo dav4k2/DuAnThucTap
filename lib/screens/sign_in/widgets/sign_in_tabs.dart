@@ -83,8 +83,8 @@ class _SignInTabsState extends State<SignInTabs> {
           alignment: isSignIn ? Alignment.centerLeft : Alignment.centerRight,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            margin: EdgeInsets.symmetric(horizontal: 15.w),
-            width: isSignIn ? 160.w : 120.w,
+            margin: EdgeInsets.symmetric(horizontal: 33.w),
+            width: isSignIn ? 150.w : 110.w,
             height: underlineThickness,
             color: Colors.black,
           ),

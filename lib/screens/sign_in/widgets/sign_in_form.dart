@@ -1,66 +1,73 @@
-/// Sơn
-/// Form đăng nhập
-
+/// Sơn - Sign In Form
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../explore/explore_screen.dart';
+import '../logic/auth_provider.dart';
 
-class SignInForm extends StatefulWidget {
+class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  ConsumerState<SignInForm> createState() => _SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class _SignInFormState extends ConsumerState<SignInForm> {
   final TextEditingController _accountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? errorMessage;
+
   bool _isPasswordVisible = false;
 
-  /// Xử lý đăng nhập
+  @override
+  void initState() {
+    super.initState();
+    // Reset lỗi khi vào màn
+    Future.microtask(() {
+      ref.read(authProvider.notifier).setError(null);
+    });
+  }
+
   void _login() {
     final account = _accountController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (account.isEmpty || password.isEmpty) {
-      setState(() => errorMessage = 'Vui lòng nhập tài khoản và mật khẩu!');
-      return;
-    }
+    ///Gọi logic đăng nhập
+    final result = ref.read(authProvider.notifier).login(account, password);
 
-    if (account == 'a' && password == '1') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const AdminScreen()),
-      );
-    } else if (account == 'u' && password == '1') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const ExploreScreen()),
-      );
+    if (result == "admin") {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const AdminScreen()));
+    } else if (result == "user") {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const ExploreScreen()));
     } else {
-      setState(() => errorMessage = 'Tài khoản hoặc mật khẩu không đúng!');
+      ref.read(authProvider.notifier).setError(result);
     }
   }
 
-  /// Quản lý widget
+
+  ///Widget
   @override
   Widget build(BuildContext context) {
-    final inputWidth = 0.85.sw; // 85% màn hình
+    final state = ref.watch(authProvider);
+
+    final inputWidth = 0.85.sw;
     final errorWidth = 0.75.sw;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        /// Ô nhập tài khoản
+
+        ///Textbox TK
         InputField(
           hintText: 'Tài khoản',
           controller: _accountController,
           width: inputWidth,
         ),
+
         SizedBox(height: 33.h),
 
-        /// Ô nhập mật khẩu
+        ///Textbox MK
         InputField(
           hintText: 'Mật khẩu',
           controller: _passwordController,
@@ -76,32 +83,41 @@ class _SignInFormState extends State<SignInForm> {
                 setState(() => _isPasswordVisible = !_isPasswordVisible),
           ),
         ),
+
         SizedBox(height: 10.h),
 
-        /// Quên mật khẩu
+        /// Quên MK
         const ForgotPasswordLink(),
+
         SizedBox(height: 33.h),
 
-        /// Thông báo lỗi
-        if (errorMessage != null)
+        /// Error
+        if (state.errorMessage != null)
           Padding(
             padding: EdgeInsets.only(bottom: 20.h),
-            child: ErrorMessage(message: errorMessage!, width: errorWidth),
+            child: ErrorMessage(
+              message: state.errorMessage!,
+              width: errorWidth,
+            ),
           ),
 
-        /// Nút đăng nhập
+        ///Đăng nhập
         GestureDetector(
           onTap: _login,
           child: PrimaryButton(text: 'Đăng nhập', width: inputWidth),
         ),
+
         SizedBox(height: 42.h),
 
-        /// Đăng nhập khách
+        /// Đăng nhập là khách
         GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ExploreScreen()),
-          ),
+          onTap: () {
+            ref.read(authProvider.notifier).setError(null);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ExploreScreen()),
+            );
+          },
           child: Text(
             'Đăng nhập với tư cách khách',
             textAlign: TextAlign.center,
@@ -118,6 +134,7 @@ class _SignInFormState extends State<SignInForm> {
     );
   }
 }
+
 
 /// -------------------- Widget --------------------
 
@@ -137,7 +154,6 @@ class InputField extends StatelessWidget {
     this.obscure = false,
     this.suffixIcon,
   });
-
 
   @override
   Widget build(BuildContext context) {
