@@ -1,54 +1,64 @@
-// Widget cho phép người dùng nhập email hoặc số điện thoại
-// Dùng trong màn hình "Quên mật khẩu" hoặc "Xác minh tài khoản"
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../logic/reset_provider.dart'; // Import file chứa state quản lý bằng Riverpod
+import '../logic/reset_provider.dart';
 
-class ResetForm extends ConsumerWidget {
+class ResetForm extends ConsumerStatefulWidget {
   const ResetForm({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Lấy giá trị hiện tại của email hoặc số điện thoại từ provider
-    final emailOrPhone = ref.watch(emailProvider);
+  ConsumerState<ResetForm> createState() => _ResetFormState();
+}
 
-    // Tạo controller cho TextField, hiển thị giá trị ban đầu từ provider
-    final controller = TextEditingController(text: emailOrPhone);
+class _ResetFormState extends ConsumerState<ResetForm> {
+  late TextEditingController controller;
 
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController(
+      text: ref.read(emailProvider),
+    );
+
+    // Lắng nghe thay đổi trong controller và cập nhật provider
+    controller.addListener(() {
+      ref.read(emailProvider.notifier).state = controller.text;
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // Căn trái nội dung
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- Tiêu đề hướng dẫn nhập thông tin ---
         const Text(
           'Nhập email/sđt nhận mã xác minh',
           style: TextStyle(
             fontSize: 20,
             fontFamily: 'SF Pro Rounded',
-            fontWeight: FontWeight.w500, // In đậm vừa phải
+            fontWeight: FontWeight.w500,
           ),
         ),
-
-        const SizedBox(height: 12), // Khoảng cách giữa tiêu đề và ô nhập
-
-        // --- Ô nhập email / số điện thoại ---
+        const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFEBEBEB), // Màu nền xám nhạt
-            borderRadius: BorderRadius.circular(50), // Bo tròn góc
-            border: Border.all(color: Colors.black.withOpacity(0.4)), // Viền mờ
+            color: const Color(0xFFEBEBEB),
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: Colors.black.withOpacity(0.4)),
           ),
           child: TextField(
-            controller: controller, // Liên kết controller để hiển thị giá trị
-            // Mỗi khi người dùng thay đổi nội dung, cập nhật lại giá trị trong provider
-            onChanged: (value) => ref.read(emailProvider.notifier).state = value,
-
-            // Cấu hình giao diện của ô nhập
+            controller: controller,
             decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 18), // Lề trong
-              border: InputBorder.none, // Ẩn viền mặc định
-              hintText: 'Email/SĐT', // Gợi ý hiển thị
+              contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+              border: InputBorder.none,
+              hintText: 'Email/SĐT',
               hintStyle: TextStyle(
-                color: Colors.black54, // Màu chữ gợi ý mờ
+                color: Colors.black54,
                 fontSize: 20,
                 fontFamily: 'SF Pro Rounded',
               ),

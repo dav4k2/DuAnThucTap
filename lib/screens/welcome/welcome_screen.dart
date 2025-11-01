@@ -60,7 +60,7 @@ class WelcomeScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const VerifyResetPhoneScreen()),
+                    MaterialPageRoute(builder: (context) => const VerifyResetEmailScreen()),
                   );
                 },
                 child: Text(
