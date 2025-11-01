@@ -118,17 +118,27 @@ class _SignInFormState extends ConsumerState<SignInForm> {
               MaterialPageRoute(builder: (_) => const ExploreScreen()),
             );
           },
-          child: Text(
-            'Đăng nhập với tư cách khách',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20.sp,
-              fontFamily: 'SF Pro Rounded',
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.underline,
-            ),
-          ),
+          child: Stack(
+            children: [
+              Text(
+                'Đăng nhập với tư cách khách ?',
+                style: TextStyle(
+                  fontSize: 22.sp,
+                  fontFamily: 'SF Pro Rounded',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Positioned(
+                bottom: -4, // khoảng cách gạch với chữ
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 6, // độ dày gạch
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          )
         ),
       ],
     );
@@ -280,16 +290,29 @@ class ForgotPasswordLink extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: GestureDetector(
           onTap: () => Navigator.pushNamed(context, '/reset'),
-          child: Text(
-            'Quên mật khẩu ?',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20.sp,
-              fontFamily: 'SF Pro Rounded',
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.underline,
-            ),
-          ),
+          child: Stack(
+            children: [
+              Text(
+                'Quên mật khẩu ?',
+                style: TextStyle(
+                  color: Color(0xFFFFB901),
+                  fontSize: 20.sp,
+                  fontFamily: 'SF Pro Rounded',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Positioned(
+                bottom: -4, // khoảng cách gạch với chữ
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 6, // độ dày gạch
+                  color: Color(0xFFFFB901),
+                ),
+              ),
+            ],
+          )
+
         ),
       ),
     );

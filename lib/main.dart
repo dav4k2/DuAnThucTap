@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/terms/terms.dart';
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/welcome/widgets/splash_page.dart';
 import 'screens/sign_in/sign_in_screen.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
             '/signin': (context) => const SignInScreen(),
             '/explore': (context) => const ExploreScreen(),
             '/reset': (context) => const ResetPasswordScreen(),
+            '/terms' : (context) => const TermsPage(),
           },
 
 

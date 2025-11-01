@@ -64,7 +64,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                                   setState(() => isSignIn = val),
                             ),
 
-                            SizedBox(height: 63.h),
+                            SizedBox(height: 45.h),
 
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),

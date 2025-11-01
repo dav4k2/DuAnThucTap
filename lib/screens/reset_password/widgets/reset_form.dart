@@ -2,7 +2,7 @@
 // Dùng trong màn hình "Quên mật khẩu" hoặc "Xác minh tài khoản"
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../reset_provider.dart'; // Import file chứa state quản lý bằng Riverpod
+import '../logic/reset_provider.dart'; // Import file chứa state quản lý bằng Riverpod
 
 class ResetForm extends ConsumerWidget {
   const ResetForm({super.key});
@@ -49,7 +49,7 @@ class ResetForm extends ConsumerWidget {
               hintText: 'Email/SĐT', // Gợi ý hiển thị
               hintStyle: TextStyle(
                 color: Colors.black54, // Màu chữ gợi ý mờ
-                fontSize: 18,
+                fontSize: 20,
                 fontFamily: 'SF Pro Rounded',
               ),
             ),

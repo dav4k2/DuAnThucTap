@@ -1,1 +1,0 @@
-// Phần "Không nhận được email?" + "Gửi lại"

@@ -15,6 +15,7 @@ class SignUpForm extends ConsumerStatefulWidget {
 
 class _SignUpFormState extends ConsumerState<SignUpForm> {
   final TextEditingController _accountController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
@@ -29,11 +30,12 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   void _register() {
     final auth = ref.read(authProvider.notifier);
     final acc = _accountController.text.trim();
+    final email = _emailController.text.trim();
     final pass = _passwordController.text.trim();
     final confirm = _confirmController.text.trim();
 
     /// Gọi logic signup test trong provider
-    final result = auth.signup(acc, pass, confirm);
+    final result = auth.signup(acc, pass, confirm,email);
 
     if (result == null) {
       // Thành công
@@ -60,7 +62,6 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10.h),
 
         /// Tài khoản
         Center(
@@ -70,7 +71,17 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             width: inputWidth,
           ),
         ),
-        SizedBox(height: 25.h),
+        SizedBox(height: 9.h),
+
+        /// Email
+        Center(
+          child: InputField(
+            hintText: "Email",
+            controller: _emailController,
+            width: inputWidth,
+          ),
+        ),
+        SizedBox(height: 9.h),
 
         /// Mật khẩu
         Center(
@@ -89,7 +100,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ),
           ),
         ),
-        SizedBox(height: 25.h),
+        SizedBox(height: 9.h),
 
         /// Nhập lại mật khẩu
         Center(
@@ -110,7 +121,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ),
           ),
         ),
-        SizedBox(height: 15.h),
+        SizedBox(height: 9.h),
 
         /// Điều khoản
         Padding(
@@ -262,7 +273,7 @@ class TermsCheckbox extends StatelessWidget {
                     fontSize: 15.sp,
                     fontFamily: "SF Pro Rounded",
                     fontWeight: FontWeight.w700,
-                    color: Colors.blueAccent,
+                    color: Color(0xFFFFB901),
                     decoration: TextDecoration.underline,
                   ),
                 ),

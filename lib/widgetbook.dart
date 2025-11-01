@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:fontend/screens/welcome/widgets/splash_page.dart';
 import 'package:widgetbook/widgetbook.dart';
+
 
 void main() {
   runApp(const WidgetBookApp());
@@ -28,6 +30,8 @@ class WidgetBookApp extends StatelessWidget {
                 ),
               ],
             ),
+
+
             
           ],
         ),

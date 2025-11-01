@@ -30,8 +30,8 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   /// Đăng ký
-  String register(String account, String password) {
-    if (account.isEmpty || password.isEmpty) {
+  String register(String account, String password, String email) {
+    if (account.isEmpty || email.isEmpty || password.isEmpty ) {
       return "Không được để trống";
     }
 
@@ -60,7 +60,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(agreeTerms: !state.agreeTerms);
   }
 
-  /// Login
+  /// Đăng nhập
   String? login(String account, String password) {
     if (account.isEmpty || password.isEmpty) {
       return "Vui lòng nhập tài khoản và mật khẩu!";
@@ -70,9 +70,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     return "Tài khoản hoặc mật khẩu không đúng!";
   }
 
-  /// Signup
-  String? signup(String account, String pass, String confirm) {
-    if (account.isEmpty || pass.isEmpty || confirm.isEmpty) {
+  /// Đăng ký
+  String? signup(String account, String pass, String confirm, String email) {
+    if (account.isEmpty || pass.isEmpty || confirm.isEmpty || email.isEmpty) {
       return "Vui lòng điền đầy đủ thông tin!";
     }
     if (pass != confirm) {
