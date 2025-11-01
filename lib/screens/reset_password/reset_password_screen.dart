@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../enter_verification_code/verify_code_screen.dart';
+
+import '../enter_verification_code/verify_reset_phone_screen.dart'; // ✅ đổi đúng file
 import '../sign_in/sign_in_screen.dart';
-import 'widgets/custom_status_bar.dart';
+
 import 'widgets/reset_header.dart';
 import 'widgets/reset_form.dart';
 import 'widgets/reset_button.dart';
 import 'logic/reset_provider.dart';
-
 
 class ResetPasswordScreen extends ConsumerWidget {
   const ResetPasswordScreen({super.key});
@@ -21,7 +21,6 @@ class ResetPasswordScreen extends ConsumerWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // 🟡 Toàn bộ nội dung màn hình
             Container(
               width: size.width,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -37,9 +36,10 @@ class ResetPasswordScreen extends ConsumerWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const VerifyCodeScreen(),
+                          builder: (_) => const VerifyResetPhoneScreen(), // ✅ đúng rồi
                         ),
                       );
+
                       final email = ref.watch(emailProvider);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Đã gửi mã xác minh tới: $email')),
@@ -50,7 +50,6 @@ class ResetPasswordScreen extends ConsumerWidget {
               ),
             ),
 
-            // 🔙 Nút quay lại đè trên nền vàng
             Positioned(
               top: size.height * 0.006,
               left: size.width * 0.014,

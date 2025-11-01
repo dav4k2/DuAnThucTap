@@ -17,7 +17,7 @@ class ErrorMessage extends StatelessWidget {
       width: width,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: ShapeDecoration(
-        color: const Color(0xA8F0A4A4), // nền hồng nhạt
+        color: const Color(0xA8F0A4A4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50.r),
         ),

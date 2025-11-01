@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'widgets/title_text.dart';
+import 'widgets/description_text.dart';
+import 'widgets/otp_input_area.dart';
+import 'widgets/resend_email_text.dart';
+import 'widgets/verify_button.dart';
+import 'widgets/error_message.dart';
+import 'logic/verify_signup_phone_provider.dart';
+
+class VerifySignupPhoneScreen extends ConsumerWidget {
+  const VerifySignupPhoneScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(verifySignupPhoneProvider);
+    final notifier = ref.read(verifySignupPhoneProvider.notifier);
+
+    return ScreenUtilInit(
+      designSize: const Size(402, 874),
+      minTextAdapt: true,
+      builder: (_, __) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Positioned(top: 62.h, left: 10.w, child: SizedBox(width: 40.w, height: 34.h)),
+                Positioned(top: 141.h, child: const TitleText(
+                  title: 'Xác minh Email',
+                  description: 'Nhập mã xác minh đã được gửi đến email của bạn để đặt lại mật khẩu.',
+                ),),
+                Positioned(
+                  top: 206.h,
+                  child: const DescriptionText(
+                    description: 'Nhập mã xác minh đã được gửi đến số điện thoại của bạn để hoàn tất đăng ký.',
+                  ),
+                ),
+                Positioned(
+                  top: 300.h,
+                  child: OTPInputArea(onChanged: notifier.setCode),
+                ),
+                if (state.errorMessage.isNotEmpty)
+                  Positioned(top: 400.h, child: ErrorMessage(message: state.errorMessage, width: 320.w)),
+                Positioned(top: 453.h, child: ResendEmailText(onTap: () {})),
+                Positioned(top: 526.h, child: VerifyButton(onPressed: () => notifier.submitCode(context))),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

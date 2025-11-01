@@ -1,26 +1,26 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-final verifyCodeProvider = StateNotifierProvider<VerifyCodeNotifier, VerifyCodeState>((ref) {
-  return VerifyCodeNotifier();
+final verifyResetEmailProvider = StateNotifierProvider<VerifyResetEmailNotifier, VerifyResetEmailState>((ref) {
+  return VerifyResetEmailNotifier();
 });
 
-class VerifyCodeState {
+class VerifyResetEmailState {
   final String code;
   final String errorMessage;
 
-  VerifyCodeState({this.code = '', this.errorMessage = ''});
+  VerifyResetEmailState({this.code = '', this.errorMessage = ''});
 
-  VerifyCodeState copyWith({String? code, String? errorMessage}) {
-    return VerifyCodeState(
+  VerifyResetEmailState copyWith({String? code, String? errorMessage}) {
+    return VerifyResetEmailState(
       code: code ?? this.code,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }
 
-class VerifyCodeNotifier extends StateNotifier<VerifyCodeState> {
-  VerifyCodeNotifier() : super(VerifyCodeState());
+class VerifyResetEmailNotifier extends StateNotifier<VerifyResetEmailState> {
+  VerifyResetEmailNotifier() : super(VerifyResetEmailState());
 
   void setCode(String code) {
     state = state.copyWith(code: code, errorMessage: '');
@@ -28,11 +28,9 @@ class VerifyCodeNotifier extends StateNotifier<VerifyCodeState> {
 
   Future<void> submitCode(BuildContext context) async {
     if (state.code == '1234') {
-      // nếu đúng
       state = state.copyWith(errorMessage: '');
-      Navigator.pushNamed(context, '/welcome'); // màn hình đích
+      Navigator.pushNamed(context, '/welcome'); // route đặt lại mật khẩu
     } else {
-      // nếu sai
       state = state.copyWith(errorMessage: 'Mã xác minh không hợp lệ!');
     }
   }

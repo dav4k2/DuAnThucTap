@@ -2,43 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TitleText extends StatelessWidget {
-  const TitleText({super.key});
+  final String title;
+  final String description;
+
+  const TitleText({
+    super.key,
+    required this.title,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
-
-      children: const [
-        ///Xin chào
+      children: [
         SizedBox(
-          width: 280,
+          width: 280.w,
           child: Text(
-            'Nhập mã xác minh',
+            title,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black,
-              fontSize: 32,
+              fontSize: 32.sp,
               fontWeight: FontWeight.w700,
               height: 0.69,
             ),
-          )
+          ),
         ),
-
-        SizedBox(height: 20),
-
-        ///Text chào mừng
+        SizedBox(height: 20.h),
         SizedBox(
-          width: 370,
+          width: 370.w,
           child: Text(
-            'Nếu email của bạn có trong cơ sở dữ liệu của chúng tôi, bạn sẽ nhận được một email chứa mã xác minh.\nNếu không thấy email, hãy kiểm tra cả hộp spam.',
+            description,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 15.sp,
               fontWeight: FontWeight.w400,
               height: 1.47,
             ),
-          )
+          ),
         ),
       ],
     );

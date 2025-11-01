@@ -1,42 +1,34 @@
+// widgets/otp_input_area.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../logic/verify_provider.dart';
 
-class OTPInputArea extends ConsumerStatefulWidget {
-  const OTPInputArea({super.key});
+class OTPInputArea extends StatefulWidget {
+  final void Function(String code)? onChanged; // callback trả code đầy đủ
+
+  const OTPInputArea({super.key, this.onChanged});
 
   @override
-  ConsumerState<OTPInputArea> createState() => _OTPInputAreaState();
+  State<OTPInputArea> createState() => _OTPInputAreaState();
 }
 
-class _OTPInputAreaState extends ConsumerState<OTPInputArea> {
+class _OTPInputAreaState extends State<OTPInputArea> {
   final List<TextEditingController> _controllers =
   List.generate(4, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
 
   @override
   void dispose() {
-    for (final c in _controllers) {
-      c.dispose();
-    }
-    for (final f in _focusNodes) {
-      f.dispose();
-    }
+    for (final c in _controllers) c.dispose();
+    for (final f in _focusNodes) f.dispose();
     super.dispose();
   }
 
   void _onChanged(String value, int index) {
-    // Nếu nhập đúng 1 ký tự, tự động chuyển focus sang ô kế
     if (value.isNotEmpty && index < 3) {
       _focusNodes[index + 1].requestFocus();
     }
-
-    // Ghép các ô thành chuỗi đầy đủ
     final code = _controllers.map((e) => e.text).join();
-
-    // Gửi code lên provider
-    ref.read(verifyCodeProvider.notifier).setCode(code);
+    if (widget.onChanged != null) widget.onChanged!(code);
   }
 
   @override
@@ -58,18 +50,11 @@ class _OTPInputAreaState extends ConsumerState<OTPInputArea> {
               controller: _controllers[index],
               focusNode: _focusNodes[index],
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 36.sp,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'SF Pro',
-              ),
               keyboardType: TextInputType.number,
               maxLength: 1,
-              decoration: const InputDecoration(
-                counterText: '', // ẩn “0/1”
-                border: InputBorder.none,
-              ),
-              onChanged: (value) => _onChanged(value, index),
+              decoration: const InputDecoration(counterText: '', border: InputBorder.none),
+              style: TextStyle(fontSize: 36.sp, fontWeight: FontWeight.w700),
+              onChanged: (v) => _onChanged(v, index),
             ),
           ),
         );

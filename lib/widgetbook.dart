@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fontend/screens/enter_verification_code/verify_reset_email_screen.dart';
 
 import 'package:fontend/screens/welcome/widgets/splash_page.dart';
 import 'package:widgetbook/widgetbook.dart';
@@ -27,6 +28,17 @@ class WidgetBookApp extends StatelessWidget {
                   name: 'Default',
                   builder: (context) =>
                       const Scaffold(body: Center(child: SplashPage())),
+                ),
+              ],
+            ),
+
+            WidgetbookComponent(
+              name: 'dd',
+              useCases: [
+                WidgetbookUseCase(
+                  name: 'Default',
+                  builder: (context) =>
+                  const Scaffold(body: Center(child: VerifyResetEmailScreen())),
                 ),
               ],
             ),

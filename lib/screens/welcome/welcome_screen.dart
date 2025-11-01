@@ -2,6 +2,8 @@
 ///Trang welcome
 
 import 'package:flutter/material.dart';
+import '../enter_verification_code/verify_reset_email_screen.dart';
+import '../enter_verification_code/verify_reset_phone_screen.dart';
 import 'widgets/welcome_logo.dart';
 import 'widgets/welcome_texts.dart';
 import 'widgets/welcome_buttons.dart';
@@ -54,19 +56,28 @@ class WelcomeScreen extends StatelessWidget {
               top: height * 0.95,
               left: 0,
               right: 0,
-              child: Text(
-                'Tiếp tục với tư cách Khách',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: width * 0.05, // responsive font
-                  fontFamily: 'SF Pro Rounded',
-                  fontWeight: FontWeight.w400,
-                  decoration: TextDecoration.underline,
-                  height: 1.5,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const VerifyResetPhoneScreen()),
+                  );
+                },
+                child: Text(
+                  'Tiếp tục với tư cách Khách',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: width * 0.05,
+                    fontFamily: 'SF Pro Rounded',
+                    fontWeight: FontWeight.w400,
+                    decoration: TextDecoration.underline,
+                    height: 1.5,
+                  ),
                 ),
               ),
             ),
+
           ],
         ),
       ),
