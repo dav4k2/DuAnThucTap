@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+
+class ResetSuccessButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  const ResetSuccessButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width * 0.8;
+    final height = MediaQuery.of(context).size.height * 0.07;
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFFB800),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+        ),
+        onPressed: onPressed,
+        child: const Text(
+          'Quay về đăng nhập',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
