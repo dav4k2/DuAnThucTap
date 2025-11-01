@@ -1,4 +1,3 @@
-/*
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -62,8 +61,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-*/
 
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 //import 'package:fontend/screens/reset_password2/rs_password2_screen.dart';
@@ -89,3 +88,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+*/
