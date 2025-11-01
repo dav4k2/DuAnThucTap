@@ -65,10 +65,17 @@ class MyApp extends StatelessWidget {
 */
 
 import 'package:flutter/material.dart';
-import 'package:fontend/screens/success_reset_password/success_reset_password_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+//import 'package:fontend/screens/reset_password2/rs_password2_screen.dart';
+// import 'package:fontend/screens/success_reset_password/success_reset_password_screen.dart';
+import 'package:fontend/screens/new_password/new_password_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope( //Thêm dòng này để Riverpod hoạt động
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -78,7 +85,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ResetSuccessScreen(), // 👈 mở trực tiếp trang này khi chạy app
+      home: NewPasswordScreen(),
     );
   }
 }

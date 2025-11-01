@@ -14,7 +14,7 @@ class SignInBackground extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       decoration: const BoxDecoration(
-        color: Color(0xFFFFB901), // nền vàng
+        color: Color(0xFFFFC107), // 🎨 vàng đậm hơn, chuẩn Material Yellow 700
       ),
       child: Stack(
         children: [
@@ -26,7 +26,7 @@ class SignInBackground extends StatelessWidget {
             bottom: 0,
             child: Container(
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 255, 255, 255),
+                color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(50),
                   topRight: Radius.circular(50),
@@ -35,9 +35,11 @@ class SignInBackground extends StatelessWidget {
             ),
           ),
 
+          // widget con bên trong
           child,
         ],
       ),
     );
   }
+
 }
