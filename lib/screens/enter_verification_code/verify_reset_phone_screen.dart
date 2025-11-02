@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'widgets/title_text.dart';
-
 import 'widgets/otp_input_area.dart';
 import 'widgets/resend_email_text.dart';
 import 'widgets/verify_button.dart';
@@ -25,27 +24,53 @@ class VerifyResetPhoneScreen extends ConsumerWidget {
         return Scaffold(
           backgroundColor: Colors.white,
           body: Center(
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Positioned(top: 62.h, left: 10.w, child: SizedBox(width: 40.w, height: 34.h)),
-                Positioned(
-                  top: 141.h,
-                  child: const TitleText(
-                    title: 'Xác minh SDT',
-                    description: 'Nhập mã xác minh đã được gửi đến email của bạn để đặt lại mật khẩu.',
-                  ),
-                ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 62.h),
+                  SizedBox(width: 40.w, height: 34.h),
 
-                Positioned(
-                  top: 300.h,
-                  child: OTPInputArea(onChanged: notifier.setCode),
-                ),
-                if (state.errorMessage.isNotEmpty)
-                  Positioned(top: 400.h, child: ErrorMessage(message: state.errorMessage, width: 320.w)),
-                Positioned(top: 453.h, child: ResendEmailText(onTap: () {})),
-                Positioned(top: 526.h, child: VerifyButton(onPressed: () => notifier.submitCode(context))),
-              ],
+                  SizedBox(height: 70.h),
+                  const TitleText(
+                    title: 'Xác minh SĐT',
+                    description: 'Nhập mã xác minh đã được gửi đến số điện thoại của bạn để đặt lại mật khẩu.',
+                  ),
+
+                  SizedBox(height: 28.h),
+                  OTPInputArea(
+                    onChanged: notifier.setCode,
+                  ),
+
+                  // lỗi xuất hiện + đẩy UI xuống
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: state.errorMessage.isNotEmpty
+                        ? Padding(
+                      padding: EdgeInsets.only(top: 28.h),
+                      child: ErrorMessage(
+                        message: state.errorMessage,
+                        width: 320.w,
+                      ),
+                    )
+                        : SizedBox(height: 10.h),
+                  ),
+
+                  SizedBox(height: 28.h),
+                  ResendEmailText(
+                    onTap: notifier.resendCode,
+                    isWaiting: state.isWaiting,
+                    secondsLeft: state.secondsLeft,
+                  ),
+
+                  SizedBox(height: 24.h),
+                  VerifyButton(
+                    onPressed: () => notifier.submitCode(context),
+                  ),
+                ],
+              ),
             ),
           ),
         );

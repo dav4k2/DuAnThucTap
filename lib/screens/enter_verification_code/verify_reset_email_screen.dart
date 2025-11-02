@@ -20,49 +20,68 @@ class VerifyResetEmailScreen extends ConsumerWidget {
     // lấy notifier
     final notifier = ref.read(verifyResetEmailProvider.notifier);
 
+
     return ScreenUtilInit(
       designSize: const Size(402, 874),
       minTextAdapt: true,
       builder: (_, __) {
         return Scaffold(
           backgroundColor: Colors.white,
-          body: Center(
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Positioned(top: 62.h, left: 10.w, child: SizedBox(width: 40.w, height: 34.h)),
-                Positioned(
-                  top: 141.h,
-                  child: const TitleText(
-                    title: 'Xác minh Email',
-                    description: 'Nhập mã xác minh đã được gửi đến email của bạn để đặt lại mật khẩu.',
-                  ),
+            body: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 62.h),
+                    SizedBox(width: 40.w, height: 34.h), // giữ hình placeholder nếu cần
+
+                    SizedBox(height: 70.h),
+                    const TitleText(
+                      title: 'Xác minh Email',
+                      description: 'Nhập mã xác minh đã được gửi đến email của bạn để đặt lại mật khẩu.',
+                    ),
+
+                    SizedBox(height: 28.h),
+                    OTPInputArea(
+                      onChanged: (code) {
+                        notifier.setCode(code);
+                      },
+                    ),
+
+                    // Nếu có lỗi thì hiện + chiếm diện tích, tự đẩy các widget dưới
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: state.errorMessage.isNotEmpty
+                          ? Padding(
+                        padding: EdgeInsets.only(top: 28.h),
+                        child: ErrorMessage(
+                          message: state.errorMessage,
+                          width: 320.w,
+                        ),
+                      )
+                          : SizedBox(height: 10.h),
+                    ),
+
+                    SizedBox(height: 28.h),
+                    ResendEmailText(
+                      onTap: notifier.resendCode,
+                      isWaiting: state.isWaiting,
+                      secondsLeft: state.secondsLeft,
+                    ),
+
+                    SizedBox(height: 24.h),
+                    VerifyButton(
+                      onPressed: () {
+                        notifier.submitCode(context);
+                      },
+                    ),
+                  ],
                 ),
-                // truyền callback onChanged cho OTPInputArea
-                Positioned(
-                  top: 300.h,
-                  child: OTPInputArea(
-                    onChanged: (code) {
-                      notifier.setCode(code); // gọi setCode trên notifier
-                    },
-                  ),
-                ),
-                if (state.errorMessage.isNotEmpty)
-                  Positioned(top: 400.h, child: ErrorMessage(message: state.errorMessage, width: 320.w)),
-                Positioned(top: 453.h, child: ResendEmailText(onTap: () {
-                  // gọi resend nếu cần
-                })),
-                Positioned(
-                  top: 526.h,
-                  child: VerifyButton(
-                    onPressed: () {
-                      notifier.submitCode(context); // gọi submitCode
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            )
+
         );
       },
     );
