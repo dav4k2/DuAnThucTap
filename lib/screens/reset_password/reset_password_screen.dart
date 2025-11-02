@@ -16,7 +16,7 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
 }
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
-  String errorMessage = ''; // biến lưu thông báo lỗi
+  String errorMessage = ''; // Biến lưu thông báo lỗi
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,17 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   SizedBox(height: size.height * 0.08),
                   const ResetHeader(),
                   SizedBox(height: size.height * 0.05),
-                  const ResetForm(),
+
+                  // 🟡 Gọi ResetForm và truyền callback khi người dùng nhập lại
+                  ResetForm(
+                    onChanged: () {
+                      if (errorMessage.isNotEmpty) {
+                        setState(() {
+                          errorMessage = '';
+                        });
+                      }
+                    },
+                  ),
 
                   // Hiển thị thông báo lỗi (nằm giữa TextField và nút)
                   if (errorMessage.isNotEmpty)
@@ -53,8 +63,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: const [
-                          Icon(Icons.warning_amber_rounded,
-                              color: Color(0xFFD32F2F), size: 20),
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: Color(0xFFD32F2F),
+                            size: 20,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             'Vui lòng nhập email hoặc số điện thoại hợp lệ!',
@@ -67,13 +80,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       ),
                     ),
 
+                  // Nút xác nhận
                   ResetButton(
                     onPressed: () {
                       final input = ref.watch(emailProvider);
                       final isEmail = input.contains('@');
-                      final isPhone = RegExp(r'^[0-9]{9,11}$').hasMatch(input);
+                      final isPhone =
+                      RegExp(r'^[0-9]{9,11}$').hasMatch(input);
 
-                      setState(() => errorMessage = ''); // reset lỗi trước
+                      // Reset lỗi trước khi validate
+                      setState(() => errorMessage = '');
 
                       if (isEmail) {
                         Navigator.pushReplacement(
@@ -92,7 +108,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       } else {
                         // ❌ Gán thông báo lỗi hiển thị ngay giữa màn hình
                         setState(() {
-                          errorMessage = 'Vui lòng nhập email hoặc số điện thoại hợp lệ!';
+                          errorMessage =
+                          'Vui lòng nhập email hoặc số điện thoại hợp lệ!';
                         });
                       }
                     },
