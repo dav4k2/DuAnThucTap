@@ -8,6 +8,8 @@ import 'screens/sign_in/sign_in_screen.dart';
 import 'screens/explore/explore_screen.dart';
 import 'screens/reset_password/reset_password_screen.dart';
 import 'screens/success_reset_password/success_reset_password_screen.dart';
+import 'screens/new_password/new_password_screen.dart';
+import 'screens/auth/auth_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -50,7 +52,9 @@ class MyApp extends StatelessWidget {
             '/explore': (context) => const ExploreScreen(),
             '/reset': (context) => const ResetPasswordScreen(),
             '/terms' : (context) => const TermsPage(),
-            '/success' : (context) => const ResetSuccessScreen()
+            '/success' : (context) => const ResetSuccessScreen(),
+            '/newpass' : (context) => const NewPasswordScreen(),
+            '/auth' : (context) => const AuthScreen()
           },
 
 
@@ -65,9 +69,9 @@ class MyApp extends StatelessWidget {
 /*
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import 'package:fontend/screens/reset_password2/rs_password2_screen.dart';
 // import 'package:fontend/screens/success_reset_password/success_reset_password_screen.dart';
 import 'package:fontend/screens/new_password/new_password_screen.dart';
+import 'package:fontend/screens/auth/auth_screen.dart';
 
 void main() {
   runApp(
@@ -84,7 +88,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: NewPasswordScreen(),
+      home: AuthScreen(),
     );
   }
 }
