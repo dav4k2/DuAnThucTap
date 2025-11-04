@@ -47,7 +47,7 @@ class VerifyResetPhoneNotifier extends StateNotifier<VerifyResetPhoneState> {
   Future<void> submitCode(BuildContext context) async {
     if (state.code == '1234') {
       state = state.copyWith(errorMessage: '');
-      Navigator.pushNamed(context, '/welcome');
+      Navigator.pushNamed(context, '/enterpass');
     } else {
       state = state.copyWith(errorMessage: 'Mã xác minh không hợp lệ!');
     }

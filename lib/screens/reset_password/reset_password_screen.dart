@@ -92,20 +92,21 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       setState(() => errorMessage = '');
 
                       if (isEmail) {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => const VerifyResetEmailScreen(),
                           ),
                         );
                       } else if (isPhone) {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => const VerifyResetPhoneScreen(),
                           ),
                         );
-                      } else {
+                      }
+                      else {
                         // ❌ Gán thông báo lỗi hiển thị ngay giữa màn hình
                         setState(() {
                           errorMessage =

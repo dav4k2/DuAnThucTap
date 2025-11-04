@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
 import 'package:fontend/screens/terms/terms.dart';
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/welcome/widgets/splash_page.dart';
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
             '/terms' : (context) => const TermsPage(),
             '/success' : (context) => const ResetSuccessScreen(),
             '/newpass' : (context) => const NewPasswordScreen(),
-            '/auth' : (context) => const AuthScreen()
+            '/auth' : (context) => const AuthScreen(),
+            '/enterpass' : (context) => const EnterResetPasswordScreen()
           },
 
 

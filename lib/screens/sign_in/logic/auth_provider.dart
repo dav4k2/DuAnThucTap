@@ -29,25 +29,9 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  /// Đăng ký
-  String register(String account, String password, String email) {
-    if (account.isEmpty || email.isEmpty || password.isEmpty ) {
-      return "Không được để trống";
-    }
-
-    // demo: chặn user "admin"
-    if (account.toLowerCase() == "admin") {
-      return "Tài khoản đã tồn tại";
-    }
-
-    // success
-    state = state.copyWith(errorMessage: null);
-    return "done";
-  }
-
   AuthNotifier() : super(const AuthState());
 
-  /// Toggle show password
+  // ---------------- TOGGLE UI ----------------
   void togglePassword() {
     state = state.copyWith(showPassword: !state.showPassword);
   }
@@ -60,7 +44,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(agreeTerms: !state.agreeTerms);
   }
 
-  /// Đăng nhập
+  void setError(String? msg) {
+    state = state.copyWith(errorMessage: msg);
+  }
+
+  // ---------------- LOGIN (giữ nguyên logic cũ) ----------------
   String? login(String account, String password) {
     if (account.isEmpty || password.isEmpty) {
       return "Vui lòng nhập tài khoản và mật khẩu!";
@@ -70,22 +58,59 @@ class AuthNotifier extends StateNotifier<AuthState> {
     return "Tài khoản hoặc mật khẩu không đúng!";
   }
 
-  /// Đăng ký
-  String? signup(String account, String pass, String confirm, String email) {
-    if (account.isEmpty || pass.isEmpty || confirm.isEmpty || email.isEmpty) {
-      return "Vui lòng điền đầy đủ thông tin!";
+  // ---------------- SIGNUP (email hoặc SĐT) ----------------
+  String? signup(String account, String pass, String confirm, String emailOrPhone) {
+    final acc = account.trim();
+    final input = emailOrPhone.trim();
+    final password = pass.trim();
+    final confirmPassword = confirm.trim();
+
+    if (acc.isEmpty) return 'Vui lòng nhập tài khoản';
+    if (input.isEmpty) return 'Vui lòng nhập email hoặc số điện thoại';
+    if (password.isEmpty) return 'Vui lòng nhập mật khẩu';
+    if (confirmPassword.isEmpty) return 'Vui lòng nhập lại mật khẩu';
+
+    final phoneRegex = RegExp(r'^[0-9]{4,11}$'); // demo: 4-11 chữ số
+    final isEmail = input.contains('@');
+    final isPhone = phoneRegex.hasMatch(input);
+
+    if (!(isEmail || isPhone)) return 'Email hoặc SĐT không hợp lệ';
+
+    if (isEmail) {
+      final emailRegex = RegExp(r"^[^\s@]+@[^\s@]+\.[^\s@]+$");
+      if (!emailRegex.hasMatch(input)) return 'Email không hợp lệ';
     }
-    if (pass != confirm) {
-      return "Mật khẩu nhập lại không khớp!";
-    }
-    if (!state.agreeTerms) {
-      return "Vui lòng đồng ý với điều khoản!";
-    }
+
+    if (password.length < 4) return 'Mật khẩu phải ít nhất 4 ký tự';
+    if (password != confirmPassword) return 'Mật khẩu nhập lại không khớp';
+    if (acc.toLowerCase() == 'admin') return 'Tài khoản đã tồn tại';
+    if (!state.agreeTerms) return 'Vui lòng đồng ý với điều khoản';
+
     return null; // hợp lệ
   }
 
-  void setError(String? msg) {
-    state = state.copyWith(errorMessage: msg);
+  // ---------------- REGISTER (callback phân biệt email/phone) ----------------
+  void register(
+      String account,
+      String pass,
+      String confirm,
+      String emailOrPhone,
+      void Function(bool isEmail) onSuccess,
+      ) {
+    final error = signup(account, pass, confirm, emailOrPhone);
+    if (error != null) {
+      setError(error);
+      return;
+    }
+
+    final isEmail = emailOrPhone.contains('@');
+    final phoneRegex = RegExp(r'^[0-9]{4,11}$');
+    final isPhone = phoneRegex.hasMatch(emailOrPhone);
+
+    if (isEmail || isPhone) {
+      setError(null);
+      onSuccess(isEmail);
+    }
   }
 }
 

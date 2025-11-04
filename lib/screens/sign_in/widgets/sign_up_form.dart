@@ -1,10 +1,11 @@
-/// Sơn
-/// Form đăng ký
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../enter_verification_code/verify_signup_email_screen.dart';
+import '../../enter_verification_code/verify_signup_phone_screen.dart';
 import '../logic/auth_provider.dart';
-import '../../explore/explore_screen.dart';
+
 
 class SignUpForm extends ConsumerStatefulWidget {
   const SignUpForm({super.key});
@@ -28,42 +29,49 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   }
 
   void _register() {
+    FocusScope.of(context).unfocus();
+
     final auth = ref.read(authProvider.notifier);
     final acc = _accountController.text.trim();
-    final email = _emailController.text.trim();
-    final pass = _passwordController.text.trim();
-    final confirm = _confirmController.text.trim();
+    final emailOrPhone = _emailController.text.trim();
+    final pass = _passwordController.text;
+    final confirm = _confirmController.text;
 
-    /// Gọi logic signup test trong provider
-    final result = auth.signup(acc, pass, confirm,email);
+    final result = auth.signup(acc, pass, confirm, emailOrPhone);
 
     if (result == null) {
-      // Thành công
-      auth.setError(null);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const ExploreScreen()),
-      );
+      final phoneRegex = RegExp(r'^[0-9]{9,11}$');
+      final isEmail = emailOrPhone.contains('@');
+      final isPhone = phoneRegex.hasMatch(emailOrPhone);
+
+      if (isEmail) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const VerifySignupEmailScreen()),
+        );
+      } else if (isPhone) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const VerifySignupPhoneScreen()),
+        );
+      } else {
+        auth.setError('Vui lòng nhập email hoặc số điện thoại hợp lệ');
+      }
     } else {
-      // Có lỗi
-      auth.setError(result);
+      auth.setError(result); // cập nhật lỗi từ provider
     }
   }
 
 
-  ///Widget
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(authProvider);
     final inputWidth = 0.85.sw;
     final errorWidth = 0.75.sw;
-    final state = ref.watch(authProvider);
-    final auth = ref.read(authProvider.notifier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
-        /// Tài khoản
         Center(
           child: InputField(
             hintText: "Tài khoản",
@@ -72,18 +80,14 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
           ),
         ),
         SizedBox(height: 9.h),
-
-        /// Email
         Center(
           child: InputField(
-            hintText: "Email",
+            hintText: "Email hoặc SĐT",
             controller: _emailController,
             width: inputWidth,
           ),
         ),
         SizedBox(height: 9.h),
-
-        /// Mật khẩu
         Center(
           child: InputField(
             hintText: "Mật khẩu",
@@ -96,13 +100,11 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 color: Colors.black.withOpacity(0.5),
                 size: 26.sp,
               ),
-              onPressed: () => auth.togglePassword(),
+              onPressed: () => ref.read(authProvider.notifier).togglePassword(),
             ),
           ),
         ),
         SizedBox(height: 9.h),
-
-        /// Nhập lại mật khẩu
         Center(
           child: InputField(
             hintText: "Nhập lại mật khẩu",
@@ -111,41 +113,33 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             width: inputWidth,
             suffixIcon: IconButton(
               icon: Icon(
-                state.showConfirmPassword
-                    ? Icons.visibility_off
-                    : Icons.visibility,
+                state.showConfirmPassword ? Icons.visibility_off : Icons.visibility,
                 color: Colors.black.withOpacity(0.5),
                 size: 26.sp,
               ),
-              onPressed: () => auth.toggleConfirmPassword(),
+              onPressed: () => ref.read(authProvider.notifier).toggleConfirmPassword(),
             ),
           ),
         ),
         SizedBox(height: 9.h),
-
-        /// Điều khoản
         Padding(
           padding: EdgeInsets.only(left: 0.01.sw),
           child: TermsCheckbox(
             isChecked: state.agreeTerms,
-            onChanged: (_) => auth.toggleTerms(),
+            onChanged: (_) => ref.read(authProvider.notifier).toggleTerms(),
           ),
         ),
         SizedBox(height: 15.h),
-
-        /// Lỗi
         if (state.errorMessage != null)
           Center(
             child: Padding(
-              padding: EdgeInsets.only(bottom: 20.h),
+              padding: EdgeInsets.only(bottom: 15.h),
               child: ErrorMessage(
                 message: state.errorMessage!,
                 width: errorWidth,
               ),
             ),
           ),
-
-        /// Nút đăng ký
         Center(
           child: GestureDetector(
             onTap: _register,
@@ -160,11 +154,6 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   }
 }
 
-////////////////////////////////////////////
-/// --------- WIDGET PHỤ ------------------
-////////////////////////////////////////////
-
-/// Textbox TK,MK
 class InputField extends StatelessWidget {
   final String hintText;
   final bool obscure;
@@ -220,7 +209,6 @@ class InputField extends StatelessWidget {
   }
 }
 
-///Checkbox DK
 class TermsCheckbox extends StatelessWidget {
   final bool isChecked;
   final ValueChanged<bool> onChanged;
@@ -286,7 +274,6 @@ class TermsCheckbox extends StatelessWidget {
   }
 }
 
-///TB lỗi
 class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;
@@ -313,7 +300,7 @@ class ErrorMessage extends StatelessWidget {
         children: [
           Icon(Icons.warning_amber_rounded,
               color: const Color(0xFFF01E1E), size: 22.sp),
-          SizedBox(width: 19.w),
+          SizedBox(width: 10.w),
           Flexible(
             child: Text(
               message,
@@ -333,7 +320,6 @@ class ErrorMessage extends StatelessWidget {
   }
 }
 
-///Nút đăng ký
 class PrimaryButton extends StatelessWidget {
   final String text;
   final double width;
