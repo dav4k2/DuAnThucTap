@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fontend/screens/sign_in/sign_in_screen.dart';
 
 class ResetSuccessButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -19,7 +20,14 @@ class ResetSuccessButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
           ),
         ),
-        onPressed: onPressed,
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SignInScreen(),
+            ),
+          );
+        },
         child: const Text(
           'Quay về đăng nhập',
           style: TextStyle(

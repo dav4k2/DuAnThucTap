@@ -74,6 +74,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:fontend/screens/success_reset_password/success_reset_password_screen.dart';
 import 'package:fontend/screens/new_password/new_password_screen.dart';
 import 'package:fontend/screens/auth/auth_screen.dart';
+import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
+import 'package:fontend/screens/terms/terms.dart';
+import 'screens/welcome/welcome_screen.dart';
+import 'screens/welcome/widgets/splash_page.dart';
+import 'screens/sign_in/sign_in_screen.dart';
+import 'screens/explore/explore_screen.dart';
+import 'screens/reset_password/reset_password_screen.dart';
+import 'screens/success_reset_password/success_reset_password_screen.dart';
+import 'screens/new_password/new_password_screen.dart';
+import 'screens/auth/auth_screen.dart';
 
 void main() {
   runApp(
@@ -90,7 +100,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AuthScreen(),
+      home: ResetPasswordScreen(),
     );
   }
 }
