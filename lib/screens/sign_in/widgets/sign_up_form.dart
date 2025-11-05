@@ -9,7 +9,6 @@ import '../sign_in_screen.dart';
 
 import '../../enter_verification_code/verify_signup_email_screen.dart';
 import '../../enter_verification_code/verify_signup_phone_screen.dart';
-import '../logic/auth_provider.dart';
 
 
 class SignUpForm extends ConsumerStatefulWidget {
@@ -97,8 +96,6 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     final state = ref.watch(authProvider);
     final inputWidth = 0.85.sw;
     final errorWidth = 0.75.sw;
-    final state = ref.watch(authProvider);
-    final auth = ref.read(authProvider.notifier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

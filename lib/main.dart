@@ -1,8 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
 import 'package:fontend/screens/terms/terms.dart';
+import 'firebase_options.dart';
 import 'screens/welcome/welcome_screen.dart';
 import 'screens/welcome/widgets/splash_page.dart';
 import 'screens/sign_in/sign_in_screen.dart';
