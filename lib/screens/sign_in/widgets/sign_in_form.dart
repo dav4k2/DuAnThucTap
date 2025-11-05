@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../explore/explore_screen.dart';
-import '../logic/auth_provider.dart';
+import '../auth/auth_provider.dart';
 
 class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
@@ -13,8 +13,10 @@ class SignInForm extends ConsumerStatefulWidget {
 }
 
 class _SignInFormState extends ConsumerState<SignInForm> {
-  final TextEditingController _accountController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   bool _isPasswordVisible = false;
 
@@ -27,24 +29,54 @@ class _SignInFormState extends ConsumerState<SignInForm> {
     });
   }
 
-  void _login() {
-    final account = _accountController.text.trim();
-    final password = _passwordController.text.trim();
+  Future<void> _signIn() async {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      if(_formKey.currentState!.validate()){
+        setState(() {
+          _isLoading = true;
+        });
+      }
+    }
 
-    ///Gọi logic đăng nhập
-    final result = ref.read(authProvider.notifier).login(account, password);
+    final authNotifier = ref.read(authProvider.notifier);
+    final authService = ref.read(authServiceProvider);
 
-    if (result == "admin") {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (_) => const AdminScreen()));
-    } else if (result == "user") {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (_) => const ExploreScreen()));
-    } else {
-      ref.read(authProvider.notifier).setError(result);
+    try {
+      // 1. Thực hiện Đăng nhập Firebase
+      await authService.signInWithEmail(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      // 2. Đăng nhập thành công -> KHÔNG CẦN điều hướng thủ công.
+      //    AuthGate sẽ tự động chuyển sang ExploreScreen.
+      if (mounted) {
+        authNotifier.setError(null);
+
+        // Sử dụng pushReplacement để chuyển đến màn hình đăng nhập
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            // Giả định SignInScreen có thể nhận tham số để hiển thị tab Đăng nhập
+            builder: (context) => const ExploreScreen(),
+          ),
+        );
+      }
+
+    } on Exception catch (e) {
+      // Xử lý lỗi
+      final errorMessage = e.toString().contains(':')
+          ? e.toString().split(': ').last
+          : 'Đăng nhập không thành công. Vui lòng thử lại.';
+      authNotifier.setError(errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-
 
   ///Widget
   @override
@@ -61,7 +93,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
         ///Textbox TK
         InputField(
           hintText: 'Tài khoản',
-          controller: _accountController,
+          controller: _emailController,
           width: inputWidth,
         ),
 
@@ -103,7 +135,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
         ///Đăng nhập
         GestureDetector(
-          onTap: _login,
+          onTap: _signIn,
           child: PrimaryButton(text: 'Đăng nhập', width: inputWidth),
         ),
 

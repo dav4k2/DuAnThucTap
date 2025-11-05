@@ -12,7 +12,20 @@
           "package_name": "com.datt.cooking"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "682485604915-54qlpgqlp2v2brtlo5lct6jn2cgeaqrj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.datt.cooking",
+            "certificate_hash": "ddf3eb06c5b2c9405adbbfc8abaf1fa48f1f1c6d"
+          }
+        },
+        {
+          "client_id": "682485604915-itdl9ni4fvlbd4n6d9a8loaaj4jnm2p5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBZOS56mMlFvHXC9UfovUs6TqdrYoqEiw4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682485604915-itdl9ni4fvlbd4n6d9a8loaaj4jnm2p5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "682485604915-kfe7boptopjh426hfltgki5uvficcrgr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.datt.cooking"
+              }
+            }
+          ]
         }
       }
     }

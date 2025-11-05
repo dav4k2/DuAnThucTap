@@ -2,19 +2,46 @@
 /// Trang login với google/icloud
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SignInSocialButtons extends StatelessWidget {
+import '../auth/auth_provider.dart';
+
+class SignInSocialButtons extends ConsumerWidget {
   const SignInSocialButtons({super.key});
 
   ///Xử lý login google với icloud
-  Future<void> _handleGoogleLogin(BuildContext context) async {
-    // TODO: Gọi Google SDK hoặc API backend để login
-    debugPrint('Google login pressed');
+  Future<void> _handleGoogleLogin(BuildContext context, WidgetRef ref) async {
+    // Lấy services và notifiers
+    final authService = ref.read(authServiceProvider);
+    final authNotifier = ref.read(authProvider.notifier);
 
-    //Test nút
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Đang xử lý đăng nhập Google...')),
-    );
+    try {
+      // Xóa lỗi cũ (nếu có)
+      authNotifier.setError(null);
+
+      // Thực hiện đăng nhập Google
+      final userCredential = await authService.signInWithGoogle();
+
+      // Đăng nhập thành công!
+      // AuthGate sẽ tự động xử lý việc chuyển hướng
+      // đến ExploreScreen vì authStateProvider đã thay đổi.
+      if (userCredential != null) {
+        // Đăng nhập thành công, chuyển hướng sang trang chính
+        Navigator.pushReplacementNamed(context, '/explore');
+      } else {
+        // Đăng nhập bị hủy hoặc thất bại
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng nhập Google bị hủy hoặc thất bại')),
+        );
+      }
+
+    } on Exception catch (e) {
+      // Xử lý lỗi
+      final errorMessage = e.toString().contains(':')
+          ? e.toString().split(': ').last
+          : 'Đăng nhập Google không thành công.';
+      authNotifier.setError(errorMessage);
+    }
   }
 
   Future<void> _handleAppleLogin(BuildContext context) async {
@@ -29,7 +56,7 @@ class SignInSocialButtons extends StatelessWidget {
 
   ///Xắp xếp widget
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
 
     return Container(
@@ -42,7 +69,7 @@ class SignInSocialButtons extends StatelessWidget {
           _SocialButton(
             iconPath: 'image/google_icon.png',
             text: 'Đăng nhập bằng Google',
-            onTap: () => _handleGoogleLogin(context),
+            onTap: () => _handleGoogleLogin(context, ref),
           ),
           const SizedBox(height: 20),
           _SocialButton(

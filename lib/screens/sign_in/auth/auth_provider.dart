@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'auth_service.dart';
 
 class AuthState {
   final String? errorMessage;
@@ -116,4 +119,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier();
+});
+
+final authServiceProvider = Provider<AuthServices>((ref) {
+  return AuthServices();
 });

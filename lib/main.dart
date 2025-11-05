@@ -12,7 +12,12 @@ import 'screens/success_reset_password/success_reset_password_screen.dart';
 import 'screens/new_password/new_password_screen.dart';
 import 'screens/auth/auth_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -52,11 +57,6 @@ class MyApp extends StatelessWidget {
             '/signin': (context) => const SignInScreen(),
             '/explore': (context) => const ExploreScreen(),
             '/reset': (context) => const ResetPasswordScreen(),
-            '/terms' : (context) => const TermsPage(),
-            '/success' : (context) => const ResetSuccessScreen(),
-            '/newpass' : (context) => const NewPasswordScreen(),
-            '/auth' : (context) => const AuthScreen(),
-            '/enterpass' : (context) => const EnterResetPasswordScreen()
           },
 
 
@@ -67,43 +67,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-/*
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:fontend/screens/success_reset_password/success_reset_password_screen.dart';
-import 'package:fontend/screens/new_password/new_password_screen.dart';
-import 'package:fontend/screens/auth/auth_screen.dart';
-import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
-import 'package:fontend/screens/terms/terms.dart';
-import 'screens/welcome/welcome_screen.dart';
-import 'screens/welcome/widgets/splash_page.dart';
-import 'screens/sign_in/sign_in_screen.dart';
-import 'screens/explore/explore_screen.dart';
-import 'screens/reset_password/reset_password_screen.dart';
-import 'screens/success_reset_password/success_reset_password_screen.dart';
-import 'screens/new_password/new_password_screen.dart';
-import 'screens/auth/auth_screen.dart';
-import 'screens/cook_level/cook_level_screen.dart';
-
-void main() {
-  runApp(
-    const ProviderScope( //Thêm dòng này để Riverpod hoạt động
-      child: MyApp(),
-    ),
-  );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: CookingLevelScreen(),
-    );
-  }
-}
-*/

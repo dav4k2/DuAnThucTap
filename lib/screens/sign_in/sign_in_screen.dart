@@ -11,6 +11,8 @@ import 'widgets/sign_in_social_buttons.dart';
 import 'widgets/sign_up_form.dart';
 import '../welcome/welcome_screen.dart';
 
+enum AuthMode { login, signup }
+
 class SignInScreen extends ConsumerStatefulWidget {
   final bool initialTab;
   const SignInScreen({super.key, this.initialTab = true});
