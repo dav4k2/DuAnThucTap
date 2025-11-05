@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../logic/cook_level_provider.dart';
+import 'package:fontend/screens/cook_level2/cook_level2_screen.dart';
 
 class CookingNextButton extends ConsumerWidget {
   final VoidCallback onNext;
@@ -17,19 +18,32 @@ class CookingNextButton extends ConsumerWidget {
         height: 60,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFFB901),
+            elevation: 0,
+            backgroundColor: const Color(0xFFFFB901), // màu vàng đậm
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(20), // bo góc lớn hơn
             ),
           ),
-          onPressed: selected != null ? onNext : null,
+
+          onPressed: selected != null
+              ? () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const InterestScreen(),
+              ),
+            );
+          } :
+           null,
+
           child: const Text(
-            'Tiếp theo',
+            'tiếp theo',
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.black, // tím như trong hình
               fontSize: 20,
               fontWeight: FontWeight.w700,
               fontFamily: 'SF Pro Rounded',
+              letterSpacing: 0.2,
             ),
           ),
         ),

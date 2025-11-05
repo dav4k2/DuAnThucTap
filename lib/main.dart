@@ -1,3 +1,4 @@
+/*
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +67,34 @@ class MyApp extends StatelessWidget {
         );
       },
       child: const SplashPage(),
+    );
+  }
+}
+*/
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'screens/cook_level2/cook_level2_screen.dart';
+import 'screens/cook_level/cook_level_screen.dart';
+import 'screens/success/success_screen.dart';
+
+void main() {
+  runApp(const ProviderScope(child: MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Recipe Interest',
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+        fontFamily: 'SF Pro',
+      ),
+      home: const SuccessScreen(),
     );
   }
 }
