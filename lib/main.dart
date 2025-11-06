@@ -1,4 +1,4 @@
-
+/*
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,13 +71,14 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+*/
 
-/*
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/cook_level2/cook_level2_screen.dart';
 import 'screens/cook_level/cook_level_screen.dart';
 import 'screens/success/success_screen.dart';
+import 'screens/explore2/home_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -95,7 +96,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         fontFamily: 'SF Pro',
       ),
-      home: const SuccessScreen(),
+      home: const HomeScreen(),
     );
   }
-}*/
+}
