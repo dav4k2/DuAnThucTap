@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CookHub - Đăng ký</title>
+  <link rel="stylesheet" href="css/signup.css">
+</head>
+
+<body>
+
+<!-- Ảnh nền trang -->
+    <div class="background">
+        <img src="images/login.jpg" alt="Ảnh nền mờ" class="bg_img">
+    </div>
+
+    <div class="back_btn">
+        <img src="images/back.png" alt="Quay lại" id="back_btn">
+    </div>
+
+<div class="signup_container">
+<!--Form đăng ký-->
+    <div class="signup_form">
+        <div class="logo_title">
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <h1>Đăng ký</h1>
+        </div>
+
+        <label>Tên đăng nhập</label>
+        <input type="text" placeholder="username">
+
+        <label>Email</label>
+        <input type="email" placeholder="username@gmail.com">
+
+        <label>Mật khẩu</label>
+        <div class="password_field">
+          <input type="password" placeholder="Password">
+        </div>
+
+        <button class="signup_btn">
+            Đăng ký
+        </button>
+
+        <p class="divider">
+            Hoặc đăng nhập bằng
+        </p>
+
+<!--Options đăng nhập khác-->
+        <div class="social_login">
+          <button class="google_btn">
+            <img src="images/google.png" alt="Google" />
+            <span>Google</span>
+          </button>
+          <button class="facebook_btn">
+            <img src="images/facebook.png" alt="Facebook" />
+            <span>Facebook</span>
+          </button>
+        </div>
+
+        <p class="signup_text">
+            Đã có tài khoản?
+            <a href="login.html">
+            Đăng nhập ngay
+            </a>
+        </p>
+    </div>
+  </div>
+
+<!--Chuyển về trang chủ-->
+<!--Đoạn script cũ không áp dụng effect khi ấn vào chữ "Đăng ký ngay" và "Đăng nhập ngay" nên phải làm lại script mới có sử dụng chatgpt-->
+<!--Script cũ đang  áp dụng cho trang index.html-->
+<script>
+    //Load hiệu ứng transition
+    window.addEventListener("load", () => 
+    {
+        document.body.classList.add("loaded");
+    });
+
+    //Hàm chuyển trang
+    function fadeTo(url) 
+    {
+        document.body.classList.remove("loaded");
+        setTimeout(() => (window.location.href = url), 600); //Set thời gian effect hiện đang là 600ms
+    }
+
+    // Gắn sự kiện cho các nút/link cần chuyển
+    document.addEventListener("click", (e) => 
+    {
+        //Kiểm tra xem click vào phần tử gì (đoạn này chatgpt)
+        const target = e.target.closest("a, button, img");
+        if (!target) return;
+        //Ưu tiên href của <a>, nếu là button thì mặc định về index.html (chatgpt)
+        const href =
+            target.getAttribute("href") ||
+            target.dataset.href ||
+            (target.id === "back_btn" ? "index.html" : null);
+        //Nếu href chuyển đến html thì chặn lại gọi effect fadeTo xong mới chuyển (trick lỏ)
+        if (href && href.endsWith(".html")) 
+        {
+            e.preventDefault();
+            fadeTo(href);
+        }
+    });
+</script>
+
+
+
+</body>
+</html>
