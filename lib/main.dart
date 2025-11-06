@@ -1,4 +1,4 @@
-/*
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,6 +60,7 @@ class MyApp extends StatelessWidget {
             '/signin': (context) => const SignInScreen(),
             '/explore': (context) => const ExploreScreen(),
             '/reset': (context) => const ResetPasswordScreen(),
+            '/enterpass': (context) => const EnterResetPasswordScreen(),
           },
 
 
@@ -70,8 +71,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-*/
 
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/cook_level2/cook_level2_screen.dart';
@@ -97,4 +98,4 @@ class MyApp extends StatelessWidget {
       home: const SuccessScreen(),
     );
   }
-}
+}*/
