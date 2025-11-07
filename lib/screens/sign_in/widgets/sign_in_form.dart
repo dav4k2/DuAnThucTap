@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../explore/explore_screen.dart';
+import '../../explore2/home_screen.dart';
 import '../auth/auth_provider.dart';
 
 class SignInForm extends ConsumerStatefulWidget {
@@ -147,7 +148,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             ref.read(authProvider.notifier).setError(null);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const ExploreScreen()),
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
             );
           },
           child: Stack(

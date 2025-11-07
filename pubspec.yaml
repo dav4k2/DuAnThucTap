@@ -43,6 +43,8 @@ dependencies:
   firebase_auth: ^6.1.1
   cloud_firestore: ^6.0.3
   firebase_storage: ^13.0.3
+  liquid_glass_bottom_bar: ^0.0.6
+  palette_generator: ^0.3.3
 
 
 dev_dependencies:

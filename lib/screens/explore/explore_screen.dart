@@ -4,7 +4,7 @@ import 'widgets/explore_appbar.dart';
 import 'widgets/explore_popular_user.section.dart';
 import 'widgets/explore_keyword_section.dart';
 import 'widgets/explore_highlight_recipes.dart';
-import '../../screens/navbar.dart';
+import '../../navbar.dart';
 
 class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});

@@ -5,6 +5,7 @@ import 'package:fontend/screens/sign_in/sign_in_screen.dart';
 import 'package:fontend/screens/sign_in/widgets/sign_in_form.dart';
 import 'package:fontend/screens/welcome/welcome_screen.dart';
 
+import '../../../Main_layout/main_layout.dart';
 import 'auth_state_provider.dart';
 
 class AuthGate extends ConsumerWidget {
@@ -17,7 +18,7 @@ class AuthGate extends ConsumerWidget {
       return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (userAsync.value != null) {
-      return const ExploreScreen();
+      return const MainLayout();
     } else {
       return const SignInForm();
     }

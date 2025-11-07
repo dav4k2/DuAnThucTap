@@ -2,8 +2,11 @@
 ///Trang welcome
 
 import 'package:flutter/material.dart';
+import '../../Main_layout/main_layout.dart';
 import '../enter_verification_code/verify_reset_email_screen.dart';
 import '../enter_verification_code/verify_reset_phone_screen.dart';
+import '../explore/explore_screen.dart';
+import '../explore2/home_screen.dart';
 import 'widgets/welcome_logo.dart';
 import 'widgets/welcome_texts.dart';
 import 'widgets/welcome_buttons.dart';
@@ -60,7 +63,7 @@ class WelcomeScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const VerifyResetEmailScreen()),
+                    MaterialPageRoute(builder: (context) => const MainLayout()),
                   );
                 },
                 child: Text(
