@@ -10,20 +10,20 @@ class FeaturedRecipes extends StatelessWidget {
     // Danh sách công thức nổi bật
     final List<Map<String, String>> recipes = [
       {
+        'image': 'image/Rectangle301.png',
+        'title': 'Gà rán Công Phượng',
+        'time': '45 Phút',
+        'difficulty': 'Dễ',
+      },
+      {
         'image': 'image/Rectangle30.png',
         'title': 'Mỳ Ý sốt Bolognese',
         'time': '15 Phút',
         'difficulty': 'Dễ',
       },
       {
-        'image': 'image/Rectangle301.png',
-        'title': 'Gà rán Công Phượng',
-        'time': '45 Phút',
-        'difficulty': 'Trung bình',
-      },
-      {
         'image': 'image/Rectangle302.png',
-        'title': 'Phở tái',
+        'title': 'Phở Tái',
         'time': '60 Phút',
         'difficulty': 'Dễ',
       },
@@ -32,9 +32,9 @@ class FeaturedRecipes extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Tiêu đề phần
+        // 🔥 PHẦN “CÔNG THỨC NỔI BẬT”
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.05, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: width * 0.05),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -50,16 +50,18 @@ class FeaturedRecipes extends StatelessWidget {
           ),
         ),
 
-        // Danh sách công thức
+        const SizedBox(height: 8),
+
+        // 🧩 DANH SÁCH NGANG
         SizedBox(
-          height: 200,
+          height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: recipes.length,
             itemBuilder: (context, index) {
               final recipe = recipes[index];
               return Container(
-                width: 150,
+                width: 140,
                 margin: EdgeInsets.only(
                   left: index == 0 ? width * 0.05 : 10,
                   right: index == recipes.length - 1 ? width * 0.05 : 0,
@@ -67,34 +69,34 @@ class FeaturedRecipes extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.bottomLeft,
                   children: [
-                    // Ảnh nền
+                    // Ảnh món ăn
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(12),
                       child: Image.asset(
                         recipe['image']!,
-                        width: 150,
-                        height: 200,
+                        width: 140,
+                        height: 180,
                         fit: BoxFit.cover,
                       ),
                     ),
-
-                    // Lớp mờ + thông tin
+                    // Lớp phủ + thông tin món ăn
                     Container(
-                      height: 70,
+                      width: 140,
+                      height: 55,
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.vertical(
-                            bottom: Radius.circular(15)),
-                        color: Colors.black.withOpacity(0.4),
+                            bottom: Radius.circular(12)),
+                        color: Colors.black.withOpacity(0.5),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 6),
+                      padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
                             recipe['title']!,
-                            maxLines: 2,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
@@ -102,23 +104,33 @@ class FeaturedRecipes extends StatelessWidget {
                               fontSize: 13,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                recipe['time']!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.access_time,
+                                      color: Colors.white, size: 12),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    recipe['time']!,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 11),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                recipe['difficulty']!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.emoji_emotions,
+                                      color: Colors.white, size: 12),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    recipe['difficulty']!,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 11),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
