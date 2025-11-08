@@ -29,7 +29,7 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 250), // Mượt hơn
+      duration: const Duration(milliseconds: 300), // Mượt hơn
     );
     _setupAnimations(widget.currentIndex.toDouble());
     widget.scrollController.addListener(_checkScroll);
@@ -106,14 +106,14 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
     final activeColor = isDarkBackground ? Colors.white : Colors.black;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.w, left: 8, right: 8),
+      padding: EdgeInsets.only(bottom: 25.w, left: 8, right: 8),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30.r),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+          filter: ImageFilter.blur(sigmaX: 9, sigmaY: 9),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            height: 62.h,
+            height: 65.h,
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(30.r),
@@ -189,7 +189,7 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
     return GestureDetector(
       onTap: () => widget.onTap(index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 300),
         padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 8.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,

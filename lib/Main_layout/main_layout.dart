@@ -1,7 +1,9 @@
+// lib/main_layout.dart
 import 'package:flutter/material.dart';
-import '../navbar.dart';
+import '../navbar/navbar_selector.dart';
 import '../screens/explore2/home_screen.dart';
 import '../screens/explore/explore_screen.dart';
+import '../screens/user_profile/chef_profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -12,14 +14,14 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
-
-  // ScrollController để navbar đổi màu theo vùng sáng/tối
   final ScrollController _scrollController = ScrollController();
 
   final List<Widget> _pages = const [
     HomeScreen(),
     ExploreScreen(),
-    HomeScreen(),
+    ChefProfileScreen(), // placeholder
+    Center(child: Text('Library')),
+    Center(child: Text('Profile')),
   ];
 
   @override
@@ -33,19 +35,15 @@ class _MainLayoutState extends State<MainLayout> {
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.white,
-      // 👇 body hiển thị page theo tab
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
-      // 👇 truyền controller vào navbar
-      bottomNavigationBar: SmartNavBar(
+      bottomNavigationBar: PlatformNavBar(
         currentIndex: _currentIndex,
         scrollController: _scrollController,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          setState(() => _currentIndex = index);
         },
       ),
     );
