@@ -1,9 +1,10 @@
-/*
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
+import 'package:fontend/screens/sign_in/logic/auth_gate.dart';
 import 'package:fontend/screens/terms/terms.dart';
 import 'firebase_options.dart';
 import 'screens/welcome/welcome_screen.dart';
@@ -52,8 +53,6 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
             useMaterial3: true,
           ),
-
-          initialRoute: '/splash',
           routes: {
             '/splash': (context) => const SplashPage(),
             '/welcome': (context) => const WelcomeScreen(),
@@ -61,40 +60,9 @@ class MyApp extends StatelessWidget {
             '/explore': (context) => const ExploreScreen(),
             '/reset': (context) => const ResetPasswordScreen(),
           },
-
-
-          home: child,
+          home: const AuthGate(),
         );
       },
-      child: const SplashPage(),
-    );
-  }
-}
-*/
-
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'screens/cook_level2/cook_level2_screen.dart';
-import 'screens/cook_level/cook_level_screen.dart';
-import 'screens/success/success_screen.dart';
-
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Recipe Interest',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        fontFamily: 'SF Pro',
-      ),
-      home: const SuccessScreen(),
     );
   }
 }

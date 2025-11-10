@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../auth/auth_provider.dart';
+import '../logic/auth_provider.dart';
 import '../../explore/explore_screen.dart';
 import '../sign_in_screen.dart';
 
@@ -19,6 +19,7 @@ class SignUpForm extends ConsumerStatefulWidget {
 }
 
 class _SignUpFormState extends ConsumerState<SignUpForm> {
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
@@ -51,12 +52,11 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       await authService.signUpWithEmail(
         _emailController.text.trim(),
         _passwordController.text.trim(),
+        _usernameController.text.trim(),
+        _confirmController.text.trim(),
       );
 
-      // 2. ĐĂNG XUẤT ngay lập tức (để chuyển hướng về màn hình đăng nhập)
-      await authService.signOut();
-
-      // 3. THÀNH CÔNG: Chuyển hướng đến màn hình Đăng nhập
+      // 2. THÀNH CÔNG: Chuyển hướng đến màn hình Đăng nhập
       if (mounted) {
         authNotifier.setError(null);
 
@@ -64,8 +64,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            // Giả định SignInScreen có thể nhận tham số để hiển thị tab Đăng nhập
-            builder: (context) => const SignInScreen(initialTab: true),
+            builder: (context) => const SignInScreen(), // <-- ĐỔI THÀNH MÀN HÌNH CHÍNH
           ),
         );
       }
@@ -106,7 +105,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         Center(
           child: InputField(
             hintText: "Tài khoản",
-            controller: _emailController,
+            controller: _usernameController,
             width: inputWidth,
           ),
         ),
