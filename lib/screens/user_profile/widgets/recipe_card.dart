@@ -7,9 +7,13 @@ class RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final VoidCallback onTap;
 
-  const RecipeCard({super.key, required this.recipe, required this.onTap});
+  const RecipeCard({
+    super.key,
+    required this.recipe,
+    required this.onTap,
+  });
 
-  // Widget nền mờ nhẹ (thay thế Liquid Glass)
+  // Widget nền mờ nhẹ (giữ nguyên như cũ)
   Widget _frostedContainer({
     required Widget child,
     double? width,
@@ -22,7 +26,7 @@ class RecipeCard extends StatelessWidget {
       height: height,
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.75), // Mờ nhẹ, không dùng blur
+        color: Colors.white.withOpacity(0.75),
         borderRadius: borderRadius ?? BorderRadius.circular(20.r),
         border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.2),
         boxShadow: [
@@ -52,26 +56,29 @@ class RecipeCard extends StatelessWidget {
                 image: AssetImage(recipe.imageAsset),
                 fit: BoxFit.cover,
               ),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.r),
+              ),
               shadows: const [
-                BoxShadow(color: Color(0x3F000000), blurRadius: 6, offset: Offset(0, 4))
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  blurRadius: 6,
+                  offset: Offset(0, 4),
+                )
               ],
             ),
           ),
 
-          // === THANH DƯỚI – NỀN MỜ NHẸ ===
+          // === THANH DƯỚI – NỀN MỜ, KHÔNG TRÀN ===
           Positioned(
             top: 135.h,
-            left: 2.w,
-            right: 2.w,
-            bottom : 2.w,
+            left: 0.w,
+            right:10.w,
+            height: 43.h, // Dùng height thay vì bottom
             child: _frostedContainer(
-              height: 43.h,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40.r),
-                topRight: Radius.circular(40.r),
-                bottomLeft: Radius.circular(40.r),
-                bottomRight: Radius.circular(40.r),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(40.r),
+                bottom: Radius.circular(33.r), // Chỉ bo trên + dưới nhẹ
               ),
               child: const SizedBox(),
             ),
@@ -80,7 +87,7 @@ class RecipeCard extends StatelessWidget {
           // === TIÊU ĐỀ ===
           Positioned(
             left: 20.w,
-            top: 138.h,
+            top: 140.h,
             right: 16.w,
             child: Text(
               recipe.title,
@@ -107,7 +114,6 @@ class RecipeCard extends StatelessWidget {
               ],
             ),
           ),
-
           Positioned(
             left: 92.w,
             top: 158.h,
@@ -119,7 +125,6 @@ class RecipeCard extends StatelessWidget {
               ],
             ),
           ),
-
           Positioned(
             right: 16.w,
             top: 158.h,
@@ -132,10 +137,10 @@ class RecipeCard extends StatelessWidget {
             ),
           ),
 
-          // === RATING – NỀN MỜ NHẸ ===
+          // === RATING – NỀN MỜ (cùng top với tim) ===
           Positioned(
             left: 12.w,
-            top: 8.h,
+            top: 12.h, // Cùng chiều cao với tim
             child: _frostedContainer(
               width: 162.w,
               height: 26.h,
@@ -148,20 +153,24 @@ class RecipeCard extends StatelessWidget {
                   SizedBox(width: 5.w),
                   Text(
                     '${recipe.rating} (1k+ Đánh giá)',
-                    style: TextStyle(fontSize: 12.5.sp, fontWeight: FontWeight.w600, color: Colors.black87),
+                    style: TextStyle(
+                      fontSize: 12.5.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
 
-          // === TRÁI TIM – NỀN TRẮNG MỜ ===
+          // === TRÁI TIM – NỀN MỜ (cùng top với rating) ===
           Positioned(
-            right: 12.w,
-            top: 12.h,
+            right: 22.w,
+            top: 12.h, // Cùng 12.h → thẳng hàng
             child: _frostedContainer(
               width: 28.w,
-              height: 28.h,
+              height: 28.w,
               borderRadius: BorderRadius.circular(14.r),
               child: Center(
                 child: Icon(
