@@ -24,7 +24,8 @@ class ChefProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ChefProfileScreen> createState() => _ChefProfileScreenState();
 }
 
-class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen> with TickerProviderStateMixin {
+class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
+    with TickerProviderStateMixin {
   late final ScrollController _scrollController;
   double _titleOpacity = 0.0;
 
@@ -43,7 +44,6 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen> with Tick
     final double opacity = offset > triggerPoint
         ? ((offset - triggerPoint) / (maxScroll - triggerPoint)).clamp(0.0, 1.0)
         : 0.0;
-
     if (opacity != _titleOpacity) {
       setState(() => _titleOpacity = opacity);
     }
@@ -61,6 +61,7 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen> with Tick
     final chef = ref.watch(chefProvider);
     final profileTab = ref.watch(profileTabProvider);
     final mealTab = ref.watch(mealTabProvider);
+
     final displayedRecipes = profileTab == ProfileTab.congThuc
         ? chef.allRecipes.where((r) => mealTab == MealTab.tatCa || r.meal == mealTab).toList()
         : <Recipe>[];
@@ -87,7 +88,14 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen> with Tick
               automaticallyImplyLeading: false,
               title: Opacity(
                 opacity: _titleOpacity,
-                child: Text(chef.name, style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w600, color: Colors.black87)),
+                child: Text(
+                  chef.name,
+                  style: TextStyle(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
               ),
               centerTitle: true,
               flexibleSpace: FlexibleSpaceBar(
@@ -103,14 +111,20 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen> with Tick
                         width: double.infinity,
                         decoration: ShapeDecoration(
                           color: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                          ),
                         ),
                       ),
                     ),
                     const HeaderImage(),
                     const ProfileAvatar(),
                     ChefInfo(name: chef.name, title: chef.title),
-                    StatsSection(recipes: chef.recipes, followers: chef.followers, following: chef.following),
+                    StatsSection(
+                      recipes: chef.recipes,
+                      followers: chef.followers,
+                      following: chef.following,
+                    ),
                     const FollowButton(),
                     const ProfileTabs(),
                   ],
@@ -118,19 +132,26 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen> with Tick
               ),
             ),
 
-            // === MEAL FILTER ===
+            // === MEAL FILTER (CÔNG THỨC) ===
             if (profileTab == ProfileTab.congThuc)
-              SliverPersistentHeader(pinned: true, delegate: _MealFilterDelegate()),
-
-            // === REVIEW FILTER ===
-            if (profileTab == ProfileTab.danhGia)
-              SliverPersistentHeader(pinned: true, delegate: _ReviewFilterDelegate()),
-
-            // === NỘI DUNG TAB – TẤT CẢ BỌC TRONG SLIVER ===
-            if (profileTab == ProfileTab.congThuc)
-              SliverToBoxAdapter(
-                child: RecipeList(recipes: displayedRecipes, topOffset: 0),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _MealFilterDelegate(),
               ),
+
+            // === REVIEW FILTER (ĐÁNH GIÁ) ===
+            if (profileTab == ProfileTab.danhGia)
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _ReviewFilterDelegate(),
+              ),
+
+            // === NỘI DUNG TAB ===
+            if (profileTab == ProfileTab.congThuc)
+              RecipeList(recipes: displayedRecipes), // ĐÃ CÓ HEADER BÊN TRONG
+
+            if (profileTab == ProfileTab.danhGia)
+              const ReviewTab(), // ĐÃ CÓ HEADER BÊN TRONG
 
             if (profileTab == ProfileTab.tieuSu)
               const SliverToBoxAdapter(child: BioTab()),
@@ -138,9 +159,7 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen> with Tick
             if (profileTab == ProfileTab.anh)
               const SliverToBoxAdapter(child: PhotoGrid()),
 
-            if (profileTab == ProfileTab.danhGia)
-              const ReviewTab(),
-
+            // KHOẢNG TRỐNG CUỐI
             SliverToBoxAdapter(child: SizedBox(height: 100.h)),
           ],
         ),
@@ -156,9 +175,12 @@ class _MealFilterDelegate extends SliverPersistentHeaderDelegate {
     return Container(color: Colors.white, child: const MealFilter());
   }
 
-  @override double get maxExtent => 54.0;
-  @override double get minExtent => 54.0;
-  @override bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
+  @override
+  double get maxExtent => 54.0;
+  @override
+  double get minExtent => 54.0;
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
 }
 
 // === REVIEW FILTER DELEGATE ===
@@ -168,7 +190,10 @@ class _ReviewFilterDelegate extends SliverPersistentHeaderDelegate {
     return Container(color: Colors.white, child: const ReviewFilterHeader());
   }
 
-  @override double get maxExtent => 54.0;
-  @override double get minExtent => 54.0;
-  @override bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
+  @override
+  double get maxExtent => 54.0;
+  @override
+  double get minExtent => 54.0;
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
 }

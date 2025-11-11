@@ -12,7 +12,6 @@ class ProfileTabs extends ConsumerStatefulWidget {
 }
 
 class _ProfileTabsState extends ConsumerState<ProfileTabs> {
-  // Lưu kích thước từng tab để thanh gạch căn chuẩn
   final Map<ProfileTab, double> _tabWidths = {};
   final Map<ProfileTab, double> _tabLefts = {};
 
@@ -29,16 +28,16 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
         _buildTab('Ảnh', ProfileTab.anh, cur, notifier),
         _buildTab('Đánh giá', ProfileTab.danhGia, cur, notifier),
 
-        // === THANH GẠCH DƯỚI – TỰ ĐỘNG CĂN THEO CHỮ ===
-        if (_tabWidths[cur] != null)
+        // === THANH GẠCH DƯỚI ===
+        if (_tabWidths[cur] != null && _tabLefts[cur] != null)
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOutCubic,
             left: _tabLefts[cur]!,
-            top: 525.h,
+            top: _getTop(cur) + 25.h, // Dịch xuống dưới chữ (khoảng cách tùy chỉnh)
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: _tabWidths[cur]! + 0.w,
+              width: _tabWidths[cur]!,
               height: 3.h,
               decoration: BoxDecoration(
                 color: const Color(0xFFFFB901),
@@ -46,9 +45,6 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
               ),
             ),
           ),
-
-
-
       ],
     );
   }
@@ -63,18 +59,17 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
         onTap: () => notifier.state = tab,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Lưu kích thước + vị trí khi build
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final renderBox = context.findRenderObject() as RenderBox?;
               if (renderBox != null && renderBox.hasSize) {
                 final width = renderBox.size.width;
-                final offset = renderBox.localToGlobal(Offset.zero);
-                final left = offset.dx / ScreenUtil().scaleWidth;
+                final globalOffset = renderBox.localToGlobal(Offset.zero);
+                final relativeLeft = globalOffset.dx; // DÙNG TRỰC TIẾP (không chia scale)
 
-                if (_tabWidths[tab] != width || _tabLefts[tab] != left) {
+                if (_tabWidths[tab] != width || _tabLefts[tab] != relativeLeft) {
                   setState(() {
                     _tabWidths[tab] = width;
-                    _tabLefts[tab] = left;
+                    _tabLefts[tab] = relativeLeft;
                   });
                 }
               }

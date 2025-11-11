@@ -1,34 +1,67 @@
-// lib/screens/user_profile/widgets/recipe_list.dart
+// lib/widgets/recipe_list.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../logic/chef_provider.dart';
 import 'recipe_card.dart';
 
-
-class RecipeList extends StatelessWidget {
+class RecipeList extends ConsumerWidget {
   final List<Recipe> recipes;
-  final double topOffset;
-  const RecipeList({super.key, required this.recipes, this.topOffset = 0});
+
+  const RecipeList({super.key, required this.recipes});
 
   @override
-  Widget build(BuildContext context) {
-    if (recipes.isEmpty) return const SizedBox();
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (recipes.isEmpty) {
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(1.w, 0.h, 1.w, 1.h),
-      child: Column(
-        children: recipes.asMap().entries.map((e) {
-          final recipe = e.value;
+    final totalRecipes = ref.read(chefProvider).allRecipes.length;
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+            (context, index) {
+          if (index == 0) {
+            return _buildHeader(totalRecipes);
+          }
+          final recipe = recipes[index - 1];
           return Padding(
-            padding: EdgeInsets.only(bottom: 24.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: RecipeCard(
               recipe: recipe,
               onTap: () {
-                // Mở chi tiết
+                // Mở chiivew chi tiết công thức
               },
             ),
           );
-        }).toList(),
+        },
+        childCount: recipes.length + 1,
+      ),
+    );
+  }
+
+  Widget _buildHeader(int totalRecipes) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Công thức',
+                  style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
+                ),
+                TextSpan(
+                  text: ' ($totalRecipes)',
+                  style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
+                ),
+              ],
+            ),
+          ),
+
+        ],
       ),
     );
   }

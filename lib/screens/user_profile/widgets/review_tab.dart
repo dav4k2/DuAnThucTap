@@ -39,13 +39,19 @@ class ReviewTab extends ConsumerWidget {
             TextSpan(
               children: [
                 TextSpan(text: 'Đánh giá', style: TextStyle(fontSize: 15.sp)),
-                TextSpan(text: ' ($totalReviews)', style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6))),
+                TextSpan(
+                  text: ' ($totalReviews)',
+                  style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
+                ),
               ],
             ),
           ),
           GestureDetector(
             onTap: () {},
-            child: Text('Viết đánh giá', style: TextStyle(fontSize: 15.sp, color: const Color(0xFFFFB901))),
+            child: Text(
+              'Viết đánh giá',
+              style: TextStyle(fontSize: 15.sp, color: const Color(0xFFFFB901)),
+            ),
           ),
         ],
       ),
@@ -56,30 +62,52 @@ class ReviewTab extends ConsumerWidget {
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12.r)),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12.r),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              CircleAvatar(radius: 22.5.r, backgroundImage: NetworkImage(review.avatar)),
+              CircleAvatar(
+                radius: 22.5.r,
+                backgroundImage: NetworkImage(review.avatar),
+              ),
               SizedBox(width: 12.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(review.name, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700)),
+                    Text(
+                      review.name,
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
+                    ),
                     Row(
                       children: [
-                        ...List.generate(5, (i) => Icon(Icons.star, size: 16.sp, color: i < review.rating ? Colors.amber : Colors.grey)),
+                        ...List.generate(
+                          5,
+                              (i) => Icon(
+                            Icons.star,
+                            size: 16.sp,
+                            color: i < review.rating ? Colors.amber : Colors.grey,
+                          ),
+                        ),
                         SizedBox(width: 8.w),
-                        Text('${review.rating}', style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6))),
+                        Text(
+                          '${review.rating}',
+                          style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
-              Text(review.timeAgo, style: TextStyle(fontSize: 13.sp, color: Colors.black.withOpacity(0.6))),
+              Text(
+                review.timeAgo,
+                style: TextStyle(fontSize: 13.sp, color: Colors.black.withOpacity(0.6)),
+              ),
             ],
           ),
           SizedBox(height: 8.h),
