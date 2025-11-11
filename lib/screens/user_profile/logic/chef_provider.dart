@@ -12,6 +12,7 @@ class Recipe {
   final double rating;
   final int reviews;
   final MealTab meal;
+  final String imageAsset;
 
   Recipe({
     required this.title,
@@ -21,6 +22,7 @@ class Recipe {
     required this.rating,
     required this.reviews,
     required this.meal,
+    required this.imageAsset,
   });
 }
 
@@ -34,10 +36,10 @@ final chefProvider = Provider((ref) => Chef(
   followers: "45.6k",
   following: 15,
   allRecipes: [
-    Recipe(title: "Gà rán KFC", time: "30 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.8, reviews: 1000, meal: MealTab.tatCa),
-    Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang),
-    Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua),
-    Recipe(title: "Chè thái", time: "20 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.7, reviews: 600, meal: MealTab.anVat),
+    Recipe(title: "Gà rán KFC", time: "30 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.8, reviews: 1000, meal: MealTab.tatCa,imageAsset: "image/vit.png"),
+    Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang,imageAsset: "image/vit.png"),
+    Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua,imageAsset: "image/profile_bg.png"),
+    Recipe(title: "Chè thái", time: "20 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.7, reviews: 600, meal: MealTab.anVat,imageAsset: "image/profile_bg.png"),
   ],
 ));
 

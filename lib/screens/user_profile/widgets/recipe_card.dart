@@ -18,7 +18,10 @@ class RecipeCard extends StatelessWidget {
             width: 322.w,
             height: 139.h,
             decoration: ShapeDecoration(
-              image: const DecorationImage(image: NetworkImage("https://placehold.co/322x139"), fit: BoxFit.cover),
+              image: DecorationImage(
+                image: AssetImage(recipe.imageAsset), // ← DÙNG ẢNH CỦA MÓN
+                fit: BoxFit.cover,
+              ),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
               shadows: const [BoxShadow(color: Color(0x3F000000), blurRadius: 4, offset: Offset(0, 4))],
             ),
