@@ -19,8 +19,8 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _pages = const [
     HomeScreen(),
     ExploreScreen(),
-    ChefProfileScreen(), // placeholder
     Center(child: Text('Library')),
+    ChefProfileScreen(),
     Center(child: Text('Profile')),
   ];
 

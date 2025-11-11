@@ -19,10 +19,11 @@ class NavBarIOS extends StatefulWidget {
 class _NavBarIOSState extends State<NavBarIOS> {
   // Danh sách tab – giữ nguyên như hướng dẫn pub.dev
   final List<CNTabBarItem> _items = const [
-    CNTabBarItem(label: 'TV', icon: CNSymbol('appletv.fill')),
-    CNTabBarItem(label: 'Video', icon: CNSymbol('video.fill')),
-    CNTabBarItem(label: 'Chat', icon: CNSymbol('message.fill')),
-    CNTabBarItem(label: 'Home', icon: CNSymbol('homepod.fill')),
+    CNTabBarItem(label: 'Trang chủ', icon: CNSymbol('house.fill')),
+    CNTabBarItem(label: 'Tìm kiếm', icon: CNSymbol('magnifyingglass')),
+    CNTabBarItem(label: 'Tạo mới', icon: CNSymbol('plus.app.fill')),
+    CNTabBarItem(label: 'Hồ sơ', icon: CNSymbol('person.crop.circle')),
+    CNTabBarItem(label: 'Cài đặt', icon: CNSymbol('gearshape.fill')),
   ];
 
   @override

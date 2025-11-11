@@ -1,3 +1,4 @@
+// lib/widgets/smart_nav_bar.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,22 +28,15 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300), // Mượt hơn
-    );
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     _setupAnimations(widget.currentIndex.toDouble());
     widget.scrollController.addListener(_checkScroll);
   }
 
   void _setupAnimations(double targetIndex) {
-    _positionAnimation = Tween<double>(
-      begin: targetIndex,
-      end: targetIndex,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOutCubic,
-    ));
+    _positionAnimation = Tween<double>(begin: targetIndex, end: targetIndex).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
+    );
   }
 
   @override
@@ -53,10 +47,7 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
       _positionAnimation = Tween<double>(
         begin: beginPos,
         end: widget.currentIndex.toDouble(),
-      ).animate(CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOutCubic,
-      ));
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic));
 
       _controller
         ..reset()
@@ -85,12 +76,11 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
     } catch (_) {}
   }
 
-  // Hàm tính scale theo tiến trình (parabol, đỉnh ở giữa)
   double _calculateScale(double progress) {
     const double peakScale = 1.3;
     const double baseScale = 1.0;
     final double t = progress - 0.5;
-    final double parabola = 1 - 4 * t * t; // 1 ở giữa, 0 ở hai đầu
+    final double parabola = 1 - 4 * t * t;
     return baseScale + (peakScale - baseScale) * parabola;
   }
 
@@ -126,11 +116,10 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
                 return Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Highlight bubble: di chuyển + scale theo hành trình
                     AnimatedBuilder(
                       animation: _controller,
                       builder: (context, _) {
-                        final progress = _controller.value; // 0.0 -> 1.0
+                        final progress = _controller.value;
                         final currentIndex = _positionAnimation.value;
                         final targetX = (currentIndex - 2) * itemWidth;
                         final scale = _calculateScale(progress);
@@ -159,7 +148,7 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
                       children: List.generate(5, (index) {
                         return Expanded(
                           child: _buildItem(
-                            _getIcon(index),
+                            _getIconPath(index),
                             _getLabel(index),
                             index,
                             activeColor,
@@ -179,7 +168,7 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
   }
 
   Widget _buildItem(
-      IconData icon,
+      String iconPath,
       String label,
       int index,
       Color active,
@@ -195,24 +184,22 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: isActive ? 30.sp : 25.sp,
+            Image.asset(
+              iconPath,
+              width: isActive ? 30.w : 25.w,
+              height: isActive ? 30.w : 25.w,
               color: isActive ? active : inactive,
             ),
-            SizedBox(height: 0.h),
-            SizedBox(
-              width: double.infinity,
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: isActive ? active : inactive,
-                  fontSize: 10.sp,
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                ),
+            SizedBox(height: 2.h),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: isActive ? active : inactive,
+                fontSize: 10.sp,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
           ],
@@ -221,19 +208,20 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
     );
   }
 
-  IconData _getIcon(int index) {
+  /// 🔥 Thay IconData bằng đường dẫn tới icon trong assets
+  String _getIconPath(int index) {
     const icons = [
-      Icons.home_outlined,
-      Icons.grid_view_rounded,
-      Icons.wifi_tethering_rounded,
-      Icons.library_music_rounded,
-      Icons.person_outline_rounded,
+      'image/home_navbar.png',
+      'image/search2.png',
+      'image/new_navbar.png',
+      'image/profile_navbar.png',
+      'image/Setting_navbar.png',
     ];
     return icons[index];
   }
 
   String _getLabel(int index) {
-    const labels = ["Home", "New", "Radio", "Library", "Profile"];
+    const labels = ["Trang chủ", "Tìm kiếm", "Tạo C.Thức", "Hồ sơ", "Cài đặt"];
     return labels[index];
   }
 }
