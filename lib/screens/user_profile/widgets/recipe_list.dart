@@ -15,7 +15,7 @@ class RecipeList extends StatelessWidget {
     if (recipes.isEmpty) return const SizedBox();
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(43.w, 40.h, 43.w, 20.h),
+      padding: EdgeInsets.fromLTRB(1.w, 0.h, 1.w, 1.h),
       child: Column(
         children: recipes.asMap().entries.map((e) {
           final recipe = e.value;

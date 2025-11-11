@@ -5,31 +5,53 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class PhotoGrid extends StatelessWidget {
   const PhotoGrid({super.key});
 
+  // Ảnh test
+  static final List<String> _localImages = [
+    "image/profile_bg.png",
+    "image/profile_bg.png",
+    "image/profile_bg.png",
+    "image/profile_bg.png",
+    "image/profile_bg.png",
+    "image/profile_bg.png",
+
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(43.w, 0.h, 43.w, 20.h),
-      child: GridView.builder(
-        shrinkWrap: true, // ← QUAN TRỌNG: cho phép GridView co lại
-        physics: const NeverScrollableScrollPhysics(), // ← để SingleChildScrollView cuộn
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16.h,
-          crossAxisSpacing: 16.w,
-          childAspectRatio: 150 / 120,
-        ),
-        itemCount: 10, // giả lập 50 ảnh
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 10.h,
+            crossAxisSpacing: 10.w,
+            childAspectRatio: 150 / 150,
+          ),
+          itemCount: _localImages.length,
+          itemBuilder: (context, index) {
+            final imagePath = _localImages[index];
+
+            return ClipRRect(
               borderRadius: BorderRadius.circular(16.r),
-              image: DecorationImage(
-                image: AssetImage("image/profile_bg.png"),
+              child: Image.asset(
+                imagePath,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image, color: Colors.red),
+                  );
+                },
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

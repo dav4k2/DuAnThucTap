@@ -6,36 +6,53 @@ import '../logic/chef_provider.dart';
 
 class MealFilter extends ConsumerWidget {
   const MealFilter({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cur = ref.watch(mealTabProvider);
     final notifier = ref.read(mealTabProvider.notifier);
 
-    return Stack(
-      children: [
-        _item('Tất cả', 24.w, 545.h, MealTab.tatCa, cur == MealTab.tatCa, notifier),
-        _item('Bữa sáng', 113.w, 545.h, MealTab.buaSang, cur == MealTab.buaSang, notifier),
-        _item('Bữa trưa', 202.w, 545.h, MealTab.buaTrua, cur == MealTab.buaTrua, notifier),
-        _item('Ăn vặt', 291.w, 546.h, MealTab.anVat, cur == MealTab.anVat, notifier),
-      ],
+    return Padding(
+      padding: EdgeInsets.only(top: 0.h), // sát mép trên
+      child: Container(
+        color: Colors.white,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _chip('Tất cả', MealTab.tatCa, cur == MealTab.tatCa, notifier),
+            _chip('Bữa sáng', MealTab.buaSang, cur == MealTab.buaSang, notifier),
+            _chip('Bữa trưa', MealTab.buaTrua, cur == MealTab.buaTrua, notifier),
+            _chip('Ăn vặt', MealTab.anVat, cur == MealTab.anVat, notifier),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _item(String text, double left, double top, MealTab tab, bool active, StateController<MealTab> notifier) {
-    return Positioned(
-      left: left,
-      top: top,
+  Widget _chip(String text, MealTab tab, bool active, StateController<MealTab> notifier) {
+    return Expanded(
       child: GestureDetector(
         onTap: () => notifier.state = tab,
-        child: Container(
-          width: 73.w,
-          height: 25.h,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: EdgeInsets.symmetric(horizontal: 4.w),
+          padding: EdgeInsets.symmetric(vertical: 8.h),
           decoration: BoxDecoration(
             color: active ? const Color(0xFFFFB901) : const Color(0xFFD9D9D9),
-            borderRadius: BorderRadius.circular(30.r),
+            borderRadius: BorderRadius.circular(25.r),
           ),
           alignment: Alignment.center,
-          child: Text(text, style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w300, height: 1.69)),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+              height: 1.2,
+            ),
+          ),
         ),
       ),
     );
