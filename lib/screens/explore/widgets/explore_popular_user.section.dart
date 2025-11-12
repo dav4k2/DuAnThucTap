@@ -46,7 +46,7 @@ class PopularUsersSection extends StatelessWidget {
             children: [
               _userItem('Mr.Dean', 'image/bean.png'),
               _userItem('Donald D.', 'image/vit.png'),
-              _userItem('Cristiano M.', 'image/a7.png'),
+              _userItem('Cristiano M.', 'image/7ga.png'),
             ],
           ),
         ],

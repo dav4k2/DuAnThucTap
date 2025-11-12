@@ -1,62 +1,69 @@
-// Widget hiển thị phần "Từ khóa nổi bật" trong trang khám phá
 import 'package:flutter/material.dart';
 
 class KeywordsSection extends StatelessWidget {
-  final double width; // Chiều rộng toàn bộ vùng hiển thị (truyền từ ngoài vào)
+  final double width;
 
   const KeywordsSection({super.key, required this.width});
 
   @override
   Widget build(BuildContext context) {
-    // Danh sách các từ khóa nổi bật
     final keywords = [
       'Healthy', 'Đồ cay', 'Ngọt',
-      'Đồ ăn nhanh', 'Mỳ sốt', 'Ăn sáng', 'Bánh', 'Súp', 'Đồ chay',
+      'Đồ ăn nhanh', 'Mỳ sốt', 'Ăn sáng',
+      'Bánh', 'Súp', 'Đồ chay',
     ];
 
     return Container(
-      width: width, // Căn theo chiều rộng của màn hình
-      color: Colors.white, // Màu nền trắng
-      padding: const EdgeInsets.all(16), // Lề trong xung quanh
-
-      // Toàn bộ phần "Từ khóa nổi bật" được gói trong Column
+      width: width,
+      color: Colors.white,
+      padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Căn trái
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Hàng tiêu đề: "Từ khóa nổi bật" + "Xem thêm"
+          // Tiêu đề
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Giãn đều 2 đầu
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
               Text(
                 'Từ khóa nổi bật',
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w700, // In đậm
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               Text(
                 'Xem thêm',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.black54, // Màu chữ xám nhạt
+                  color: Colors.black54,
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 12), // Khoảng cách giữa tiêu đề và danh sách từ khóa
+          const SizedBox(height: 12),
 
-          // Dùng Wrap để hiển thị danh sách từ khóa dạng "chip"
+          // Danh sách chip
           Wrap(
-            spacing: 12, // Khoảng cách ngang giữa các chip
-            runSpacing: 8, // Khoảng cách dọc khi xuống dòng
+            spacing: 10,
+            runSpacing: 8,
             children: keywords.map((k) {
-              // Mỗi từ khóa được hiển thị bằng một Chip
-              return Chip(
-                label: Text(k), // Nội dung của chip
-                backgroundColor: Colors.grey.shade200, // Màu nền chip nhạt
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2F2F2), // Màu nền xám nhạt nhẹ
+                  borderRadius: BorderRadius.circular(20), // Bo tròn mạnh như ảnh
+                ),
+                child: Text(
+                  k,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
               );
-            }).toList(), // Chuyển danh sách từ khóa thành danh sách widget
+            }).toList(),
           ),
         ],
       ),
