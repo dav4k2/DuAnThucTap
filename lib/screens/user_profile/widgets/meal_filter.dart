@@ -12,25 +12,35 @@ class MealFilter extends ConsumerWidget {
     final cur = ref.watch(mealTabProvider);
     final notifier = ref.read(mealTabProvider.notifier);
 
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
+
     return Padding(
-      padding: EdgeInsets.only(top: 0.h), // sát mép trên
+      padding: EdgeInsets.only(top: 0.h),
       child: Container(
-        color: Colors.white,
+        color: bgColor,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _chip('Tất cả', MealTab.tatCa, cur == MealTab.tatCa, notifier),
-            _chip('Bữa sáng', MealTab.buaSang, cur == MealTab.buaSang, notifier),
-            _chip('Bữa trưa', MealTab.buaTrua, cur == MealTab.buaTrua, notifier),
-            _chip('Ăn vặt', MealTab.anVat, cur == MealTab.anVat, notifier),
+            _chip(context, 'Tất cả', MealTab.tatCa, cur == MealTab.tatCa, notifier, textColor),
+            _chip(context, 'Bữa sáng', MealTab.buaSang, cur == MealTab.buaSang, notifier, textColor),
+            _chip(context, 'Bữa trưa', MealTab.buaTrua, cur == MealTab.buaTrua, notifier, textColor),
+            _chip(context, 'Ăn vặt', MealTab.anVat, cur == MealTab.anVat, notifier, textColor),
           ],
         ),
       ),
     );
   }
 
-  Widget _chip(String text, MealTab tab, bool active, StateController<MealTab> notifier) {
+  Widget _chip(
+      BuildContext context, // TRUYỀN context VÀO
+      String text,
+      MealTab tab,
+      bool active,
+      StateController<MealTab> notifier,
+      Color textColor,
+      ) {
     return Expanded(
       child: GestureDetector(
         onTap: () => notifier.state = tab,
@@ -39,7 +49,11 @@ class MealFilter extends ConsumerWidget {
           margin: EdgeInsets.symmetric(horizontal: 4.w),
           padding: EdgeInsets.symmetric(vertical: 8.h),
           decoration: BoxDecoration(
-            color: active ? const Color(0xFFFFB901) : const Color(0xFFD9D9D9),
+            color: active
+                ? const Color(0xFFFFB901)
+                : Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withOpacity(0.15)
+                : const Color(0xFFD9D9D9),
             borderRadius: BorderRadius.circular(25.r),
           ),
           alignment: Alignment.center,
@@ -49,7 +63,7 @@ class MealFilter extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13.sp,
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              color: active ? Colors.black : textColor,
               height: 1.2,
             ),
           ),

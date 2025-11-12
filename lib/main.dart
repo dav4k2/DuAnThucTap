@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
 import 'package:fontend/screens/terms/terms.dart';
+import 'package:fontend/theme/app_localizations.dart';
 import 'package:fontend/theme/language_provider.dart';
 import 'package:fontend/theme/theme_provider.dart';
 import 'firebase_options.dart';
@@ -40,22 +41,31 @@ class MyApp extends ConsumerWidget {
           title: 'My Flutter App',
           debugShowCheckedModeBanner: false,
           useInheritedMediaQuery: true,
-          locale: Locale(lang), // ĐỔI NGÔN NGỮ
+          locale: Locale(lang),
           localizationsDelegates: const [
+            AppLocalizations.delegate, // PHẢI CÓ TRƯỚC
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('vi'), Locale('en')],
-          theme: ThemeData.light().copyWith(
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+          theme: ThemeData(
+            brightness: Brightness.light,
             scaffoldBackgroundColor: Colors.white,
-            textTheme: const TextTheme(bodyMedium: TextStyle(fontFamily: 'SF Pro')),
+            textTheme: const TextTheme(
+              bodyMedium: TextStyle(color: Colors.black, fontFamily: 'SF Pro'),
+            ),
+            useMaterial3: true,
           ),
-          darkTheme: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: Colors.grey[900],
-            textTheme: const TextTheme(bodyMedium: TextStyle(fontFamily: 'SF Pro')),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: const Color(0xFF121212), // NỀN TỐI
+            textTheme: const TextTheme(
+              bodyMedium: TextStyle(color: Colors.white, fontFamily: 'SF Pro'), // CHỮ TRẮNG
+            ),
+            useMaterial3: true,
           ),
-          themeMode: isDark ? ThemeMode.dark : ThemeMode.light, // ĐỔI CHẾ ĐỘ TỐI
           builder: (context, widget) {
             final mediaQuery = MediaQuery.of(context);
             return MediaQuery(

@@ -20,13 +20,17 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
     final cur = ref.watch(profileTabProvider);
     final notifier = ref.read(profileTabProvider.notifier);
 
+    // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
+    final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
+    final activeColor = const Color(0xFFFFB901); // VÀNG
+
     return Stack(
       children: [
         // === CÁC TAB ===
-        _buildTab('Công thức', ProfileTab.congThuc, cur, notifier),
-        _buildTab('Tiểu sử', ProfileTab.tieuSu, cur, notifier),
-        _buildTab('Ảnh', ProfileTab.anh, cur, notifier),
-        _buildTab('Đánh giá', ProfileTab.danhGia, cur, notifier),
+        _buildTab('Công thức', ProfileTab.congThuc, cur, notifier, textColor, activeColor),
+        _buildTab('Tiểu sử', ProfileTab.tieuSu, cur, notifier, textColor, activeColor),
+        _buildTab('Ảnh', ProfileTab.anh, cur, notifier, textColor, activeColor),
+        _buildTab('Đánh giá', ProfileTab.danhGia, cur, notifier, textColor, activeColor),
 
         // === THANH GẠCH DƯỚI ===
         if (_tabWidths[cur] != null && _tabLefts[cur] != null)
@@ -34,13 +38,13 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOutCubic,
             left: _tabLefts[cur]!,
-            top: _getTop(cur) + 25.h, // Dịch xuống dưới chữ (khoảng cách tùy chỉnh)
+            top: _getTop(cur) + 25.h,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               width: _tabWidths[cur]!,
               height: 3.h,
               decoration: BoxDecoration(
-                color: const Color(0xFFFFB901),
+                color: activeColor, // VÀNG
                 borderRadius: BorderRadius.circular(15.r),
               ),
             ),
@@ -49,7 +53,14 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
     );
   }
 
-  Widget _buildTab(String text, ProfileTab tab, ProfileTab cur, StateController<ProfileTab> notifier) {
+  Widget _buildTab(
+      String text,
+      ProfileTab tab,
+      ProfileTab cur,
+      StateController<ProfileTab> notifier,
+      Color textColor,
+      Color activeColor,
+      ) {
     final isActive = tab == cur;
 
     return Positioned(
@@ -64,7 +75,7 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
               if (renderBox != null && renderBox.hasSize) {
                 final width = renderBox.size.width;
                 final globalOffset = renderBox.localToGlobal(Offset.zero);
-                final relativeLeft = globalOffset.dx; // DÙNG TRỰC TIẾP (không chia scale)
+                final relativeLeft = globalOffset.dx;
 
                 if (_tabWidths[tab] != width || _tabLefts[tab] != relativeLeft) {
                   setState(() {
@@ -78,7 +89,7 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
             return Text(
               text,
               style: TextStyle(
-                color: isActive ? const Color(0xFFFFB901) : Colors.black,
+                color: isActive ? activeColor : textColor, // TỰ ĐỔI THEO THEME
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w400,
                 height: 1.38,

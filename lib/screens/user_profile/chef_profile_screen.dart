@@ -61,29 +61,32 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
     final chef = ref.watch(chefProvider);
     final profileTab = ref.watch(profileTabProvider);
     final mealTab = ref.watch(mealTabProvider);
-
     final displayedRecipes = profileTab == ProfileTab.congThuc
-        ? chef.allRecipes.where((r) => mealTab == MealTab.tatCa || r.meal == mealTab).toList()
+        ? chef.allRecipes
+        .where((r) => mealTab == MealTab.tatCa || r.meal == mealTab)
+        .toList()
         : <Recipe>[];
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
+        value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
         ),
         child: CustomScrollView(
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // === HEADER ===
             SliverAppBar(
               expandedHeight: 510.h,
               floating: false,
               pinned: true,
-              backgroundColor: Colors.white,
+              backgroundColor: theme.scaffoldBackgroundColor,
               elevation: 0.5,
               automaticallyImplyLeading: false,
               title: Opacity(
@@ -93,7 +96,7 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
                   style: TextStyle(
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: theme.textTheme.bodyMedium!.color!,
                   ),
                 ),
               ),
@@ -110,9 +113,10 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
                       child: Container(
                         width: double.infinity,
                         decoration: ShapeDecoration(
-                          color: Colors.white,
+                          color: theme.scaffoldBackgroundColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                            borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20.r)),
                           ),
                         ),
                       ),
@@ -132,34 +136,26 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
               ),
             ),
 
-            // === MEAL FILTER (CÔNG THỨC) ===
             if (profileTab == ProfileTab.congThuc)
               SliverPersistentHeader(
                 pinned: true,
-                delegate: _MealFilterDelegate(),
+                delegate: _MealFilterDelegate(bgColor: theme.scaffoldBackgroundColor),
               ),
 
-            // === REVIEW FILTER (ĐÁNH GIÁ) ===
             if (profileTab == ProfileTab.danhGia)
               SliverPersistentHeader(
                 pinned: true,
-                delegate: _ReviewFilterDelegate(),
+                delegate: _ReviewFilterDelegate(bgColor: theme.scaffoldBackgroundColor),
               ),
 
-            // === NỘI DUNG TAB ===
             if (profileTab == ProfileTab.congThuc)
-              RecipeList(recipes: displayedRecipes), // ĐÃ CÓ HEADER BÊN TRONG
-
-            if (profileTab == ProfileTab.danhGia)
-              const ReviewTab(), // ĐÃ CÓ HEADER BÊN TRONG
-
+              RecipeList(recipes: displayedRecipes),
+            if (profileTab == ProfileTab.danhGia) const ReviewTab(),
             if (profileTab == ProfileTab.tieuSu)
               const SliverToBoxAdapter(child: BioTab()),
-
             if (profileTab == ProfileTab.anh)
               const SliverToBoxAdapter(child: PhotoGrid()),
 
-            // KHOẢNG TRỐNG CUỐI
             SliverToBoxAdapter(child: SizedBox(height: 100.h)),
           ],
         ),
@@ -168,11 +164,16 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
   }
 }
 
-// === MEAL FILTER DELEGATE ===
 class _MealFilterDelegate extends SliverPersistentHeaderDelegate {
+  final Color bgColor;
+  const _MealFilterDelegate({required this.bgColor});
+
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(color: Colors.white, child: const MealFilter());
+    return Container(
+      color: bgColor,
+      child: const MealFilter(),
+    );
   }
 
   @override
@@ -183,11 +184,16 @@ class _MealFilterDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
 }
 
-// === REVIEW FILTER DELEGATE ===
 class _ReviewFilterDelegate extends SliverPersistentHeaderDelegate {
+  final Color bgColor;
+  const _ReviewFilterDelegate({required this.bgColor});
+
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(color: Colors.white, child: const ReviewFilterHeader());
+    return Container(
+      color: bgColor,
+      child: const ReviewFilterHeader(),
+    );
   }
 
   @override

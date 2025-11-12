@@ -2,7 +2,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:palette_generator/palette_generator.dart';
 
 class SmartNavBar extends StatefulWidget {
   final int currentIndex;
@@ -20,23 +19,26 @@ class SmartNavBar extends StatefulWidget {
   State<SmartNavBar> createState() => _SmartNavBarState();
 }
 
-class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStateMixin {
-  bool isDarkBackground = false;
+class _SmartNavBarState extends State<SmartNavBar>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _positionAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
     _setupAnimations(widget.currentIndex.toDouble());
-    widget.scrollController.addListener(_checkScroll);
   }
 
   void _setupAnimations(double targetIndex) {
-    _positionAnimation = Tween<double>(begin: targetIndex, end: targetIndex).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
-    );
+    _positionAnimation = Tween<double>(
+      begin: targetIndex,
+      end: targetIndex,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic));
   }
 
   @override
@@ -48,7 +50,6 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
         begin: beginPos,
         end: widget.currentIndex.toDouble(),
       ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic));
-
       _controller
         ..reset()
         ..forward();
@@ -57,23 +58,8 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
 
   @override
   void dispose() {
-    widget.scrollController.removeListener(_checkScroll);
     _controller.dispose();
     super.dispose();
-  }
-
-  void _checkScroll() async {
-    try {
-      final color = await PaletteGenerator.fromImageProvider(
-        const AssetImage('assets/sample_bg.jpg'),
-        maximumColorCount: 8,
-      );
-      final brightness = color.dominantColor?.color.computeLuminance() ?? 0.5;
-      final dark = brightness < 0.5;
-      if (dark != isDarkBackground) {
-        setState(() => isDarkBackground = dark);
-      }
-    } catch (_) {}
   }
 
   double _calculateScale(double progress) {
@@ -86,84 +72,114 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isDarkBackground
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.black.withValues(alpha: 0.1);
-    final borderColor = isDarkBackground
-        ? Colors.white.withValues(alpha: 0.2)
-        : Colors.black.withValues(alpha: 0.2);
-    final inactiveColor = isDarkBackground ? Colors.white70 : Colors.black87;
-    final activeColor = isDarkBackground ? Colors.white : Colors.black;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // MÀU CHUNG CHO CẢ 2 MODE
+    final inactiveColor = isDark ? Colors.white70 : Colors.black87;
+    final activeColor = isDark ? Colors.white : Colors.black;
 
     return Padding(
       padding: EdgeInsets.only(bottom: 25.w, left: 8, right: 8),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30.r),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 9, sigmaY: 9),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: 65.h,
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(30.r),
-              border: Border.all(color: borderColor),
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final itemWidth = constraints.maxWidth / 5;
+        child: isDark
+            ? _buildDarkMode(activeColor, inactiveColor) // DARK: CODE CŨ BẠN THÍCH
+            : _buildLightMode(activeColor, inactiveColor), // LIGHT: CODE MỚI ĐẸP
+      ),
+    );
+  }
 
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, _) {
-                        final progress = _controller.value;
-                        final currentIndex = _positionAnimation.value;
-                        final targetX = (currentIndex - 2) * itemWidth;
-                        final scale = _calculateScale(progress);
+  // DARK MODE: DÙNG CODE CŨ BẠN THÍCH (BLUR + MỜ NHẸ)
+  Widget _buildDarkMode(Color activeColor, Color inactiveColor) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 9, sigmaY: 9),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        height: 65.h,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(30.r),
+          border: Border.all(color: Colors.white.withOpacity(0.2)),
+        ),
+        child: _buildContent(activeColor, inactiveColor),
+      ),
+    );
+  }
 
-                        return Transform.translate(
-                          offset: Offset(targetX, 0),
-                          child: Transform.scale(
-                            scale: scale,
-                            alignment: Alignment.center,
-                            child: Container(
-                              width: 75.w,
-                              height: 67.h,
-                              margin: EdgeInsets.symmetric(vertical: 3.h),
-                              decoration: BoxDecoration(
-                                color: activeColor.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(30.r),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+  // LIGHT MODE: DÙNG CODE MỚI ĐẸP (NỀN TRẮNG MỜ + BÓNG ĐỔ)
+  Widget _buildLightMode(Color activeColor, Color inactiveColor) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: 65.h,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.75),
+        borderRadius: BorderRadius.circular(30.r),
+        border: Border.all(color: Colors.black.withOpacity(0.15), width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: _buildContent(activeColor, inactiveColor),
+    );
+  }
+
+  // NỘI DUNG CHUNG CHO CẢ 2 MODE
+  Widget _buildContent(Color activeColor, Color inactiveColor) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = constraints.maxWidth / 5;
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            // Hiệu ứng active
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                final progress = _controller.value;
+                final currentIndex = _positionAnimation.value;
+                final targetX = (currentIndex - 2) * itemWidth;
+                final scale = _calculateScale(progress);
+                return Transform.translate(
+                  offset: Offset(targetX, 0),
+                  child: Transform.scale(
+                    scale: scale,
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 75.w,
+                      height: 67.h,
+                      margin: EdgeInsets.symmetric(vertical: 3.h),
+                      decoration: BoxDecoration(
+                        color: activeColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(30.r),
+                      ),
                     ),
-
-                    // 5 tab items
-                    Row(
-                      children: List.generate(5, (index) {
-                        return Expanded(
-                          child: _buildItem(
-                            _getIconPath(index),
-                            _getLabel(index),
-                            index,
-                            activeColor,
-                            inactiveColor,
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
+                  ),
                 );
               },
             ),
-          ),
-        ),
-      ),
+
+            // 5 tab items
+            Row(
+              children: List.generate(5, (index) {
+                return Expanded(
+                  child: _buildItem(
+                    _getIconPath(index),
+                    _getLabel(index),
+                    index,
+                    activeColor,
+                    inactiveColor,
+                  ),
+                );
+              }),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -208,7 +224,6 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
     );
   }
 
-  /// 🔥 Thay IconData bằng đường dẫn tới icon trong assets
   String _getIconPath(int index) {
     const icons = [
       'image/home_navbar.png',
@@ -221,7 +236,13 @@ class _SmartNavBarState extends State<SmartNavBar> with SingleTickerProviderStat
   }
 
   String _getLabel(int index) {
-    const labels = ["Trang chủ", "Tìm kiếm", "Tạo C.Thức", "Hồ sơ", "Cài đặt"];
+    const labels = [
+      "Trang chủ",
+      "Tìm kiếm",
+      "Tạo C.Thức",
+      "Hồ sơ",
+      "Cài đặt"
+    ];
     return labels[index];
   }
 }
