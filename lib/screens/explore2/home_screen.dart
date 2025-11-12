@@ -25,9 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // màu vàng phần trên (phần header)
       backgroundColor: const Color(0xFFFFC221),
-
       body: SafeArea(
         child: Column(
           children: [
@@ -36,34 +34,51 @@ class _HomeScreenState extends State<HomeScreen> {
             const SearchBarWidget(),
             const SizedBox(height: 20),
 
-            // 👇 phần nội dung chính (trắng)
+            // ⚪ Nền trắng
             Expanded(
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(40),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
                 ),
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: const Column(
-                    children: [
-                      FeaturedRecipes(),
-                      RecommendedList(),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const FeaturedRecipes(),
+                    const SizedBox(height: 10),
+
+                    // 🧍 Tiêu đề cố định
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Đề xuất',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // 📜 Phần cuộn
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        child: const RecommendedList(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ],
         ),
       ),
-
-      // 👇 Thanh navbar nền trắng + truyền đúng tham số
       bottomNavigationBar: Container(
-        color: Colors.white, // đổi nền thanh navbar thành trắng
+        color: Colors.white,
         child: SmartNavBar(
           currentIndex: _currentIndex,
           onTap: _onItemTapped,
