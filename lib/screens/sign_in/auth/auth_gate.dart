@@ -6,6 +6,7 @@ import 'package:fontend/screens/sign_in/widgets/sign_in_form.dart';
 import 'package:fontend/screens/welcome/welcome_screen.dart';
 
 import '../../../Main_layout/main_layout.dart';
+import '../../success/success_screen.dart';
 import 'auth_state_provider.dart';
 
 class AuthGate extends ConsumerWidget {
@@ -20,7 +21,7 @@ class AuthGate extends ConsumerWidget {
     if (userAsync.value != null) {
       return const MainLayout();
     } else {
-      return const SignInForm();
+      return const SuccessScreen();
     }
   }
 }

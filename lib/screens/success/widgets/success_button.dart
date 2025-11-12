@@ -29,7 +29,7 @@ class ResetSuccessButton extends StatelessWidget {
           );
         },
         child: const Text(
-          'Đến trang chủ',
+          'Đến trang đăng nhập',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,

@@ -4,6 +4,7 @@ import '../navbar/navbar_selector.dart';
 import '../screens/explore2/home_screen.dart';
 import '../screens/explore/explore_screen.dart';
 import '../screens/user_profile/chef_profile_screen.dart';
+import '../screens/setting/settings_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -21,7 +22,7 @@ class _MainLayoutState extends State<MainLayout> {
     ExploreScreen(),
     Center(child: Text('Library')),
     ChefProfileScreen(),
-    Center(child: Text('Profile')),
+    SettingsScreen(),
   ];
 
   @override
