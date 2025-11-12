@@ -1,3 +1,4 @@
+// Widget hiển thị mục "Công thức nổi bật" trong trang khám phá
 import 'package:flutter/material.dart';
 
 class HighlightRecipes extends StatelessWidget {
@@ -7,32 +8,30 @@ class HighlightRecipes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Danh sách các công thức nổi bật (tên món + đường dẫn ảnh + điểm + lượt đánh giá)
+    // Danh sách các công thức nổi bật (tên món + đường dẫn ảnh)
     final recipes = [
       {
         'name': 'Gà rán sốt Hàn Quốc',
-        'image': 'image/Rectangle30.png',
-        'rating': '4.8',
-        'reviews': '1k+ Đánh giá',
+        'image': 'image/my_y.png',
       },
       {
         'name': 'Mỳ Ý sốt Bolognese',
-        'image': 'image/Rectangle301.png',
-        'rating': '4.8',
-        'reviews': '1k+ Đánh giá',
+        'image': 'image/garan.png',
       },
     ];
 
     return Container(
-      width: width,
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      width: width, // Căn theo chiều rộng màn hình
+      color: Colors.white, // Màu nền trắng
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Lề trong
+
+      // Gói toàn bộ phần nội dung (tiêu đề + danh sách món)
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start, // Căn trái
         children: [
-          // Tiêu đề
+          // Hàng tiêu đề gồm: "Công thức nổi bật" và "Xem thêm"
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Giãn 2 đầu
             children: const [
               Text(
                 'Công thức nổi bật',
@@ -51,13 +50,18 @@ class HighlightRecipes extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 12), // Khoảng cách dưới tiêu đề
 
-          // Danh sách ngang
+          // Danh sách ngang các công thức
           SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+            scrollDirection: Axis.horizontal, // Cho phép cuộn ngang
             child: Row(
-              children: recipes.map((r) => _recipeCard(r)).toList(),
+              // Duyệt qua danh sách `recipes` để tạo từng thẻ món ăn
+              children: recipes
+                  .map(
+                    (r) => _recipeCard(r), // Gọi hàm riêng để dựng card món ăn
+              )
+                  .toList(),
             ),
           ),
         ],
@@ -65,80 +69,43 @@ class HighlightRecipes extends StatelessWidget {
     );
   }
 
-  // Hàm dựng từng card món
+  // Hàm dựng từng thẻ món ăn (card hiển thị ảnh + tên món)
   Widget _recipeCard(Map<String, String> r) {
     return Container(
-      margin: const EdgeInsets.only(right: 12),
+      margin: const EdgeInsets.only(right: 12), // Khoảng cách giữa các card
       width: 225,
       height: 133,
-      clipBehavior: Clip.hardEdge,
+      clipBehavior: Clip.hardEdge, // Cắt phần ảnh bị tràn ra ngoài viền bo góc
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15), // Bo tròn góc card
       ),
       child: Stack(
-        fit: StackFit.expand,
+        fit: StackFit.expand, // Mở rộng toàn bộ vùng chứa
         children: [
-          // Ảnh nền
+          // Ảnh nền của món ăn
           Image.asset(
-            r['image']!,
-            fit: BoxFit.cover,
+            r['image']!, // Dấu ! để xác nhận không null
+            fit: BoxFit.cover, // Ảnh phủ đầy vùng hiển thị
           ),
 
-          // Góc trên trái: đánh giá ⭐ + số lượt đánh giá
-          Positioned(
-            top: 6,
-            left: 6,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.85),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.star,
-                    color: Colors.white,
-                    size: 14,
-                  ),
-                  const SizedBox(width: 3),
-                  Text(
-                    '${r['rating']} ',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '(${r['reviews']})',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Góc dưới: tên món
+          // Lớp mờ + tên món ở phía dưới ảnh
           Align(
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.bottomCenter, // Căn phần text xuống dưới
             child: Container(
-              height: 30,
+              height: 30, // Chiều cao vùng chứa tên món
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.45),
+                color: Colors.black.withOpacity(0.45), // Nền đen mờ
               ),
               child: Center(
+                // Hiển thị tên món ăn
                 child: Text(
-                  r['name']!,
+                  r['name']!, // Lấy tên món
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis, // Nếu quá dài sẽ hiển thị "..."
                 ),
               ),
             ),

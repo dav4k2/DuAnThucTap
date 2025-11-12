@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../Main_layout/main_layout.dart';
 import '../../explore/explore_screen.dart';
-import '../../explore2/home_screen.dart';
-import '../auth/auth_provider.dart';
+import '../logic/auth_provider.dart';
 
 class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
@@ -93,7 +92,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
         ///Textbox TK
         InputField(
-          hintText: 'Tài khoản',
+          hintText: 'Email',
           controller: _emailController,
           width: inputWidth,
         ),
@@ -148,7 +147,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             ref.read(authProvider.notifier).setError(null);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const ExploreScreen()),
             );
           },
           child: Stack(

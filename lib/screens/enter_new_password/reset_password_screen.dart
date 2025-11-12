@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fontend/screens/enter_new_password/widgets/password_field.dart';
 import 'package:fontend/screens/enter_new_password/widgets/confirm_password_field.dart';
-import 'widgets/title.dart';
 import 'logic/enter_new_password_provider.dart';
 
 class EnterResetPasswordScreen extends ConsumerWidget {
@@ -26,8 +25,19 @@ class EnterResetPasswordScreen extends ConsumerWidget {
                 children: [
                   SizedBox(height: 120.h),
 
-                  TitleSection(),
+                  // 🟡 Tiêu đề
+                  Text(
+                    'Đặt lại mật khẩu',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 28.sp,
+                      fontFamily: 'SF Pro Rounded',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: 40.h),
 
+                  // 🟢 Nhập mật khẩu
                   const PasswordFieldGroup(),
                   const ConfirmPasswordFieldGroup(),
                   SizedBox(height: 24.h),
@@ -86,7 +96,7 @@ class EnterResetPasswordScreen extends ConsumerWidget {
                         border: Border.all(color: Colors.black, width: 2.w),
                       ),
                       child: Text(
-                        'Tạo mật khẩu mới',
+                        'Xác nhận',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 24.sp,

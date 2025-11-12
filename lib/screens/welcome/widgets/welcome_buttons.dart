@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../sign_in/sign_in_screen.dart';
 
 class WelcomeButtons extends StatelessWidget {
@@ -7,41 +6,42 @@ class WelcomeButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return SizedBox(
-      width: 0.9.sw, // 90% chiều rộng màn hình theo ScreenUtil
-      height: 70.h, // responsive theo chiều cao
+      width: width * 0.9,
+      height: width * 0.16, // button height
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+
           // Nút Đăng nhập
-          Expanded(
-            child: _buildButton(
-              context,
-              label: 'Đăng nhập',
-              backgroundColor: const Color(0xFFFFB901),
-              borderColor: Colors.black,
-              textColor: Colors.black,
-              initialTab: true,
-            ),
+          _buildButton(
+            context,
+            label: 'Đăng nhập',
+            backgroundColor: const Color(0xFFFFB901),
+            borderColor: Colors.black,
+            textColor: Colors.black,
+            initialTab: true,
           ),
-          SizedBox(width: 12.w),
+
+          SizedBox(width: width * 0.04), // spacing
+
           // Nút Đăng ký
-          Expanded(
-            child: _buildButton(
-              context,
-              label: 'Đăng ký',
-              backgroundColor: Colors.white,
-              textColor: Colors.black,
-              borderColor: Colors.black,
-              initialTab: false,
-            ),
+          _buildButton(
+            context,
+            label: 'Đăng ký',
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            borderColor: Colors.black ,
+            initialTab: false,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildButton(
+  Expanded _buildButton(
       BuildContext context, {
         required String label,
         required Color backgroundColor,
@@ -49,8 +49,12 @@ class WelcomeButtons extends StatelessWidget {
         Color? borderColor,
         required bool initialTab,
       }) {
-    return SizedBox(
-      height: 70.h,
+    final width = MediaQuery.of(context).size.width;
+    final buttonHeight = width * 0.16;
+    final fontSize = width * 0.06;
+    final borderRadius = width * 0.12;
+
+    return Expanded(
       child: ElevatedButton(
         onPressed: () => Navigator.push(
           context,
@@ -60,19 +64,18 @@ class WelcomeButtons extends StatelessWidget {
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
-          side: borderColor != null
-              ? BorderSide(color: borderColor, width: 2.w)
-              : null,
+          side: borderColor != null ? BorderSide(color: borderColor,width: 2) : null,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50.r),
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
-          elevation: 4,
           shadowColor: const Color(0x3F000000),
+          elevation: 4,
+          fixedSize: Size.fromHeight(buttonHeight),
         ),
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 23.sp,
+            fontSize: fontSize,
             fontFamily: 'SF Pro Rounded',
             fontWeight: FontWeight.w700,
             color: textColor,
