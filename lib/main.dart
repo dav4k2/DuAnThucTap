@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
+import 'package:fontend/screens/sign_in/auth/auth_gate.dart';
 import 'package:fontend/screens/terms/terms.dart';
 import 'package:fontend/theme/app_localizations.dart';
 import 'package:fontend/theme/language_provider.dart';
@@ -74,11 +75,6 @@ class MyApp extends ConsumerWidget {
               child: widget!,
             );
           },
-
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-            useMaterial3: true,
-          ),
           routes: {
             '/splash': (context) => const SplashPage(),
             '/welcome': (context) => const WelcomeScreen(),
