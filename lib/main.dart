@@ -1,11 +1,9 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
-import 'package:fontend/screens/sign_in/auth/auth_gate.dart';
 import 'package:fontend/screens/terms/terms.dart';
 import 'package:fontend/theme/app_localizations.dart';
 import 'package:fontend/theme/language_provider.dart';
@@ -45,7 +43,7 @@ class MyApp extends ConsumerWidget {
           useInheritedMediaQuery: true,
           locale: Locale(lang),
           localizationsDelegates: const [
-            AppLocalizations.delegate,
+            AppLocalizations.delegate, // PHẢI CÓ TRƯỚC
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
@@ -62,9 +60,9 @@ class MyApp extends ConsumerWidget {
           ),
           darkTheme: ThemeData(
             brightness: Brightness.dark,
-            scaffoldBackgroundColor: const Color(0xFF121212),
+            scaffoldBackgroundColor: const Color(0xFF121212), // NỀN TỐI
             textTheme: const TextTheme(
-              bodyMedium: TextStyle(color: Colors.white, fontFamily: 'SF Pro'),
+              bodyMedium: TextStyle(color: Colors.white, fontFamily: 'SF Pro'), // CHỮ TRẮNG
             ),
             useMaterial3: true,
           ),
@@ -75,8 +73,8 @@ class MyApp extends ConsumerWidget {
               child: widget!,
             );
           },
+          home: const SplashPage(),
           routes: {
-            '/splash': (context) => const SplashPage(),
             '/welcome': (context) => const WelcomeScreen(),
             '/signin': (context) => const SignInScreen(),
             '/explore': (context) => const ExploreScreen(),
@@ -84,13 +82,8 @@ class MyApp extends ConsumerWidget {
             '/enterpass': (context) => const EnterResetPasswordScreen(),
             '/terms': (context) => const TermsPage(),
           },
-          home: const AuthGate(),
         );
       },
-      child: const SplashPage(),
     );
   }
 }
-
-
-

@@ -1,49 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthServices {
   final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
 
-  Future<User?> signUpWithEmail(String email, String password, String username, String confirmPass) async {
+  Future<UserCredential?> signUpWithEmail(String email, String password) async {
     try {
       final userCred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
-      User? user = userCred.user;
-
-      if(user!=null){
-        // 2. Cập nhật displayName trong Firebase Auth
-        await user.updateDisplayName(username);
-        await user.reload();
-        user = _auth.currentUser; // Lấy lại thông tin user đã cập nhật
-
-        // 3. Lưu thông tin (username, email) vào Cloud Firestore
-        // Dùng UID của user làm ID document
-        await _firestore.collection("user").doc(user!.uid).set({
-          'username': username,
-          'email': email,
-          'uid': user.uid,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      }
-      return user;
+      return userCred;
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseError(e);
     }
   }
 
-  Future<User?> signInWithEmail(String email, String password) async {
+  Future<UserCredential> signInWithEmail(String email, String password) async {
     try {
       final userCred = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return userCred.user;
+      return userCred;
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseError(e);
     }

@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../logic/auth_provider.dart';
+import '../auth/auth_provider.dart';
 
 class SignInSocialButtons extends ConsumerWidget {
   const SignInSocialButtons({super.key});

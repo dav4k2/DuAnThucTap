@@ -1,0 +1,35 @@
+// lib/navbar/navbar_selector.dart
+import 'dart:io' show Platform;
+import 'package:flutter/material.dart';
+import 'navbar_ios.dart';
+import 'smart_navbar.dart';
+
+
+class PlatformNavBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+  final ScrollController? scrollController;
+
+  const PlatformNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+    this.scrollController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (Platform.isIOS) {
+      return NavBarIOS(
+        currentIndex: currentIndex,
+        onTap: onTap,
+      );
+    } else {
+      return SmartNavBar(
+        currentIndex: currentIndex,
+        onTap: onTap,
+        scrollController: scrollController ?? ScrollController(),
+      );
+    }
+  }
+}

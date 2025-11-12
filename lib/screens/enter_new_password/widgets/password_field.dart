@@ -22,7 +22,7 @@ class PasswordFieldGroup extends ConsumerWidget {
               'Mật khẩu',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 24.sp,
+                fontSize: 22.sp,
                 fontFamily: 'SF Pro Rounded',
                 fontWeight: FontWeight.w500,
                 height: 1.5,
@@ -57,7 +57,6 @@ class PasswordFieldGroup extends ConsumerWidget {
                         color: Colors.black,
                         fontSize: 22.sp,
                         fontFamily: 'SF Pro Rounded',
-                        fontWeight: FontWeight.w900,
                         height: 1.0,
                       ),
                     ),
