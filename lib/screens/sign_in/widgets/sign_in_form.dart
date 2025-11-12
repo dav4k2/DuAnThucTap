@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../Main_layout/main_layout.dart';
 import '../../explore/explore_screen.dart';
 import '../../explore2/home_screen.dart';
 import '../auth/auth_provider.dart';
@@ -53,13 +54,12 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       //    AuthGate sẽ tự động chuyển sang ExploreScreen.
       if (mounted) {
         authNotifier.setError(null);
-
         // Sử dụng pushReplacement để chuyển đến màn hình đăng nhập
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             // Giả định SignInScreen có thể nhận tham số để hiển thị tab Đăng nhập
-            builder: (context) => const ExploreScreen(),
+            builder: (context) => const MainLayout(),
           ),
         );
       }

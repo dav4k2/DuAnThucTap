@@ -26,7 +26,7 @@ class RecipeList extends ConsumerWidget {
           }
           final recipe = recipes[index - 1];
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
             child: RecipeCard(
               recipe: recipe,
               onTap: () {

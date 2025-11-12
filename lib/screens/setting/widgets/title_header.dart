@@ -16,7 +16,7 @@ class TitleHeader extends StatelessWidget {
         'Cài đặt',
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: textColor, // TỰ ĐỔI: ĐEN → TRẮNG
+          color: textColor,
           fontSize: 24.sp,
           fontFamily: 'SF Pro',
           fontWeight: FontWeight.w700,

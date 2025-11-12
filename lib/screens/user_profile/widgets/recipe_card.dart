@@ -93,7 +93,7 @@ class RecipeCard extends StatelessWidget {
           Positioned(
             top: 135.h,
             left: 0.w,
-            right: 10.w,
+            right: 2.w,
             height: 43.h,
             child: _frostedContainer(
               context: context, // TRUYỀN context

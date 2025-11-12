@@ -43,7 +43,7 @@ class MyApp extends ConsumerWidget {
           useInheritedMediaQuery: true,
           locale: Locale(lang),
           localizationsDelegates: const [
-            AppLocalizations.delegate, // PHẢI CÓ TRƯỚC
+            AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
@@ -60,9 +60,9 @@ class MyApp extends ConsumerWidget {
           ),
           darkTheme: ThemeData(
             brightness: Brightness.dark,
-            scaffoldBackgroundColor: const Color(0xFF121212), // NỀN TỐI
+            scaffoldBackgroundColor: const Color(0xFF121212),
             textTheme: const TextTheme(
-              bodyMedium: TextStyle(color: Colors.white, fontFamily: 'SF Pro'), // CHỮ TRẮNG
+              bodyMedium: TextStyle(color: Colors.white, fontFamily: 'SF Pro'),
             ),
             useMaterial3: true,
           ),

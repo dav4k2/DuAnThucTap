@@ -21,7 +21,7 @@ class AuthGate extends ConsumerWidget {
     if (userAsync.value != null) {
       return const MainLayout();
     } else {
-      return const SuccessScreen();
+      return const WelcomeScreen();
     }
   }
 }
