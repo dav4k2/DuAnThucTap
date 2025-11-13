@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <nav class="sidebar">
+    
+    <div class="profile">
+      <h4>Chào mừng quay lại</h4>
+      <h5>Admin</h5>
+    </div>
+
+    <ul class="menu-main">
+      <li class="active">
+        <img src="images/search.png" alt="tongquat">
+        <span class="menu-text">Tổng quan</span>
+      </li>
+      <li>
+        <img src="images/qlnd.png" alt="qlnd">
+        <span class="menu-text">Quản lý người dùng</span>
+      </li>
+      <li>
+        <img src="images/qlct.png" alt="qlct">
+        <span class="menu-text">Quản lý công thức</span>
+      </li>
+      <li>
+        <img src="images/report.png" alt="report">
+        <span class="menu-text">Báo cáo & Phản hồi</span>
+        <span class="badge menu-text">11</span> </li>
+      <li>
+        <img src="images/analysis.png" alt="analysis">
+        <span class="menu-text">Phân tích</span>
+      </li>
+    </ul>
+
+    <ul class="menu-bottom">
+      <li>
+        <img src="images/bug.png" alt="bug">
+      </li>
+      <li>
+        <img src="images/setting.png" alt="setting">
+      </li>
+      <li>
+        <img src="images/exit.png" alt="exit">
+      </li>
+    </ul>
+  </nav>
+
+  <main class="content">
+
+    <section class="cards">
+      <div class="card">
+        <img src="images/user.png" alt="user">
+        <div class="card-text">
+          <p>Tổng số người dùng</p>
+          <strong>1,234</strong>
+        </div>
+      </div>
+      <div class="card">
+        <img src="images/recipe.png" alt="recipe">
+        <div class="card-text">
+          <p>Tổng số công thức</p>
+          <strong>567</strong>
+        </div>
+      </div>
+      <div class="card">
+        <img src="images/fav.png" alt="fav">
+        <div class="card-text">
+          <p>Tổng số lượt thích</p>
+          <strong>3,240</strong>
+        </div>
+      </div>
+      <div class="card">
+        <img src="images/report_2.png" alt="report_2">
+        <div class="card-text">
+          <p>Tổng số báo cáo</p>
+          <strong>12</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="charts-row">
+      <div class="chart-container">
+        <h4>Phân loại công thức</h4>
+        <img src="images/bieudo.png" alt="Biểu đồ tròn">
+      </div>
+      <div class="chart-container">
+        <h4>Công thức hàng đầu</h4>
+        <img src="images/bieudocot.png" alt="Biểu đồ ngang">
+      </div>
+      <div class="chart-container">
+        <h4>Người dùng mới</h4>
+        <img src="images/bieudoduong.png" alt="Biểu đồ đường">
+      </div>
+    </section>
+
+    <section class="bottom-row">
+      
+      <div class="main-tables">
+        <div class="table-container">
+          <div class="table-header">
+            <h4>Người dùng</h4> <hr> <div class="search-box">
+              <div class="input-group">
+                <label for="search-user">Tên hoặc ID</label>
+                <input type="text" id="search-user">
+              </div>
+              <button>Lọc</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tên người dùng</th>
+                <th>Email</th>
+                <th>Trạng thái</th>
+                <th>Ngày tham gia</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>John Doe</td>
+                <td>john@e...</td>
+                <td><span class="status active">Đang hoạt động</span></td>
+                <td>26/05/2025</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Jane Smith</td>
+                <td>jane@e...</td>
+                <td><span class="status active">Đang hoạt động</span></td>
+                <td>29/05/2025</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Kong Fuong</td>
+                <td>kongfu...</td>
+                <td><span class="status active">Đang hoạt động</span></td>
+                <td>11/07/2025</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Gordon Jamsay</td>
+                <td>gordon...</td>
+                <td><span class="status active">Đang hoạt động</span></td>
+                <td>23/09/2025</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Cr7Liem</td>
+                <td>cr7lie...</td>
+                <td><span class="status banned">Bị cấm</span></td>
+                <td>22/09/2025</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-container">
+          <div class="table-header">
+            <h4>Công thức</h4> <hr> <div class="search-box">
+              <div class="input-group">
+                <label for="search-recipe">Tên hoặc ID</label>
+                <input type="text" id="search-recipe">
+              </div>
+              <button>Lọc</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tên công thức</th>
+                <th>Tác giả</th>
+                <th>Trạng thái</th>
+                <th>Ngày đăng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Phở tái</td>
+                <td>Gordon...</td>
+                <td><span class="status active">Đã đăng</span></td>
+                <td>26/09/2025</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Mỳ Ý sốt Bolog...</td>
+                <td>Jane S...</td>
+                <td><span class="status active">Đã đăng</span></td>
+                <td>29/05/2025</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Gà rán KFC</td>
+                <td>Kong F...</td>
+                <td><span class="status active">Đã đăng</span></td>
+                <td>12/07/2025</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Pizza Phô</td>
+                <td>Gordon...</td>
+                <td><span class="status banned">Bị xóa</span></td>
+                <td>24/09/2025</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Rau muống luộc</td>
+                <td>John D...</td>
+                <td><span class="status pending">Chờ duyệt</span></td>
+                <td>23/09/2025</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="info-sidebar">
+        <h4>Thông tin tổng quát</h4>
+        <ul>
+          <li>
+            <span>Số người đăng ký trong tháng</span>
+            <strong class="positive">+100</strong>
+          </li>
+          <li>
+            <span>Đang truy cập</span>
+            <strong>245</strong>
+          </li>
+          <li>
+            <span>Công thức chờ duyệt</span>
+            <strong>36</strong>
+          </li>
+          <li>
+            <span>Tổng số báo cáo trong tháng</span>
+            <strong>3</strong>
+          </li>
+          <li>
+            <span>Tổng số bug trong tháng</span>
+            <strong>2</strong>
+          </li>
+          <li>
+            <span>Tổng lượt truy cập</span>
+            <strong>315.245</strong>
+          </li>
+          <li>
+            <span>Tổng lượt truy cập trong tháng</span>
+            <strong class="negative">50.023</strong>
+          </li>
+          <li>
+            <span>Tổng lượt truy cập tháng trước</span>
+            <strong>52.023</strong>
+          </li>
+        </ul>
+      </aside>
+    </section>
+
+  </main>
+  
+</body>
+</html>
