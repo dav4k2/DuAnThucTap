@@ -28,7 +28,7 @@ class ExploreAppBar extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 24.sp,
                 fontWeight: FontWeight.w800,
-                color: isDarkMode ? Colors.black : Colors.black,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: 14.h),
@@ -42,15 +42,15 @@ class ExploreAppBar extends ConsumerWidget {
                 );
               },
               child: Container(
-                height: 50.h,
+                height: 48.h,
                 width: 0.88.sw,
                 decoration: BoxDecoration(
                   color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
                   borderRadius: BorderRadius.circular(30.r),
                   border: Border.all(
                     color: isDarkMode
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.black.withOpacity(0.3),
+                        ? Colors.white.withOpacity(0.10)
+                        : Colors.black.withOpacity(0.60),
                     width: 1.2,
                   ),
                   boxShadow: isDarkMode

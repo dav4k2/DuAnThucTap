@@ -24,7 +24,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
     // lib/screens/search/explore_screen.dart
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         bottom: true,
         child: Column(
