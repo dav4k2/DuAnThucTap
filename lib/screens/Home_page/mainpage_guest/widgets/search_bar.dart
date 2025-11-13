@@ -5,21 +5,31 @@ class SearchBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: width * 0.05),
+      margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black.withOpacity(0.4)),
+        color: isDark ? Colors.black.withOpacity(0.2) : Colors.white,
+        border: Border.all(
+          color: isDark ? Colors.white54 : Colors.black26,
+        ),
         borderRadius: BorderRadius.circular(50),
       ),
-      child: const TextField(
+      child: TextField(
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: 'Nhập tên món ăn hoặc nguyên liệu...',
+          hintStyle: TextStyle(
+            color: isDark ? Colors.white70 : Colors.black,
+          ),
           border: InputBorder.none,
-          icon: Icon(Icons.search),
+          icon: Icon(
+            Icons.search,
+            color: isDark ? Colors.white : Colors.black54,
+          ),
         ),
       ),
     );

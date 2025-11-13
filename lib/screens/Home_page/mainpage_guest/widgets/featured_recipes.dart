@@ -6,8 +6,8 @@ class FeaturedRecipes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context);
 
-    // Danh sách công thức nổi bật
     final List<Map<String, String>> recipes = [
       {
         'image': 'image/Rectangle301.png',
@@ -32,27 +32,28 @@ class FeaturedRecipes extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 🔥 PHẦN “CÔNG THỨC NỔI BẬT”
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Công thức nổi bật',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onBackground,
+                ),
               ),
               Text(
                 'Xem thêm',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.hintColor,
+                ),
               ),
             ],
           ),
         ),
-
         const SizedBox(height: 8),
-
-        // 🧩 DANH SÁCH NGANG
         SizedBox(
           height: 180,
           child: ListView.builder(
@@ -68,7 +69,6 @@ class FeaturedRecipes extends StatelessWidget {
                 ),
                 child: Stack(
                   children: [
-                    // 🖼 Ảnh món ăn
                     ClipRRect(
                       borderRadius: BorderRadius.circular(15),
                       child: Image.asset(
@@ -78,88 +78,70 @@ class FeaturedRecipes extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-
-                    // 📋 Khối nội dung nằm ở đầu ảnh
                     Positioned(
                       top: 8,
                       left: 8,
                       right: 8,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 🔘 Button-like background mờ bo tròn 4 góc
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              recipe['title']!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // Tên món ăn
-                                Text(
-                                  recipe['title']!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-
-                                // Hàng thời gian | độ khó
                                 Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.access_time,
-                                            color: Colors.white, size: 12),
-                                        const SizedBox(width: 3),
-                                        Text(
-                                          recipe['time']!,
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 11),
-                                        ),
-                                      ],
+                                    const Icon(Icons.access_time,
+                                        color: Colors.white, size: 12),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      recipe['time']!,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 11),
                                     ),
-                                    // Dấu phân cách |
-                                    const Padding(
-                                      padding:
-                                      EdgeInsets.symmetric(horizontal: 6),
-                                      child: Text(
-                                        '|',
-                                        style: TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.emoji_emotions,
-                                            color: Colors.white, size: 12),
-                                        const SizedBox(width: 3),
-                                        Text(
-                                          recipe['difficulty']!,
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 11),
-                                        ),
-                                      ],
+                                  ],
+                                ),
+                                const Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(horizontal: 6),
+                                  child: Text('|',
+                                      style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 11)),
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.emoji_emotions,
+                                        color: Colors.white, size: 12),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      recipe['difficulty']!,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 11),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

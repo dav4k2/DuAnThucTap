@@ -24,6 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 🔹 Lấy theme hiện tại
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFC221),
       body: SafeArea(
@@ -34,13 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
             const SearchBarWidget(),
             const SizedBox(height: 20),
 
-            // ⚪ Nền trắng
+            // ⚪ Nền nội dung chính
             Expanded(
               child: Container(
                 width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface, // 🌗 đổi theo theme
+                  borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(40)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,13 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const FeaturedRecipes(),
                     const SizedBox(height: 10),
 
-                    // 🧍 Tiêu đề cố định
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                    // 🧍 Tiêu đề cố định (bỏ const để nhận theme)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'Đề xuất',
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -77,8 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+
+      // 🔸 Thanh điều hướng (đổi màu theo theme)
       bottomNavigationBar: Container(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         child: SmartNavBar(
           currentIndex: _currentIndex,
           onTap: _onItemTapped,

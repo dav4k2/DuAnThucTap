@@ -8,12 +8,14 @@ class BottomNavBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(selectedIndexProvider);
+    final theme = Theme.of(context);
 
     return BottomNavigationBar(
       currentIndex: selectedIndex,
       onTap: (i) => ref.read(selectedIndexProvider.notifier).state = i,
-      selectedItemColor: Colors.orange,
-      unselectedItemColor: Colors.black54,
+      selectedItemColor: theme.colorScheme.primary,
+      unselectedItemColor: theme.colorScheme.onSurfaceVariant,
+      backgroundColor: theme.colorScheme.surface,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
         BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Thêm công thức'),
