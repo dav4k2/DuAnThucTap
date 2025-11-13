@@ -3,20 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fontend/screens/enter_new_password/reset_password_screen.dart';
-import 'package:fontend/screens/terms/terms.dart';
+import 'package:fontend/screens/Remove/enter_new_password/reset_password_screen.dart';
+import 'package:fontend/screens/Searching/search/explore_screen.dart';
+import 'package:fontend/screens/Setting/terms_and_conditions/terms.dart';
+import 'package:fontend/screens/Signin/reset_pass_email/reset_password_screen.dart';
+import 'package:fontend/screens/Signin/sign_in&sign_up/sign_in_screen.dart';
+import 'package:fontend/screens/Start/welcome/welcome_screen.dart';
+import 'package:fontend/screens/Start/welcome/widgets/splash_page.dart';
 import 'package:fontend/theme/app_localizations.dart';
 import 'package:fontend/theme/language_provider.dart';
 import 'package:fontend/theme/theme_provider.dart';
 import 'firebase_options.dart';
-import 'screens/welcome/welcome_screen.dart';
-import 'screens/welcome/widgets/splash_page.dart';
-import 'screens/sign_in/sign_in_screen.dart';
-import 'screens/explore/explore_screen.dart';
-import 'screens/reset_password/reset_password_screen.dart';
-import 'screens/success_reset_password/success_reset_password_screen.dart';
-import 'screens/new_password/new_password_screen.dart';
-import 'screens/auth/auth_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

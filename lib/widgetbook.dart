@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fontend/screens/enter_verification_code/verify_reset_email_screen.dart';
-
-import 'package:fontend/screens/welcome/widgets/splash_page.dart';
+import 'package:fontend/screens/Remove/enter_verification_code/verify_reset_email_screen.dart';
+import 'package:fontend/screens/Start/welcome/widgets/splash_page.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 
