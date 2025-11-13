@@ -46,11 +46,20 @@ class RecommendedList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: recommended.map((item) {
         final difficulty = item['difficulty']!;
-        Color levelColor = difficulty.contains('Dễ')
-            ? Colors.green
-            : difficulty.contains('Trung')
-            ? Colors.orange
-            : Colors.red;
+
+        // 🧠 Chọn emoji + màu dựa theo độ khó
+        String emoji = '';
+        Color levelColor = Colors.green;
+        if (difficulty.toLowerCase().contains('dễ')) {
+          emoji = '😊';
+          levelColor = Colors.green;
+        } else if (difficulty.toLowerCase().contains('trung')) {
+          emoji = '😐';
+          levelColor = Colors.orange;
+        } else {
+          emoji = '😅';
+          levelColor = Colors.red;
+        }
 
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -70,8 +79,12 @@ class RecommendedList extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: Image.asset(item['image']!,
-                    width: 100, height: 90, fit: BoxFit.cover),
+                child: Image.asset(
+                  item['image']!,
+                  width: 100,
+                  height: 90,
+                  fit: BoxFit.cover,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -81,14 +94,20 @@ class RecommendedList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(item['title']!,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onSurface)),
+                      Text(
+                        item['title']!,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text(item['author']!,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant)),
+                      Text(
+                        item['author']!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                       const SizedBox(height: 6),
                       Row(
                         children: [
@@ -100,11 +119,14 @@ class RecommendedList extends StatelessWidget {
                           const SizedBox(width: 8),
                           const Text("|"),
                           const SizedBox(width: 8),
-                          Text(item['difficulty']!,
-                              style: TextStyle(
-                                  color: levelColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500)),
+                          Text(
+                            "$emoji ${item['difficulty']!}",
+                            style: TextStyle(
+                              color: levelColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                     ],
