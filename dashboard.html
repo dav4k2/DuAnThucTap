@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Nhúng chart.js -->
   <title>Tổng quan</title>
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 
+  <!-- navbar -->
   <nav class="navbar">
-    
+  
+  <!-- tên + welcome -->
   <div class="profile">
     <img src="images/avatar.png" alt="avatar" class="profile_avatar">
 
@@ -19,9 +21,9 @@
       <h5>Admin</h5>
     </div>
   </div>
-
+    <!-- danh sách tab của navbar -->
     <ul class="nav_main">
-      <li class="active">
+      <li class="active"> <!-- mặc định là chọn trang tổng quát -->
         <img src="images/search.png" alt="tongquat">
         <span class="nav_text">Tổng quan</span>
       </li>
@@ -43,6 +45,7 @@
       </li>
     </ul>
 
+    <!-- phần tab phụ navbar -->
     <ul class="nav_bottom">
       <li>
         <img src="images/bug.png" alt="bug">
@@ -56,9 +59,11 @@
     </ul>
   </nav>
 
+  <!-- phần thông tin và biểu đồ -->
   <main class="content">
-    <div class="content_wrapper">
-
+    <div class="content_wrapper"> <!-- nhóm toàn bộ nội dung -->
+      
+      <!-- phần thông tin -->
       <section class="cards">
         <div class="card">
           <img src="images/user.png" alt="user">
@@ -90,23 +95,26 @@
         </div>
       </section>
 
+      <!-- phần biểu đồ -->
       <section class="charts">
-          <div class="chart_container">
+          <div class="chart_container"> <!-- biểu đồ tròn -->
             <h4>Phân loại công thức</h4>
             <canvas id="pieChart"></canvas>
           </div>
-          <div class="chart_container">
+          <div class="chart_container"> <!-- biểu đồ cột ngang -->
             <h4>Công thức hàng đầu</h4>
             <canvas id="barChart"></canvas>
           </div>
-          <div class="chart_container">
+          <div class="chart_container"> <!-- biểu đồ đường -->
             <h4>Người dùng mới trong tháng</h4>
             <canvas id="lineChart"></canvas>
           </div>
         </section>
 
-      <section class="bottom_row">
+      <!-- phần bảng và thống kê -->
+      <section class="bottom_row"> <!-- chia phần bảng và thống kê -->
         
+        <!-- phần bảng user -->
         <div class="main_tables">
           <div class="table_container">
             <div class="table_header">
@@ -168,6 +176,7 @@
             </table>
           </div>
 
+          <!-- phần bảng food -->
           <div class="table_container">
             <div class="table_header">
               <h4>Công thức</h4> <hr> <div class="search_box">
@@ -229,6 +238,7 @@
           </div>
         </div>
 
+        <!-- phần thống kê -->
         <aside class="info">
           <h4>Thông tin tổng quát</h4>
           <ul>
@@ -270,11 +280,11 @@
   </div>
   </main>
   
-<script> // dung chart.js
+<script> // script chart.js
 
     window.addEventListener('load', () => {
 
-      // bieu do tron
+      // biểu đồ tròn
       const pieCtx = document.getElementById('pieChart').getContext('2d');
       new Chart(pieCtx, {
         type: 'pie',
@@ -305,7 +315,7 @@
         }
       });
 
-      // bieu do ngang
+      // biểu đồ cột ngang
       const barCtx = document.getElementById('barChart').getContext('2d');
       new Chart(barCtx, {
         type: 'bar',
@@ -335,7 +345,7 @@
         }
       });
 
-      // bieu do duong
+      // biểu đồ đường
       const lineCtx = document.getElementById('lineChart').getContext('2d');
       new Chart(lineCtx, {
         type: 'line',
@@ -374,22 +384,22 @@
         }
       });
       
-      // chon cac muc trong nav
+      // script chọn tab trong navbar
       const menuItems = document.querySelectorAll('.nav_main li');
 
-      // su kien click vao tung tab trong navbar
+      // sự kiện click vào từng tab trong navbar
       menuItems.forEach(item => {
         item.addEventListener('click', function() {
           
-          // tim xem muc nao dang active
+          // tìm mục đang active
           const currentActive = document.querySelector('.nav_main li.active');
           
-          // xoa class active khoi muc hien tai
+          // xóa class hiện tại đang active
           if (currentActive) {
             currentActive.classList.remove('active');
           }
 
-          // them class active vao muc vua click
+          // đánh dấu active vào tab mới vừa click
           this.classList.add('active');
         });
       });
