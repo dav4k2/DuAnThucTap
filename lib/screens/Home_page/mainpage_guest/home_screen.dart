@@ -82,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
+      /*
       // 🔸 Thanh điều hướng (đổi màu theo theme)
       bottomNavigationBar: Container(
         color: theme.colorScheme.surface,
@@ -91,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
           scrollController: _scrollController,
         ),
       ),
+      */
     );
   }
 }
