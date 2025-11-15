@@ -22,45 +22,44 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final width = size.width;
     final height = size.height;
 
-    // lib/screens/search/explore_screen.dart
     return Scaffold(
-      //backgroundColor: Colors.white,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        bottom: true,
-        child: Column(
-          children: [
-            // AppBar vàng
-            Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFB901),
-              ),
-              child: ExploreAppBar(width: width),
-            ),
+      backgroundColor: const Color(0xFFFFC221), // ← CỐ ĐỊNH MÀU VÀNG
+      body: Column(
+        children: [
+          // AppBar vàng
+          ExploreAppBar(width: width),
 
-            // Nội dung cuộn
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: height * 0.02),
-                  child: Column(
-                    children: [
-                      PopularUsersSection(width: width),
-                      SizedBox(height: height * 0.02),
-                      KeywordsSection(width: width),
-                      SizedBox(height: height * 0.02),
-                      HighlightRecipes(width: width),
-                      // Nếu bạn vẫn muốn giữ cái thanh kéo dưới cùng (kiểu sheet)
-                      // thì để ở đây, không để trong AppBar hay widget khác
-                      // const BottomIndicator(),
-                      const SizedBox(height: 20), // để không sát mép
-                    ],
+          // Nội dung cuộn
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor, // ← Đổi theo theme
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(30), // ← Thêm bo góc
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                bottom: true,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: height * 0.02),
+                    child: Column(
+                      children: [
+                        PopularUsersSection(width: width),
+                        SizedBox(height: height * 0.02),
+                        KeywordsSection(width: width),
+                        SizedBox(height: height * 0.02),
+                        HighlightRecipes(width: width),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

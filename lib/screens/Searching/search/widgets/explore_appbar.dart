@@ -11,87 +11,94 @@ class ExploreAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        width: width,
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // TIÊU ĐỀ "Khám phá" – TỰ ĐỘNG ĐỔI MÀU THEO DARK MODE
-            Text(
-              'Khám phá',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24.sp,
-                fontWeight: FontWeight.w800,
-                color: isDarkMode ? Colors.white : Colors.black,
+    return Container(
+      width: width,
+      color: const Color(0xFFFFC221), // ← CỐ ĐỊNH MÀU VÀNG (không đổi theo theme)
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top,
+        left: 16.w,
+        right: 16.w,
+        bottom: 10.h,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ROW CHỨA NÚT BACK VÀ TIÊU ĐỀ
+          Row(
+            children: [
+              // Nút back
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
               ),
-            ),
-            SizedBox(height: 14.h),
 
-            // THANH TÌM KIẾM – ĐẸP CHUẨN, HỖ TRỢ DARK MODE HOÀN HẢO
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SearchScreen()),
-                );
-              },
-              child: Container(
-                height: 48.h,
-                width: 0.88.sw,
-                decoration: BoxDecoration(
-                  color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
-                  borderRadius: BorderRadius.circular(30.r),
-                  border: Border.all(
-                    color: isDarkMode
-                        ? Colors.white.withOpacity(0.10)
-                        : Colors.black.withOpacity(0.60),
-                    width: 1.2,
+              // Tiêu đề "Khám phá" ở giữa
+              Expanded(
+                child: Text(
+                  'Khám phá',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // ← CỐ ĐỊNH MÀU ĐEN
                   ),
-                  boxShadow: isDarkMode
-                      ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                      : [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      color: isDarkMode ? Colors.white70 : Colors.black54,
-                      size: 22,
-                    ),
-                    SizedBox(width: 12.w),
-                    Text(
-                      'Tìm món ăn, nguyên liệu...',
-                      style: TextStyle(
-                        color: isDarkMode ? Colors.white70 : Colors.black45,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
                 ),
               ),
+
+              // Spacer để cân bằng với back button
+              const SizedBox(width: 40),
+            ],
+          ),
+
+          SizedBox(height: 12.h),
+
+          // THANH TÌM KIẾM
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchScreen()),
+              );
+            },
+            child: Container(
+              height: 48.h,
+              width: 0.88.sw,
+              decoration: BoxDecoration(
+                color: Colors.white, // ← CỐ ĐỊNH MÀU TRẮNG
+                borderRadius: BorderRadius.circular(30.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search,
+                    color: Colors.grey[400],
+                    size: 22,
+                  ),
+                  SizedBox(width: 12.w),
+                  Text(
+                    'Nhập tên món ăn hoặc nguyên liệu...',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
