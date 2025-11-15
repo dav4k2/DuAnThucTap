@@ -109,23 +109,26 @@ class _SmartNavBarState extends State<SmartNavBar>
 
   // LIGHT MODE: DÙNG CODE MỚI ĐẸP (NỀN TRẮNG MỜ + BÓNG ĐỔ)
   Widget _buildLightMode(Color activeColor, Color inactiveColor) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: 65.h,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.75),
-        borderRadius: BorderRadius.circular(30.r),
-        border: Border.all(color: Colors.black.withOpacity(0.15), width: 1.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return BackdropFilter(  // ← THÊM DÒNG NÀY
+      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),  // ← THÊM DÒNG NÀY
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        height: 65.h,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.3),  // ← GIẢM TỪ 0.75 XUỐNG 0.3
+          borderRadius: BorderRadius.circular(30.r),
+          border: Border.all(color: Colors.black.withOpacity(0.1), width: 1.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),  // ← GIẢM TỪ 0.1 XUỐNG 0.05
+              blurRadius: 8,  // ← GIẢM TỪ 12 XUỐNG 8
+              offset: const Offset(0, 2),  // ← GIẢM TỪ 4 XUỐNG 2
+            ),
+          ],
+        ),
+        child: _buildContent(activeColor, inactiveColor),
       ),
-      child: _buildContent(activeColor, inactiveColor),
-    );
+    );  // ← THÊM DÒNG NÀY
   }
 
   // NỘI DUNG CHUNG CHO CẢ 2 MODE

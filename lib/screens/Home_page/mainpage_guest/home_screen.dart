@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widgets/home_header.dart';
 import 'widgets/search_bar.dart';
 import 'widgets/featured_recipes.dart';
@@ -30,7 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFC221),
+      extendBody: true, // ← Cho phép body kéo dài xuống dưới navbar
       body: SafeArea(
+        bottom: false, // ← Không dùng safe area ở bottom
         child: Column(
           children: [
             const HomeHeader(),
@@ -71,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: SingleChildScrollView(
                         controller: _scrollController,
                         physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.only(bottom: 120.h), // ← Tăng padding để không bị navbar che
                         child: const RecommendedList(),
                       ),
                     ),
@@ -82,14 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      // 🔸 Thanh điều hướng (đổi màu theo theme)
-      bottomNavigationBar: Container(
-        color: theme.colorScheme.surface,
-        child: SmartNavBar(
-          currentIndex: _currentIndex,
-          onTap: _onItemTapped,
-          scrollController: _scrollController,
-        ),
+      // 🔸 Thanh điều hướng (không bọc Container để giữ hiệu ứng trong suốt)
+      bottomNavigationBar: SmartNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onItemTapped,
+        scrollController: _scrollController,
       ),
     );
   }
