@@ -1,28 +1,25 @@
 from sqlalchemy.orm import Session
-from . import models, schemas, utils
+from app import models, schemas
+from app.core.security import get_password_hash
+from typing import Optional
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
+    """
+    Tìm user bằng email
+    """
     return db.query(models.User).filter(models.User.email == email).first()
 
-def create_user(db: Session, user_in: schemas.UserCreate):
-    hashed = utils.hash_password(user_in.password)
-    user = models.User(email=user_in.email, hashed_password=hashed, full_name=user_in.full_name)
-    db.add(user)
+def create_user(db: Session, user: schemas.UserCreate) -> models.User:
+    """
+    Tạo user mới trong database
+    """
+    hashed_password = get_password_hash(user.password)
+    db_user = models.User(
+        email=user.email,
+        username=user.username,
+        hashed_password=hashed_password
+    )
+    db.add(db_user)
     db.commit()
-    db.refresh(user)
-    return user
-
-def authenticate_user(db: Session, email: str, password: str):
-    user = get_user_by_email(db, email)
-    if not user: return None
-    if not utils.verify_password(password, user.hashed_password): return None
-    return user
-
-def reset_password(db: Session, email: str, new_password: str):
-    user = get_user_by_email(db, email)
-    if not user: return None
-    user.hashed_password = utils.hash_password(new_password)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+    db.refresh(db_user)
+    return db_user

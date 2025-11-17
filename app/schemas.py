@@ -1,30 +1,39 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
-    full_name: Optional[str] = None
+# --- User Schemas ---
 
-class UserOut(BaseModel):
-    id: int
+class UserBase(BaseModel):
     email: EmailStr
-    full_name: Optional[str]
+    username: str
+
+class UserCreate(UserBase):
+    """
+    Schema dùng để tạo user (đăng ký)
+    """
+    password: str
+
+class UserRead(UserBase):
+    """
+    Schema dùng để đọc/trả về thông tin user
+    """
+    id: int
     is_active: bool
+
     class Config:
-        orm_mode = True
+        from_attributes = True # Pydantic v2 (orm_mode ở v1)
+
+# --- Token Schemas ---
 
 class Token(BaseModel):
+    """
+    Schema cho JWT Token
+    """
     access_token: str
-    token_type: str = "bearer"
+    token_type: str
 
-class LoginIn(BaseModel):
-    email: EmailStr
-    password: str
-
-class ResetRequestIn(BaseModel):
-    email: EmailStr
-
-class ResetPasswordIn(BaseModel):
-    token: str
-    new_password: str
+class TokenData(BaseModel):
+    """
+    Schema chứa dữ liệu được mã hóa trong JWT
+    """
+    email: Optional[str] = None
