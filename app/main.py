@@ -7,11 +7,7 @@ from app import models
 # Trong thực tế, bạn nên dùng Alembic để migrate
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="Auth API cho Flutter App",
-    description="Backend API sử dụng FastAPI và PostgreSQL cho việc xác thực người dùng.",
-    version="1.0.0"
-)
+app = FastAPI()
 
 # Bao gồm routerxác thực
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
