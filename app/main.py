@@ -9,7 +9,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Bao gồm routerxác thực
+# Bao gồm router xác thực
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 
 @app.get("/")
