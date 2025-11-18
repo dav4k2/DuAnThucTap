@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../Main_layout/main_layout.dart';
@@ -9,14 +10,19 @@ class AuthGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(authStateProvider);
-    if (userAsync.isLoading) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-    if (userAsync.value != null) {
-      return const MainLayout();
-    } else {
-      return const SuccessScreen();
-    }
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Màn hình chờ
+        }
+        if (snapshot.hasData) {
+          // Đã đăng nhập
+          return MainLayout();
+        }
+        // Chưa đăng nhập
+        return SuccessScreen();
+      },
+    );
   }
 }

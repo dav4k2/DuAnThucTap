@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_service.dart';
 import '../../../Home_page/mainpage_guest/home_screen.dart';
 import '../../../Searching/search/explore_screen.dart';
 import '../auth/auth_provider.dart';
@@ -44,7 +45,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
     try {
       // 1. Thực hiện Đăng nhập Firebase
-      await authService.signInWithEmail(
+      await AuthServices.signIn(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );

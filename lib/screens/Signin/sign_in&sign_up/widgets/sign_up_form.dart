@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_service.dart';
 import '../auth/auth_provider.dart';
 import '../sign_in_screen.dart';
 
@@ -13,7 +14,7 @@ class SignUpForm extends ConsumerStatefulWidget {
 
 class _SignUpFormState extends ConsumerState<SignUpForm> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailOrPhoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
   bool _isLoading = false;
@@ -28,19 +29,23 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   }
 
   Future<void> _signUp() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      setState(() => _isLoading = true);
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      if(_formKey.currentState!.validate()){
+        setState(() {
+          _isLoading = true;
+        });
+      }
+    }
 
       final authNotifier = ref.read(authProvider.notifier);
       final authService = ref.read(authServiceProvider);
 
       try {
-        await authService.signUpWithEmail(
-          _emailOrPhoneController.text.trim(),
+        await AuthServices.signUp(
+          _usernameController.text.trim(),
+          _emailController.text.trim(),
           _passwordController.text.trim(),
         );
-
-        await authService.signOut();
 
         if (mounted) {
           authNotifier.setError(null);
@@ -59,13 +64,12 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
-    }
   }
 
   @override
   void dispose() {
     _usernameController.dispose();
-    _emailOrPhoneController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
     super.dispose();
@@ -96,7 +100,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         Center(
           child: InputField(
             hintText: "Email hoặc SĐT",
-            controller: _emailOrPhoneController,
+            controller: _emailController,
             width: inputWidth,
           ),
         ),
