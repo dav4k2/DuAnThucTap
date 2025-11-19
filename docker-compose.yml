@@ -1,0 +1,34 @@
+version: '3.8' # Phiên bản docker-compose
+
+services:
+  # 1. Dịch vụ FastAPI (tên là 'web')
+  web:
+    build: .  # Build từ Dockerfile ở thư mục hiện tại
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload # Thêm --reload để code tự cập nhật khi sửa
+    volumes:
+      - .:/app  # "Hot-reloading": Map code ở máy thật vào container
+    ports:
+      - "8000:8000" # Mở port 8000 của máy thật vào port 8000 của container
+    environment:
+      # RẤT QUAN TRỌNG:
+      # DATABASE_URL trỏ đến tên dịch vụ 'db' (thay vì 'localhost')
+      DATABASE_URL: "postgresql+psycopg2://postgres:181004@db:5432/cooking_db"
+      SECRET_KEY: "664c34290d28294b9afedd198f8ec91219177defc65bf8ab65a051a25e00f2ba" # Đặt secret key ở đây
+    depends_on:
+      - db # Khởi động 'web' SAU KHI 'db' đã sẵn sàng
+
+  # 2. Dịch vụ PostgreSQL (tên là 'db')
+  db:
+    image: postgres:15-alpine # Dùng image PostgreSQL 15 (nhẹ)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Lưu data kể cả khi container bị xóa
+    environment:
+      # Thông tin này PHẢI KHỚP với DATABASE_URL ở trên
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 181004
+      POSTGRES_DB: cooking_db
+    ports:
+      - "5432:5432" # (Tùy chọn) Mở port 5432 để debug DB từ máy thật
+
+volumes:
+  postgres_data: # Khai báo volume
