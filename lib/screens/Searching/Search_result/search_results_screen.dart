@@ -1,4 +1,6 @@
 // lib/screens/search/Search_result/search_results_screen.dart
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/Searching/Search_result/widgets/search_results_tabs.dart';
@@ -41,19 +43,19 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return WillPopScope(
       onWillPop: () async {
-        // KHI BẤM NÚT BACK (HỆ THỐNG HOẶC NÚT TRÁI) → BACK VỀ TRANG TÌM KIẾM
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => SearchScreen(initialQuery: widget.query),
-          ),
+          MaterialPageRoute(builder: (_) => SearchScreen(initialQuery: widget.query)),
         );
-        return false; // ngăn pop mặc định
+        return false;
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFFFB901),
+
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(120.h),
           child: AppBar(
@@ -64,57 +66,61 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
             title: Stack(
               alignment: Alignment.center,
               children: [
-                // NÚT BACK TRÁI → CŨNG BACK VỀ TRANG TÌM KIẾM
+                // Nút back
                 Positioned(
                   left: 1.w,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => SearchScreen(initialQuery: widget.query),
-                        ),
+                        MaterialPageRoute(builder: (_) => SearchScreen(initialQuery: widget.query)),
                       );
                     },
                   ),
                 ),
 
-                // THANH TÌM KIẾM → MỞ LẠI TRANG TÌM KIẾM (GIỮ GỢI Ý)
+                // THANH TÌM KIẾM – ĐÃ ĐỒNG BỘ 100% VỚI EXPLOREAPPBAR
                 Center(
                   child: GestureDetector(
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => SearchScreen(initialQuery: widget.query),
-                        ),
+                        MaterialPageRoute(builder: (_) => SearchScreen(initialQuery: widget.query)),
                       );
                     },
                     child: Container(
                       height: 50.h,
-                      width: 0.8.sw,
+                      margin: EdgeInsets.symmetric(horizontal: 42.w),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30.r),
-                        border: Border.all(color: Colors.black.withOpacity(0.3), width: 1.2),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 2)),
-                        ],
+                        color: isDark ? Colors.black.withOpacity(0.2) : Colors.white,
+                        border: Border.all(
+                          color: isDark ? Colors.white54 : Colors.black26,
+                          width: 1.2,
+                        ),
+                        borderRadius: BorderRadius.circular(50),
                       ),
                       child: Row(
                         children: [
+                          SizedBox(width: 20.w),
+                          Icon(
+                            Icons.search,
+                            color: isDark ? Colors.white70 : Colors.black54,
+                            size: 24,
+                          ),
                           SizedBox(width: 16.w),
-                          const Icon(Icons.search, color: Colors.black54, size: 22),
-                          SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
                               widget.query,
-                              style: TextStyle(color: Colors.black, fontSize: 16.sp, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                                fontSize: 14.5.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          SizedBox(width: 8.w),
+                          SizedBox(width: 20.w),
                         ],
                       ),
                     ),
@@ -122,29 +128,80 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
                 ),
               ],
             ),
-            bottom: TabBar(
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.black54,
-              indicatorColor: Colors.black,
-              indicatorWeight: 3, // tăng độ dày của line
-              labelStyle: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w600), // chữ to hơn khi active
-              unselectedLabelStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500), // chữ tab bình thường
-              tabs: const [
-                Tab(text: 'Công thức'),
-                Tab(text: 'Đầu bếp'),
-              ],
-            ),
 
+            // TAB BAR – ĐÃ FIX GẠCH NGANG + ĐẸP CHO CẢ LIGHT & DARK
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(60.h),
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 40.w, vertical: 8.h),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30.r),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+
+                          color: isDark
+                              ? Colors.black.withOpacity(0.5)   // Dark: kính đen cực trong, sang trọng
+                              : Colors.white.withOpacity(0.72),
+                          borderRadius: BorderRadius.circular(30.r),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.18)
+                                : Colors.white.withOpacity(0.9),
+                            width: 1.1,
+                          ),
+                        ),
+                        child: TabBar(
+                          controller: _tabController,
+                          dividerHeight: 0,
+                          dividerColor: Colors.transparent,
+
+                          overlayColor: WidgetStateProperty.all(Colors.transparent),
+                          splashFactory: NoSplash.splashFactory,
+
+
+                          indicator: BoxDecoration(
+                            color: isDark ? Colors.orange.shade400 : Colors.orange.shade400,
+                            borderRadius: BorderRadius.circular(30.r),
+                          ),
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          indicatorPadding: EdgeInsets.all(6.w),
+
+                          labelColor: Colors.white,
+                          unselectedLabelColor: isDark ? Colors.white70 : Colors.black54,
+                          labelStyle: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
+                          unselectedLabelStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+
+                          tabs: const [
+                            Tab(text: 'Công thức'),
+                            Tab(text: 'Đầu bếp'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ),
         ),
 
+        // BODY – KÍN MÀN HÌNH, KHÔNG HỞ VÀNG
         body: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF121212) : Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
           ),
-          child: SearchResultsTabs(tabController: _tabController),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+            child: SearchResultsTabs(tabController: _tabController),
+          ),
         ),
       ),
     );

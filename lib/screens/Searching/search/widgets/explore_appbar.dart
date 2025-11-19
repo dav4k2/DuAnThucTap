@@ -6,14 +6,16 @@ import '../../search_content/search_screen.dart';
 
 class ExploreAppBar extends ConsumerWidget {
   final double width;
-
   const ExploreAppBar({super.key, required this.width});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textAndIconColor = isDarkMode ? Colors.white : Colors.black;
+
     return Container(
       width: width,
-      color: const Color(0xFFFFC221), // ← CỐ ĐỊNH MÀU VÀNG (không đổi theo theme)
+      color: const Color(0xFFFFC221),
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
         left: 16.w,
@@ -21,21 +23,11 @@ class ExploreAppBar extends ConsumerWidget {
         bottom: 10.h,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ROW CHỨA NÚT BACK VÀ TIÊU ĐỀ
+          // Tiêu đề + back button
           Row(
             children: [
-              // Nút back
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-
-              // Tiêu đề "Khám phá" ở giữa
               Expanded(
                 child: Text(
                   'Khám phá',
@@ -43,58 +35,51 @@ class ExploreAppBar extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black, // ← CỐ ĐỊNH MÀU ĐEN
+                    color: Colors.black,
                   ),
                 ),
               ),
-
-              // Spacer để cân bằng với back button
               const SizedBox(width: 40),
             ],
           ),
-
           SizedBox(height: 12.h),
 
-          // THANH TÌM KIẾM
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SearchScreen()),
-              );
-            },
-            child: Container(
-              height: 48.h,
-              width: 0.88.sw,
-              decoration: BoxDecoration(
-                color: Colors.white, // ← CỐ ĐỊNH MÀU TRẮNG
-                borderRadius: BorderRadius.circular(30.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+          // THANH TÌM KIẾM – ĐÚNG Y HỆT SearchBarWidget
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.w),
+            decoration: BoxDecoration(
+              color: isDarkMode ? Colors.black.withOpacity(0.2) : Colors.white,
+              border: Border.all(
+                color: isDarkMode ? Colors.white54 : Colors.black26,
+                width: 1.2,
               ),
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.search,
-                    color: Colors.grey[400],
-                    size: 22,
-                  ),
-                  SizedBox(width: 12.w),
-                  Text(
-                    'Nhập tên món ăn hoặc nguyên liệu...',
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: TextField(
+              readOnly: true,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+                );
+              },
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : Colors.black,
+                fontSize: 14.5.sp,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Nhập tên món ăn hoặc nguyên liệu...',
+                hintStyle: TextStyle(
+                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                  fontSize: 14.5.sp,
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                  size: 24,
+                ),
               ),
             ),
           ),

@@ -1,4 +1,6 @@
+// lib/screens/search/widgets/keywords_section.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class KeywordsSection extends StatelessWidget {
   final double width;
@@ -9,61 +11,74 @@ class KeywordsSection extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final keywords = [
-      'Healthy',
-      'Đồ cay',
-      'Ngọt',
-      'Đồ ăn nhanh',
-      'Mỳ sốt',
-      'Ăn sáng',
-      'Bánh',
-      'Súp',
-      'Đồ chay',
+      'Healthy', 'Đồ cay', 'Ngọt', 'Đồ ăn nhanh',
+      'Mỳ sốt', 'Ăn sáng', 'Bánh', 'Súp', 'Đồ chay',
     ];
+
+    // MÀU CHỈ KHÁC NHAU – CÒN LẠI GIỐNG HỆT NHAU
+    final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
+    final tagBgColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF2F2F2);
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subtitleColor = isDark ? Colors.white : const Color(0xFF00695C);
+    final borderColor = isDark ? Colors.white.withOpacity(0.18) : Colors.black.withOpacity(0.15);
 
     return Container(
       width: width,
-      color: isDark ? const Color(0xFF121212) : Colors.white,
-      padding: const EdgeInsets.all(16),
+      color: bgColor,
+      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Tiêu đề + Xem thêm – giống hệt nhau về size, weight, spacing
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Từ khóa nổi bật',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? Colors.white : Colors.black,
+                  color: textColor,
                 ),
               ),
               Text(
                 'Xem thêm',
                 style: TextStyle(
-                  fontSize: 14,
-                  color: isDark ? Colors.white70 : Colors.black54,
+                  fontSize: 14.5.sp,
+                  fontWeight: FontWeight.w600,
+                  color: subtitleColor,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+
+          SizedBox(height: 16.h),
+
+          // Các tag – giống hệt 100% về kích thước, padding, radius, viền, bóng
           Wrap(
-            spacing: 10,
-            runSpacing: 8,
+            spacing: 12.w,
+            runSpacing: 12.h,
             children: keywords.map((k) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 11.h),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF2F2F2),
-                  borderRadius: BorderRadius.circular(20),
+                  color: tagBgColor,
+                  borderRadius: BorderRadius.circular(30.r),
+                  border: Border.all(color: borderColor, width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.5 : 0.08),
+                      blurRadius: isDark ? 10 : 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
                 child: Text(
                   k,
                   style: TextStyle(
-                    color: isDark ? Colors.white : Colors.black87,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                    color: textColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14.5.sp, // giống hệt cả 2 mode
                   ),
                 ),
               );

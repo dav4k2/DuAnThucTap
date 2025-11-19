@@ -1,3 +1,4 @@
+// lib/widgets/recipe_card.dart (hoặc đường dẫn hiện tại của bạn)
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -7,7 +8,7 @@ class RecipeCard extends StatelessWidget {
   final String level;
   final String author;
   final String rating;
-  final String imagePath; // ảnh local: images/tenanh.png
+  final String imagePath;
   final VoidCallback? onTap;
 
   const RecipeCard({
@@ -30,13 +31,11 @@ class RecipeCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color:
-        isDark ? Colors.white.withOpacity(0.15) : Colors.white.withOpacity(0.75),
+
+        color: isDark ? Colors.black.withOpacity(0.35) : Colors.white.withOpacity(0.75),
         borderRadius: radius ?? BorderRadius.circular(20.r),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withOpacity(0.3)
-              : Colors.white.withOpacity(0.9),
+          color: isDark ? Colors.white.withOpacity(0.4) : Colors.white.withOpacity(0.9),
           width: 1.2,
         ),
       ),
@@ -46,7 +45,9 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return GestureDetector(
       onTap: onTap,
       child: Stack(
@@ -75,12 +76,12 @@ class RecipeCard extends StatelessWidget {
             child: Container(
               height: 50.h,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
+                color: isDark ? Colors.black.withOpacity(0.5) : Colors.white.withOpacity(0.8),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(20.r),
                   bottom: Radius.circular(30.r),
                 ),
-                border: Border.all(color: Colors.black.withOpacity(0.5)),
+                border: Border.all(color: isDark ? Colors.white.withOpacity(0.3) : Colors.black.withOpacity(0.5)),
               ),
             ),
           ),
@@ -156,8 +157,7 @@ class RecipeCard extends StatelessWidget {
             child: _frosted(
               context: context,
               radius: BorderRadius.circular(16.r),
-              child: Icon(Icons.favorite,
-                  color: Color(0xFFFF6B9D), size: 18.sp),
+              child: Icon(Icons.favorite, color: Color(0xFFFF6B9D), size: 18.sp),
             ),
           ),
         ],

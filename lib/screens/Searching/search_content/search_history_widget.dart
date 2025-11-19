@@ -22,37 +22,54 @@ class SearchHistorySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Đã tìm",
+          "Tìm kiếm gần đây",
           style: TextStyle(
-            fontSize: 24.sp,
-            fontWeight: FontWeight.w600,
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w700,
             color: isDark ? Colors.white : Colors.black,
           ),
         ),
-        SizedBox(height: 16.h),
-        ...history.map((query) => Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
-          child: InkWell(
-            onTap: () => onHistoryTap(query),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    query,
-                    style: TextStyle(
-                      fontSize: 17.sp,
-                      color: isDark ? Colors.white70 : Colors.black.withOpacity(0.6),
+        SizedBox(height: 12.h),
+        Wrap(
+          spacing: 10.w,
+          runSpacing: 10.h,
+          children: history.map((q) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withOpacity(0.12) : Colors.grey[100],
+                borderRadius: BorderRadius.circular(30.r),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.2)
+                      : Colors.grey.withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.history, size: 18.r, color: isDark ? Colors.white70 : Colors.black54),
+                  SizedBox(width: 8.w),
+                  GestureDetector(
+                    onTap: () => onHistoryTap(q),
+                    child: Text(
+                      q,
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black87,
+                        fontSize: 14.5.sp,
+                      ),
                     ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () => onRemove(query),
-                  child: Icon(Icons.close, size: 22.r, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-        )),
+                  SizedBox(width: 8.w),
+                  GestureDetector(
+                    onTap: () => onRemove(q),
+                    child: Icon(Icons.close, size: 18.r, color: isDark ? Colors.white70 : Colors.black54),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
       ],
     );
   }

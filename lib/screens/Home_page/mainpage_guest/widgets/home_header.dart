@@ -7,7 +7,7 @@ class HomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
+
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1, vertical: 16),
@@ -16,7 +16,7 @@ class HomeHeader extends StatelessWidget {
         style: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.bold,
-          color: textColor,
+          color: Colors.black,
         ),
       ),
     );

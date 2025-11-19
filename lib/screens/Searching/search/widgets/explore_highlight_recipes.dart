@@ -4,12 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HighlightRecipes extends StatelessWidget {
   final double width;
-
   const HighlightRecipes({super.key, required this.width});
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Màu "Xem thêm" – ĐỒNG BỘ 100% với KeywordsSection & PopularUsersSection
+    final seeMoreColor = isDark ? Colors.white : const Color(0xFF00695C);
 
     final recipes = [
       {
@@ -28,12 +30,12 @@ class HighlightRecipes extends StatelessWidget {
 
     return Container(
       width: width,
-      color: isDarkMode ? const Color(0xFF121212) : Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      color: isDark ? const Color(0xFF121212) : Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // TIÊU ĐỀ – GIỮ NGUYÊN, CHỈ ĐỔI MÀU CHỮ KHI DARK MODE
+          // TIÊU ĐỀ + XEM THÊM – ĐÃ ĐỒNG BỘ HOÀN TOÀN
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -42,25 +44,27 @@ class HighlightRecipes extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
-                  color: isDarkMode ? Colors.white : Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               Text(
                 'Xem thêm',
                 style: TextStyle(
-                  fontSize: 14.sp,
-                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                  fontSize: 14.5.sp,
+                  fontWeight: FontWeight.w600,
+                  color: seeMoreColor, // giống hệt mọi nơi trong app
                 ),
               ),
             ],
           ),
-          SizedBox(height: 12.h),
 
-          // DANH SÁCH NGANG – GIỮ NGUYÊN 100%
+          SizedBox(height: 16.h),
+
+          // DANH SÁCH NGANG
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: recipes.map((r) => _recipeCard(r, isDarkMode)).toList(),
+              children: recipes.map((r) => _recipeCard(r, isDark)).toList(),
             ),
           ),
         ],
@@ -68,7 +72,7 @@ class HighlightRecipes extends StatelessWidget {
     );
   }
 
-  Widget _recipeCard(Map<String, String> r, bool isDarkMode) {
+  Widget _recipeCard(Map<String, String> r, bool isDark) {
     return Container(
       margin: EdgeInsets.only(right: 12.w),
       width: 225.w,
@@ -80,64 +84,67 @@ class HighlightRecipes extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // ẢNH NỀN – GIỮ NGUYÊN
+          // Ảnh nền
           Image.asset(
             r['image']!,
             fit: BoxFit.cover,
           ),
 
-          // RATING BADGE – GIỮ NGUYÊN MÀU CAM TRONG SUỐT
+          // Rating badge – giữ nguyên màu cam đẹp
           Positioned(
-            top: 6.h,
-            left: 6.w,
+            top: 8.h,
+            left: 8.w,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.85),
-                borderRadius: BorderRadius.circular(8.r),
+                color: Colors.orange.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(10.r),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star, color: Colors.white, size: 14.r),
-                  SizedBox(width: 3.w),
+                  Icon(Icons.star, color: Colors.white, size: 15.r),
+                  SizedBox(width: 4.w),
                   Text(
-                    '${r['rating']} ',
+                    r['rating']!,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 12.sp,
+                      fontSize: 12.5.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    '(${r['reviews']})',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.sp,
-                    ),
+                    ' (${r['reviews']})',
+                    style: TextStyle(color: Colors.white70, fontSize: 11.sp),
                   ),
                 ],
               ),
             ),
           ),
 
-          // TÊN MÓN – GIỮ NGUYÊN CONTAINER ĐEN 0.45 + CHỮ TRẮNG
+          // Tên món – TĂNG TƯƠNG PHẢN Ở DARK MODE
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: 30.h,
+              height: 36.h,
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(isDarkMode ? 0.65 : 0.45), // tối hơn chút ở dark mode cho dễ đọc
+                // Dark: tối hơn + trong suốt hơn → chữ trắng dễ đọc
+                // Light: giữ nguyên như cũ (0.45)
+                color: Colors.black.withOpacity(isDark ? 0.75 : 0.45),
               ),
               child: Center(
-                child: Text(
-                  r['name']!,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  child: Text(
+                    r['name']!,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13.5.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),

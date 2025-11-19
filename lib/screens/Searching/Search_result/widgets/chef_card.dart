@@ -1,11 +1,12 @@
+// lib/widgets/chef_card.dart (hoặc đường dẫn hiện tại)
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChefCard extends StatefulWidget {
   final String name;
   final String recipeCount;
-  final String avatarPath;           // ảnh local: images/gordon.png
-  final bool initiallyFollowing;     // trạng thái ban đầu
+  final String avatarPath;
+  final bool initiallyFollowing;
 
   const ChefCard({
     super.key,
@@ -32,39 +33,46 @@ class _ChefCardState extends State<ChefCard> {
     setState(() {
       isFollowing = !isFollowing;
     });
-    // TODO: Sau này thêm gọi API follow/unfollow ở đây
-    // await followUser(widget.userId);
+    // TODO: Gọi API follow/unfollow ở đây
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[900]! : Colors.white, // Nền đen mịn / trắng
         borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: isDark ? Colors.white.withOpacity(0.1) : Colors.transparent,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(isDark ? 0.4 : 0.08),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          // ẢNH USER (LOCAL)
+          // Avatar
           CircleAvatar(
             radius: 32.r,
             backgroundImage: AssetImage(widget.avatarPath),
             onBackgroundImageError: (_, __) {
               debugPrint('Không load được ảnh: ${widget.avatarPath}');
             },
+            backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
           ),
+
           SizedBox(width: 16.w),
 
-          // TÊN + SỐ CÔNG THỨC
+          // Tên + số công thức
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,40 +82,44 @@ class _ChefCardState extends State<ChefCard> {
                   style: TextStyle(
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 Text(
                   widget.recipeCount,
                   style: TextStyle(
                     fontSize: 14.sp,
-                    color: Colors.grey[600],
+                    color: isDark ? Colors.white70 : Colors.grey[600],
                   ),
                 ),
               ],
             ),
           ),
 
-          // NÚT THEO DÕI / BỎ THEO DÕI
+          // Nút Theo dõi / Đang theo dõi – ĐẸP CỰC KỲ Ở DARK MODE
           GestureDetector(
             onTap: _toggleFollow,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 9.h),
               decoration: BoxDecoration(
-                color: isFollowing ? Colors.white : const Color(0xFFFFC735),
+                color: isFollowing
+                    ? (isDark ? Colors.white.withOpacity(0.15) : Colors.white)
+                    : const Color(0xFFFFC735),
                 border: Border.all(
-                  color: isFollowing ? const Color(0xFFFFC836) : Colors.transparent,
-                  width: 1.5,
+                  color: isFollowing
+                      ? const Color(0xFFFFC836)
+                      : Colors.transparent,
+                  width: 1.8,
                 ),
                 borderRadius: BorderRadius.circular(30.r),
                 boxShadow: isFollowing
                     ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.25),
-                    blurRadius: 4,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(isDark ? 0.4 : 0.25),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
                   ),
                 ]
                     : null,
@@ -115,9 +127,11 @@ class _ChefCardState extends State<ChefCard> {
               child: Text(
                 isFollowing ? 'Đang theo dõi' : 'Theo dõi',
                 style: TextStyle(
-                  fontSize: 13.sp,
+                  fontSize: 13.5.sp,
                   fontWeight: FontWeight.w600,
-                  color: isFollowing ? const Color(0xFFFFC836) : Colors.black,
+                  color: isFollowing
+                      ? (isDark ? const Color(0xFFFFC836) : const Color(0xFFFFC836))
+                      : Colors.black,
                 ),
               ),
             ),
