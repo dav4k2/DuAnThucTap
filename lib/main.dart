@@ -1,3 +1,4 @@
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,56 +87,29 @@ class MyApp extends ConsumerWidget {
 }
 
 
-
 /*
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'screens/Home_page/mainpage_user/mainpage_user_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'screens/notification/notification_screen.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const ProviderScope(child: MyApp()));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return MaterialApp(
-          title: 'Dự Án Thực Tập',
-          debugShowCheckedModeBanner: false,
-
-          theme: ThemeData(
-            useMaterial3: true,
-            brightness: Brightness.light,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFFFFC221),
-              brightness: Brightness.light,
-            ),
-            scaffoldBackgroundColor: Colors.white,
-          ),
-
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            brightness: Brightness.dark,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFFFFC221),
-              brightness: Brightness.dark,
-            ),
-            scaffoldBackgroundColor: Colors.black,
-          ),
-
-          themeMode: ThemeMode.system,
-
-          // Chạy mainpage_user_screen.dart
-          home: const HomeScreen(),
-        );
-      },
+    return MaterialApp(
+      title: 'Dự Án Thực Tập',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFFFC221),
+          brightness: Brightness.light,
+        ),
+      ),
+      home: const NotificationScreen(),
     );
   }
 }
