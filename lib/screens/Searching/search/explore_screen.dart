@@ -5,6 +5,7 @@ import 'widgets/explore_appbar.dart';
 import 'widgets/explore_popular_user.section.dart';
 import 'widgets/explore_keyword_section.dart';
 import 'widgets/explore_highlight_recipes.dart';
+import 'package:fontend/navbar/smart_navbar.dart';
 
 class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});
@@ -14,7 +15,13 @@ class ExploreScreen extends ConsumerStatefulWidget {
 }
 
 class _ExploreScreenState extends ConsumerState<ExploreScreen> {
-  int currentIndex = 1;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,39 +30,59 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final height = size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFC221), // ← CỐ ĐỊNH MÀU VÀNG
-      body: Column(
-        children: [
-          // AppBar vàng
-          ExploreAppBar(width: width),
+      backgroundColor: const Color(0xFFFFC221),
+      extendBody: true,
+      extendBodyBehindAppBar: true,
 
-          // Nội dung cuộn
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor, // ← Đổi theo theme
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(30), // ← Thêm bo góc
-                ),
-              ),
-              child: SafeArea(
-                top: false,
-                bottom: true,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: height * 0.02),
-                    child: Column(
-                      children: [
-                        PopularUsersSection(width: width),
-                        SizedBox(height: height * 0.02),
-                        KeywordsSection(width: width),
-                        SizedBox(height: height * 0.02),
-                        HighlightRecipes(width: width),
-                        const SizedBox(height: 20),
-                      ],
+      body: Stack(
+        children: [
+          // ==================== NỘI DUNG CHÍNH ====================
+          Column(
+            children: [
+              ExploreAppBar(width: width),
+
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(        // ❌ bỏ const
+                    color: Theme.of(context)
+                        .colorScheme
+                        .background,               // ✔ tự đổi theo dark/light mode
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(30),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: height * 0.02),
+                      child: Column(
+                        children: [
+                          PopularUsersSection(width: width),
+                          SizedBox(height: height * 0.02),
+                          KeywordsSection(width: width),
+                          SizedBox(height: height * 0.02),
+                          HighlightRecipes(width: width),
+                          const SizedBox(height: 140),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+              ),
+            ],
+          ),
+
+          // ==================== NAVBAR FIXED Ở ĐÁY ====================
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              bottom: false, // tránh tạo khoảng trắng trong dark mode
+              child: SmartNavBar(
+                currentIndex: 1,
+                scrollController: _scrollController,
+                onTap: (index) {},
               ),
             ),
           ),
