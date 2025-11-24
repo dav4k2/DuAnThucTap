@@ -66,7 +66,6 @@ class RecommendedList extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           height: 90,
           decoration: BoxDecoration(
-            // Đây là chìa khóa: dùng surfaceContainerHighest → luôn có độ nâng rõ ràng
             color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
@@ -79,16 +78,62 @@ class RecommendedList extends StatelessWidget {
           ),
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.horizontal(left: Radius.circular(15)),
-                child: Image.asset(
-                  item['image']!,
-                  width: 100,
-                  height: 90,
-                  fit: BoxFit.cover,
-                ),
+              // Ảnh + Rating chồng lên góc dưới bên PHẢI
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.horizontal(left: Radius.circular(15)),
+                    child: Image.asset(
+                      item['image']!,
+                      width: 100,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  // Rating nhỏ, nằm góc dưới bên PHẢI ảnh
+                  Positioned(
+                    right: 6,
+                    bottom: 6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.50),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            item['rating']!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,        // nhỏ hơn
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(width: 3),
+                          const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                            size: 14,             // ngôi sao nhỏ hơn
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
+
               const SizedBox(width: 12),
+
+              // Nội dung chữ (giữ nguyên như cũ)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -96,18 +141,16 @@ class RecommendedList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Tiêu đề
                       Text(
                         item['title']!,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface, // luôn tương phản tốt
+                          color: colorScheme.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      // Tác giả
                       Text(
                         item['author']!,
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -115,7 +158,6 @@ class RecommendedList extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Dòng thời gian + độ khó
                       Row(
                         children: [
                           Icon(Icons.access_time, size: 16, color: colorScheme.primary),
@@ -141,23 +183,6 @@ class RecommendedList extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-              ),
-              // Optional: thêm rating nhỏ ở góc phải
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.star, color: Colors.amber, size: 18),
-                    Text(
-                      item['rating']!,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ],

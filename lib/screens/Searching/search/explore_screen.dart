@@ -44,9 +44,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(        // ❌ bỏ const
-                    color: Theme.of(context)
-                        .colorScheme
-                        .background,               // ✔ tự đổi theo dark/light mode
+                    color: Theme.of(context).scaffoldBackgroundColor,     // ✔ tự đổi theo dark/light mode
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(30),
                     ),
