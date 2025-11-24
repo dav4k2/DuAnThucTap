@@ -3,11 +3,11 @@ import os
 
 class Settings(BaseSettings):
     # Cấu hình để load từ file .env
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-t")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     # URL kết nối đến PostgreSQL
     # Ví dụ: "postgresql+psycopg2://user:password@localhost:5432/mydb"
-    DATABASE_URL: str = "postgresql://postgres:181004@localhost:5432/cooking_db"    
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:181004@localhost:5432/cooking_db")
     
     # Khóa bí mật để tạo JWT
     

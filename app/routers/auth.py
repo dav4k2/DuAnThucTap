@@ -22,6 +22,13 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
             detail="Email đã được đăng ký"
         )
     
+    db_user_by_username = crud.get_user_by_username(db, username=user.username)
+    if db_user_by_username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username đã được đăng ký"
+        )
+    
     new_user = crud.create_user(db, user)
     return new_user
 
