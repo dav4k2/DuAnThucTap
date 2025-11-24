@@ -29,41 +29,47 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   }
 
   Future<void> _signUp() async {
-    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      if(_formKey.currentState!.validate()){
-        setState(() {
-          _isLoading = true;
-        });
-      }
+    final authNotifier = ref.read(authProvider.notifier);
+
+    // --- Dùng provider kiểm tra dữ liệu trước khi gọi AuthServices ---
+    final error = authNotifier.signup(
+      _usernameController.text,
+      _passwordController.text,
+      _confirmController.text,
+      _emailController.text,
+    );
+
+    if (error != null) {
+      authNotifier.setError(error);
+      return;
     }
 
-      final authNotifier = ref.read(authProvider.notifier);
-      final authService = ref.read(authServiceProvider);
+    setState(() => _isLoading = true);
 
-      try {
-        await AuthServices.signUp(
-          _usernameController.text.trim(),
-          _emailController.text.trim(),
-          _passwordController.text.trim(),
+    try {
+      await AuthServices.signUp(
+        _usernameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (mounted) {
+        authNotifier.setError(null);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SignInScreen(initialTab: true),/// Nếu đăng ký thành công quay lại đăng nhâoj
+          ),
         );
-
-        if (mounted) {
-          authNotifier.setError(null);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const SignInScreen(initialTab: true),
-            ),
-          );
-        }
-      } on Exception catch (e) {
-        final errorMessage = e.toString().contains(':')
-            ? e.toString().split(': ').last
-            : 'Lỗi đăng ký. Vui lòng thử lại.';
-        authNotifier.setError(errorMessage);
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
       }
+    } on Exception catch (e) {
+      final errorMessage = e.toString().contains(':')
+          ? e.toString().split(': ').last
+          : 'Lỗi đăng ký. Vui lòng thử lại.';
+      authNotifier.setError(errorMessage);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -119,8 +125,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 color: Colors.black.withOpacity(0.5),
                 size: 26.sp,
               ),
-              onPressed: () =>
-                  ref.read(authProvider.notifier).togglePassword(),
+              onPressed: () => ref.read(authProvider.notifier).togglePassword(),
             ),
           ),
         ),
@@ -141,14 +146,14 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 color: Colors.black.withOpacity(0.5),
                 size: 26.sp,
               ),
-              onPressed: () => ref
-                  .read(authProvider.notifier)
-                  .toggleConfirmPassword(),
+              onPressed: () =>
+                  ref.read(authProvider.notifier).toggleConfirmPassword(),
             ),
           ),
         ),
         SizedBox(height: 9.h),
 
+        /// Checkbox đồng ý điều khoản
         Padding(
           padding: EdgeInsets.only(left: 0.01.sw),
           child: TermsCheckbox(
@@ -158,6 +163,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         ),
         SizedBox(height: 15.h),
 
+        /// Hiển thị lỗi
         if (state.errorMessage != null)
           Center(
             child: Padding(
@@ -169,6 +175,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ),
           ),
 
+        /// Nút đăng ký
         Center(
           child: GestureDetector(
             onTap: _signUp,
@@ -240,7 +247,6 @@ class InputField extends StatelessWidget {
   }
 }
 
-/// Checkbox điều khoản
 class TermsCheckbox extends StatelessWidget {
   final bool isChecked;
   final ValueChanged<bool> onChanged;
@@ -304,7 +310,6 @@ class TermsCheckbox extends StatelessWidget {
   }
 }
 
-/// Hiển thị lỗi
 class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;
@@ -351,7 +356,6 @@ class ErrorMessage extends StatelessWidget {
   }
 }
 
-/// Nút đăng ký
 class PrimaryButton extends StatelessWidget {
   final String text;
   final double width;

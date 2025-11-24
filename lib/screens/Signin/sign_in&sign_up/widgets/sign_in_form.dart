@@ -1,8 +1,8 @@
-/// Sơn - Sign In Form
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_service.dart';
+import '../../../../Main_layout/main_layout.dart';
 import '../../../Home_page/mainpage_guest/home_screen.dart';
 import '../../../Searching/search/explore_screen.dart';
 import '../auth/auth_provider.dart';
@@ -17,7 +17,6 @@ class SignInForm extends ConsumerStatefulWidget {
 class _SignInFormState extends ConsumerState<SignInForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
   bool _isPasswordVisible = false;
@@ -25,83 +24,85 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   @override
   void initState() {
     super.initState();
-    // Reset lỗi khi vào màn
     Future.microtask(() {
       ref.read(authProvider.notifier).setError(null);
     });
   }
 
   Future<void> _signIn() async {
-    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      if(_formKey.currentState!.validate()){
-        setState(() {
-          _isLoading = true;
-        });
-      }
+    final authNotifier = ref.read(authProvider.notifier);
+
+    // ----------------- VALIDATE INPUT QUA PROVIDER -----------------
+    final error = authNotifier.login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (error != "admin" && error != "user") {
+      // Nếu không phải là user/admin hợp lệ -> hiển thị lỗi
+      authNotifier.setError(error);
+      return;
     }
 
-    final authNotifier = ref.read(authProvider.notifier);
-    final authService = ref.read(authServiceProvider);
+    setState(() => _isLoading = true);
 
     try {
-      // 1. Thực hiện Đăng nhập Firebase
       await AuthServices.signIn(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
-      // 2. Đăng nhập thành công -> KHÔNG CẦN điều hướng thủ công.
-      //    AuthGate sẽ tự động chuyển sang ExploreScreen.
       if (mounted) {
         authNotifier.setError(null);
 
-        // Sử dụng pushReplacement để chuyển đến màn hình đăng nhập
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            // Giả định SignInScreen có thể nhận tham số để hiển thị tab Đăng nhập
-            builder: (context) => const ExploreScreen(),
-          ),
-        );
+        // Điều hướng dựa trên loại user
+        if (error == "admin") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const AdminScreen()),/// Nếu đăng nhập admin
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const MainLayout()),/// Nếu đăng nhập user
+          );
+        }
       }
-
     } on Exception catch (e) {
-      // Xử lý lỗi
       final errorMessage = e.toString().contains(':')
           ? e.toString().split(': ').last
           : 'Đăng nhập không thành công. Vui lòng thử lại.';
       authNotifier.setError(errorMessage);
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  ///Widget
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(authProvider);
-
     final inputWidth = 0.85.sw;
     final errorWidth = 0.75.sw;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-
-        ///Textbox TK
+        /// Tài khoản
         InputField(
           hintText: 'Tài khoản',
           controller: _emailController,
           width: inputWidth,
         ),
-
         SizedBox(height: 33.h),
 
-        ///Textbox MK
+        /// Mật khẩu
         InputField(
           hintText: 'Mật khẩu',
           controller: _passwordController,
@@ -113,19 +114,16 @@ class _SignInFormState extends ConsumerState<SignInForm> {
               color: Colors.black.withOpacity(0.5),
               size: 26.sp,
             ),
-            onPressed: () =>
-                setState(() => _isPasswordVisible = !_isPasswordVisible),
+            onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
           ),
         ),
-
         SizedBox(height: 10.h),
 
-        /// Quên MK
+        /// Quên mật khẩu
         const ForgotPasswordLink(),
-
         SizedBox(height: 33.h),
 
-        /// Error
+        /// Hiển thị lỗi
         if (state.errorMessage != null)
           Padding(
             padding: EdgeInsets.only(bottom: 20.h),
@@ -135,12 +133,14 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             ),
           ),
 
-        ///Đăng nhập
+        /// Đăng nhập
         GestureDetector(
           onTap: _signIn,
-          child: PrimaryButton(text: 'Đăng nhập', width: inputWidth),
+          child: PrimaryButton(
+            text: _isLoading ? 'Đang xử lý...' : 'Đăng nhập',
+            width: inputWidth,
+          ),
         ),
-
         SizedBox(height: 42.h),
 
         /// Đăng nhập là khách
@@ -163,26 +163,24 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                 ),
               ),
               Positioned(
-                bottom: -4, // khoảng cách gạch với chữ
+                bottom: -4,
                 left: 0,
                 right: 0,
                 child: Container(
-                  height: 6, // độ dày gạch
+                  height: 6,
                   color: Colors.black,
                 ),
               ),
             ],
-          )
+          ),
         ),
       ],
     );
   }
 }
 
-
 /// -------------------- Widget --------------------
 
-/// Textbox tài khoản mật khẩu
 class InputField extends StatelessWidget {
   final String hintText;
   final bool obscure;
@@ -230,7 +228,6 @@ class InputField extends StatelessWidget {
   }
 }
 
-/// Thông báo lỗi
 class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;
@@ -277,7 +274,6 @@ class ErrorMessage extends StatelessWidget {
   }
 }
 
-/// Nút đăng nhập
 class PrimaryButton extends StatelessWidget {
   final String text;
   final double width;
@@ -312,7 +308,6 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
-/// Link quên mật khẩu
 class ForgotPasswordLink extends StatelessWidget {
   const ForgotPasswordLink({super.key});
 
@@ -336,24 +331,22 @@ class ForgotPasswordLink extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: -4, // khoảng cách gạch với chữ
+                bottom: -4,
                 left: 0,
                 right: 0,
                 child: Container(
-                  height: 6, // độ dày gạch
+                  height: 6,
                   color: Color(0xFFFFB901),
                 ),
               ),
             ],
-          )
-
+          ),
         ),
       ),
     );
   }
 }
 
-/// Màn hình admin test
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
 

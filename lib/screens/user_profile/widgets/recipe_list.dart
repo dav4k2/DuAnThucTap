@@ -7,8 +7,9 @@ import 'recipe_card.dart';
 
 class RecipeList extends ConsumerWidget {
   final List<Recipe> recipes;
+  final ScrollController? controller; // ← thêm controller
 
-  const RecipeList({super.key, required this.recipes});
+  const RecipeList({super.key, required this.recipes, this.controller});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,6 +19,8 @@ class RecipeList extends ConsumerWidget {
 
     final totalRecipes = ref.read(chefProvider).allRecipes.length;
 
+    // Dùng CustomScrollView + controller ở đây, nhưng vì ngoài đã có CustomScrollView rồi
+    // nên chỉ cần gán controller cho SliverList bằng NestedScrollView hoặc PrimaryScrollController
     return SliverList(
       delegate: SliverChildBuilderDelegate(
             (context, index) {
@@ -29,9 +32,7 @@ class RecipeList extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: RecipeCard(
               recipe: recipe,
-              onTap: () {
-                // Mở chiivew chi tiết công thức
-              },
+              onTap: () {},
             ),
           );
         },
@@ -55,12 +56,12 @@ class RecipeList extends ConsumerWidget {
                 ),
                 TextSpan(
                   text: ' ($totalRecipes)',
-                  style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
+                  style: TextStyle(
+                      fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
                 ),
               ],
             ),
           ),
-
         ],
       ),
     );
