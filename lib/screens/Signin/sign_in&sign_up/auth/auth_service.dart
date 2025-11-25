@@ -55,34 +55,41 @@ class AuthServices {
 
   static Future<AuthResponse> signIn(String email, String password) async {
     try {
-      // FastAPI dùng OAuth2PasswordRequestForm, nó mong đợi
-      // dữ liệu dạng 'application/x-www-form-urlencoded'
+      print("--- Đang gửi Login: $email ---"); // Log kiểm tra
+
       final response = await http.post(
         Uri.parse('$_baseUrl/token'),
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        // LƯU Ý: Không cần set header thủ công, để thư viện tự xử lý Form Data
         body: {
-          'username': email, // FastAPI OAuth2 form dùng 'username' cho email
+          'username': email, // FastAPI bắt buộc key là 'username' (dù giá trị là email)
           'password': password,
+          'grant_type': 'password', // Thêm dòng này cho đúng chuẩn OAuth2 (đề phòng backend bắt buộc)
         },
       );
+
+      print("--- Status Code: ${response.statusCode} ---");
+
+      // Nếu API trả về lỗi 422, Backend sẽ gửi kèm lý do chi tiết trong body
+      if (response.statusCode == 422) {
+        print("🔴 LỖI FORMAT DỮ LIỆU (422): ${response.body}");
+        return AuthResponse(message: 'Lỗi định dạng dữ liệu gửi đi.');
+      }
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Đăng nhập thành công, trả về token
-        // TODO: Bạn cần một endpoint khác (ví dụ: /users/me) để lấy
-        // thông tin user từ token này.
-        // Tạm thời, chúng ta chỉ trả về token.
         return AuthResponse(
           success: true,
           token: data['access_token'],
-          // userJson: ... // Cần gọi API /users/me để lấy
         );
       } else {
-        // Đăng nhập thất bại
-        return AuthResponse(message: data['detail'] ?? 'Đăng nhập thất bại');
+        // Xử lý trường hợp data['detail'] có thể là List (lỗi 422) hoặc String
+        final detail = data['detail'];
+        String message = detail is String ? detail : detail.toString();
+        return AuthResponse(message: message);
       }
     } catch (e) {
+      print("🔴 Lỗi kết nối: $e");
       return AuthResponse(message: 'Không thể kết nối đến máy chủ: $e');
     }
   }

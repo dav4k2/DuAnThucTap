@@ -47,12 +47,19 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     setState(() => _isLoading = true);
 
     try {
-      await AuthServices.signUp(
-        _usernameController.text.trim(),
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
+      // SỬA ĐỔI: Bắt kết quả trả về và kiểm tra lỗi từ backend
+      final result = await AuthServices.signUp(
+        _emailController.text.trim(),      // Tham số 1: Email
+        _passwordController.text.trim(),   // Tham số 2: Password
+        _usernameController.text.trim(),   // Tham số 3: Username
       );
 
+      // KIỂM TRA LỖI TRẢ VỀ TỪ BACKEND
+      if (result.containsKey('error')) {
+        throw Exception(result['error']); // Ném lỗi để bắt ở catch block
+      }
+
+      // Đăng ký thành công (Nếu không có key 'error' và không có exception)
       if (mounted) {
         authNotifier.setError(null);
         Navigator.pushReplacement(

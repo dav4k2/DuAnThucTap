@@ -8,6 +8,7 @@ import 'package:fontend/screens/Remove/enter_new_password/reset_password_screen.
 import 'package:fontend/screens/Searching/search/explore_screen.dart';
 import 'package:fontend/screens/Setting/terms_and_conditions/terms.dart';
 import 'package:fontend/screens/Signin/reset_pass_email/reset_password_screen.dart';
+import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_gate.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/sign_in_screen.dart';
 import 'package:fontend/screens/Start/welcome/welcome_screen.dart';
 import 'package:fontend/screens/Start/welcome/widgets/splash_page.dart';
@@ -71,7 +72,7 @@ class MyApp extends ConsumerWidget {
               child: widget!,
             );
           },
-          home: const SplashPage(),
+          home: const AuthGate(),
           routes: {
             '/welcome': (context) => const WelcomeScreen(),
             '/signin': (context) => const SignInScreen(),

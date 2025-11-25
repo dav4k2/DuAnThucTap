@@ -5,7 +5,9 @@ import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_service.dart';
 import '../../../../Main_layout/main_layout.dart';
 import '../../../Home_page/mainpage_guest/home_screen.dart';
 import '../../../Searching/search/explore_screen.dart';
+import '../auth/auth_gate.dart';
 import '../auth/auth_provider.dart';
+import '../auth/storage_service.dart';
 
 class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({super.key});
@@ -32,40 +34,29 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   Future<void> _signIn() async {
     final authNotifier = ref.read(authProvider.notifier);
 
-    // ----------------- VALIDATE INPUT QUA PROVIDER -----------------
-    final error = authNotifier.login(
-      _emailController.text.trim(),
-      _passwordController.text.trim(),
-    );
-
-    if (error != "admin" && error != "user") {
-      // Nếu không phải là user/admin hợp lệ -> hiển thị lỗi
-      authNotifier.setError(error);
-      return;
-    }
-
+    // Nếu không có lỗi input format
+    authNotifier.setError(null); // Xóa lỗi cũ
     setState(() => _isLoading = true);
 
     try {
-      await AuthServices.signIn(
+      // Bắt AuthResponse từ API
+      final AuthResponse response = await AuthServices.signIn(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
       if (mounted) {
-        authNotifier.setError(null);
-
-        // Điều hướng dựa trên loại user
-        if (error == "admin") {
-          Navigator.pushReplacement(
+        if (response.success) { // KIỂM TRA ĐĂNG NHẬP THÀNH CÔNG (CÓ TOKEN)
+          authNotifier.setError(null);
+          await StorageService.saveToken(response.token!);
+          Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (_) => const AdminScreen()),/// Nếu đăng nhập admin
+            MaterialPageRoute(builder: (_) => const AuthGate()),
+                (route) => false, // Xóa sạch lịch sử để người dùng không bấm nút Back quay lại trang Login được
           );
         } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const MainLayout()),/// Nếu đăng nhập user
-          );
+          // Đăng nhập thất bại (API trả lời với message lỗi)
+          authNotifier.setError(response.message);
         }
       }
     } on Exception catch (e) {
@@ -149,7 +140,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             ref.read(authProvider.notifier).setError(null);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const MainLayout()),
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
             );
           },
           child: Stack(
@@ -212,30 +203,15 @@ class InputField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscure,
-
-        /// ⬇️ THÊM STYLE CHO TEXT NHẬP VÀO
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 24.sp,
-          fontFamily: 'SF Pro Rounded',
-          fontWeight: FontWeight.w700,
-        ),
-
-        cursorColor: Colors.black,
-
         decoration: InputDecoration(
-          isDense: true,
           border: InputBorder.none,
           hintText: hintText,
-
-          /// Hint cũng 24.sp để bằng text nhập
           hintStyle: TextStyle(
             color: Colors.black.withOpacity(0.3),
             fontSize: 24.sp,
             fontFamily: 'SF Pro Rounded',
             fontWeight: FontWeight.w700,
           ),
-
           suffixIcon: suffixIcon,
         ),
       ),
