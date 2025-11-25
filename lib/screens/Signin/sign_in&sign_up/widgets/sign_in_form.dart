@@ -149,7 +149,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             ref.read(authProvider.notifier).setError(null);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const MainLayout()),
             );
           },
           child: Stack(
@@ -212,15 +212,30 @@ class InputField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+
+        /// ⬇️ THÊM STYLE CHO TEXT NHẬP VÀO
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 24.sp,
+          fontFamily: 'SF Pro Rounded',
+          fontWeight: FontWeight.w700,
+        ),
+
+        cursorColor: Colors.black,
+
         decoration: InputDecoration(
+          isDense: true,
           border: InputBorder.none,
           hintText: hintText,
+
+          /// Hint cũng 24.sp để bằng text nhập
           hintStyle: TextStyle(
             color: Colors.black.withOpacity(0.3),
             fontSize: 24.sp,
             fontFamily: 'SF Pro Rounded',
             fontWeight: FontWeight.w700,
           ),
+
           suffixIcon: suffixIcon,
         ),
       ),

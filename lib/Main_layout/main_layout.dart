@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../navbar/navbar_selector.dart';
 import '../screens/Home_page/mainpage_guest/home_screen.dart';
+import '../screens/NewRecipes/add_recipe_screen.dart';
 import '../screens/Searching/search/explore_screen.dart';
 import '../screens/Setting/settings/settings_screen.dart';
 import '../screens/user_profile/chef_profile_screen.dart';
@@ -21,7 +22,7 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _pages = const [
     HomeScreen(),
     ExploreScreen(),
-    Center(child: Text('Library')),
+    AddRecipeScreen(),
     ChefProfileScreen(),
     SettingsScreen(),
   ];

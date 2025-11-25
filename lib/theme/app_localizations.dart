@@ -24,6 +24,7 @@ class AppLocalizations {
       'language': 'Ngôn ngữ',
       'help': 'Trung tâm trợ giúp',
       'logout': 'Đăng xuất',
+      'delete_account' : 'Xoá Tài khoản',
     },
     'en': {
       'settings': 'Settings',
@@ -35,6 +36,7 @@ class AppLocalizations {
       'language': 'Language',
       'help': 'HelpCenter',
       'logout': 'Log Out',
+      'delete_account' : 'Delete Account',
     },
   };
 

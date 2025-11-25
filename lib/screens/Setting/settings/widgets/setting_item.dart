@@ -11,6 +11,10 @@ class SettingItem extends StatelessWidget {
   final bool showArrow;
   final IconData? customArrow;
 
+
+  final Color? forceIconColor;
+  final Color? forceTextColor;
+
   const SettingItem({
     super.key,
     required this.iconPath,
@@ -21,13 +25,19 @@ class SettingItem extends StatelessWidget {
     this.trailing,
     this.showArrow = true,
     this.customArrow,
+    this.forceIconColor,
+    this.forceTextColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
     final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
     final goldColor = const Color(0xFFD4A017);
+
+    // DÙNG MÀU ĐỎ CỐ ĐỊNH NẾU CÓ, KHÔNG THÌ DÙNG THEO THEME
+    final iconColor = forceIconColor ?? goldColor;
+    final titleColor = forceTextColor ?? textColor;
+    final arrowColor = forceIconColor ?? goldColor;
 
     return Positioned(
       left: 0,
@@ -39,32 +49,25 @@ class SettingItem extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12.r),
-          splashColor: goldColor.withOpacity(0.15), // RIPPLE VÀNG NHẸ
-          highlightColor: goldColor.withOpacity(0.08),
+          splashColor: (forceIconColor ?? goldColor).withOpacity(0.15),
+          highlightColor: (forceIconColor ?? goldColor).withOpacity(0.08),
           child: Row(
             children: [
-              // ICON
               SizedBox(width: iconLeft.w),
               Image.asset(
                 iconPath,
                 width: 31.w,
                 height: 31.h,
                 fit: BoxFit.contain,
-                color: goldColor,
-                errorBuilder: (_, __, ___) => Icon(
-                  Icons.image,
-                  size: 31.sp,
-                  color: goldColor,
-                ),
+                color: iconColor, // ← giờ có thể đỏ
+                errorBuilder: (_, __, ___) => Icon(Icons.image, size: 31.sp, color: iconColor),
               ),
               SizedBox(width: 11.w),
-
-              // TEXT
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: textColor, // TỰ ĐỔI: ĐEN → TRẮNG
+                    color: titleColor,
                     fontSize: 28.sp,
                     fontFamily: 'SF Pro',
                     fontWeight: FontWeight.w600,
@@ -72,21 +75,14 @@ class SettingItem extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // TRAILING
-              if (trailing != null) ...[
-                trailing!,
-                SizedBox(width: 10.w),
-              ],
-
-              // MŨI TÊN
+              if (trailing != null) ...[trailing!, SizedBox(width: 10.w)],
               if (showArrow || customArrow != null)
                 Padding(
                   padding: EdgeInsets.only(right: 20.w),
                   child: Icon(
                     customArrow ?? Icons.arrow_forward_ios,
                     size: 24.sp,
-                    color: goldColor,
+                    color: arrowColor,
                   ),
                 ),
             ],
