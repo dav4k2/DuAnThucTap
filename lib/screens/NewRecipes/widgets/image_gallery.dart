@@ -1,5 +1,4 @@
 // lib/features/add_recipe/widgets/image_gallery.dart
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,46 +11,27 @@ class ImageGallery extends ConsumerWidget {
   const ImageGallery({super.key});
 
   Future<void> _pickImage(WidgetRef ref, int index) async {
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1920,
-        maxHeight: 1920,
-        imageQuality: 85,
-      );
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920,
+      maxHeight: 1920,
+      imageQuality: 85,
+    );
 
-      if (pickedFile != null) {
-        final path = pickedFile.path;
-
-        final currentImages = ref.read(addRecipeProvider).images;
-        final List<String> newImages = List.from(currentImages);
-
-        // Đảm bảo danh sách đủ dài
-        while (newImages.length <= index) {
-          newImages.add('');
-        }
-
-        newImages[index] = path;
-
-        // Loại bỏ phần tử rỗng ở cuối nếu có
-        while (newImages.isNotEmpty && newImages.last.isEmpty) {
-          newImages.removeLast();
-        }
-
-        ref.read(addRecipeProvider.notifier).state =
-            ref.read(addRecipeProvider.notifier).state.copyWith(images: newImages);
-      }
-    } catch (e) {
-      debugPrint('Lỗi chọn ảnh: $e');
+    if (pickedFile != null) {
+      // Dùng hàm có sẵn trong provider thay vì tự xử lý list
+      ref.read(addRecipeProvider.notifier).addImage(pickedFile.path);
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final images = ref.watch(addRecipeProvider).images.take(6).toList();
-    // Đảm bảo luôn có 6 vị trí (dù rỗng)
-    while (images.length < 6) images.add('');
+    final images = ref.watch(addRecipeProvider).images;
+
+    // Tạo danh sách 6 phần tử (có ảnh hoặc rỗng)
+    final displayImages = List<String>.from(images);
+    while (displayImages.length < 6) displayImages.add('');
 
     return Padding(
       padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 30.h),
@@ -67,28 +47,63 @@ class ImageGallery extends ConsumerWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildBox(
+                  _buildImageBox(
                     size: smallBoxSize * 2 + spacing,
-                    imagePath: images[0],
+                    imagePath: displayImages[0],
+                    index: 0,
+                    ref: ref,
                     onTap: () => _pickImage(ref, 0),
                   ),
                   SizedBox(width: spacing),
                   Column(
                     children: [
-                      _buildBox(size: smallBoxSize, imagePath: images[1], onTap: () => _pickImage(ref, 1)),
+                      _buildImageBox(
+                        size: smallBoxSize,
+                        imagePath: displayImages[1],
+                        index: 1,
+                        ref: ref,
+                        onTap: () => _pickImage(ref, 1),
+                      ),
                       SizedBox(height: spacing),
-                      _buildBox(size: smallBoxSize, imagePath: images[2], onTap: () => _pickImage(ref, 2)),
+                      _buildImageBox(
+                        size: smallBoxSize,
+                        imagePath: displayImages[2],
+                        index: 2,
+                        ref: ref,
+                        onTap: () => _pickImage(ref, 2),
+                      ),
                     ],
                   ),
                 ],
               ),
               SizedBox(height: spacing),
+
               // HÀNG 2: 3 ô nhỏ
               Row(
                 children: [
-                  _buildBox(size: smallBoxSize, imagePath: images[3], onTap: () => _pickImage(ref, 3), margin: EdgeInsets.only(right: spacing)),
-                  _buildBox(size: smallBoxSize, imagePath: images[4], onTap: () => _pickImage(ref, 4), margin: EdgeInsets.only(right: spacing)),
-                  _buildBox(size: smallBoxSize, imagePath: images[5], onTap: () => _pickImage(ref, 5)),
+                  _buildImageBox(
+                    size: smallBoxSize,
+                    imagePath: displayImages[3],
+                    index: 3,
+                    ref: ref,
+                    onTap: () => _pickImage(ref, 3),
+                    margin: EdgeInsets.only(right: spacing),
+                  ),
+                  _buildImageBox(
+                    size: smallBoxSize,
+                    imagePath: displayImages[4],
+                    index: 4,
+                    ref: ref,
+                    onTap: () => _pickImage(ref, 4),
+                    margin: EdgeInsets.only(right: spacing),
+                  ),
+                  _buildImageBox(
+                    size: smallBoxSize,
+                    imagePath: displayImages[5],
+                    index: 5,
+                    ref: ref,
+                    onTap: () => _pickImage(ref, 5),
+                  ),
                 ],
               ),
             ],
@@ -98,9 +113,11 @@ class ImageGallery extends ConsumerWidget {
     );
   }
 
-  Widget _buildBox({
+  Widget _buildImageBox({
     required double size,
     required String imagePath,
+    required int index,
+    required WidgetRef ref,
     required VoidCallback onTap,
     EdgeInsetsGeometry? margin,
   }) {
@@ -113,9 +130,32 @@ class ImageGallery extends ConsumerWidget {
         height: size,
         margin: margin ?? EdgeInsets.zero,
         child: hasImage
-            ? ClipRRect(
-          borderRadius: BorderRadius.circular(20.r),
-          child: Image.file(File(imagePath), fit: BoxFit.cover),
+            ? Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20.r),
+              child: Image.file(File(imagePath), fit: BoxFit.cover),
+            ),
+            // NÚT XÓA ẢNH – ĐẸP NHƯ STEPITEM
+            Positioned(
+              top: 8,
+              right: 8,
+              child: GestureDetector(
+                onTap: () {
+                  ref.read(addRecipeProvider.notifier).removeImage(index);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(6.w),
+                  decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.close, size: 18.sp, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
         )
             : DottedBorder(
           color: const Color(0xFFFFB901),

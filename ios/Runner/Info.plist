@@ -46,6 +46,8 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Ứng dụng cần truy cập thư viện ảnh để bạn chọn ảnh cho công thức</string>
+    <string>Ứng dụng cần truy cập thư viện để chọn ảnh và video</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Ứng dụng cần quyền để lưu ảnh</string>
 </dict>
 </plist>

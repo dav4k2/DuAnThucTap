@@ -72,7 +72,7 @@ class MyApp extends ConsumerWidget {
               child: widget!,
             );
           },
-          home: const AuthGate(),
+          home: const WelcomeScreen(),
           routes: {
             '/welcome': (context) => const WelcomeScreen(),
             '/signin': (context) => const SignInScreen(),

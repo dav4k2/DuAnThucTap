@@ -1,29 +1,50 @@
 // lib/features/add_recipe/logic/add_recipe_provider.dart
-
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddRecipeState {
   final List<String> images;
   final String? video;
   final String title;
   final String description;
-  final String servings;
-  final String cookingTime;
-  final String difficulty;
+  final String? servings;
+  final String? cookingTime;
+  final String? difficulty;
   final List<String> ingredients;
   final List<String> steps;
+  final List<String?> stepImages;
+
+  // LỖI CHI TIẾT CHO TỪNG PHẦN
+  final String? nameError;
+  final String? descriptionError;
+  final String? servingsError;
+  final String? cookingTimeError;
+  final String? difficultyError;
+  final List<String?> ingredientErrors;     // lỗi từng nguyên liệu
+  final List<String?> stepErrors;           // lỗi từng bước làm
 
   AddRecipeState({
     this.images = const [],
     this.video,
     this.title = '',
     this.description = '',
-    this.servings = '2 người',
-    this.cookingTime = '15-30 phút',
-    this.difficulty = 'Dễ',
+    this.servings,
+    this.cookingTime,
+    this.difficulty,
     this.ingredients = const [],
     this.steps = const [],
-  });
+    List<String?>? stepImages,
+    this.nameError,
+    this.descriptionError,
+    this.servingsError,
+    this.cookingTimeError,
+    this.difficultyError,
+    List<String?>? ingredientErrors,
+    List<String?>? stepErrors,
+  })  : stepImages = stepImages ?? [],
+        ingredientErrors = ingredientErrors ?? [],
+        stepErrors = stepErrors ?? [];
 
   AddRecipeState copyWith({
     List<String>? images,
@@ -35,6 +56,14 @@ class AddRecipeState {
     String? difficulty,
     List<String>? ingredients,
     List<String>? steps,
+    List<String?>? stepImages,
+    String? nameError,
+    String? descriptionError,
+    String? servingsError,
+    String? cookingTimeError,
+    String? difficultyError,
+    List<String?>? ingredientErrors,
+    List<String?>? stepErrors,
   }) {
     return AddRecipeState(
       images: images ?? this.images,
@@ -46,37 +75,38 @@ class AddRecipeState {
       difficulty: difficulty ?? this.difficulty,
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
+      stepImages: stepImages ?? this.stepImages,
+      nameError: nameError ?? this.nameError,
+      descriptionError: descriptionError ?? this.descriptionError,
+      servingsError: servingsError ?? this.servingsError,
+      cookingTimeError: cookingTimeError ?? this.cookingTimeError,
+      difficultyError: difficultyError ?? this.difficultyError,
+      ingredientErrors: ingredientErrors ?? this.ingredientErrors,
+      stepErrors: stepErrors ?? this.stepErrors,
     );
   }
 }
 
 class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
-  AddRecipeNotifier() : super(AddRecipeState());
+  AddRecipeNotifier()
+      : super(AddRecipeState(
+    servings: null,
+    cookingTime: null,
+    difficulty: null,
+    stepImages: [],
+    ingredientErrors: [],
+    stepErrors: [],
+  ));
 
-  // === CÁI MÀY CẦN – 3 HÀM MỚI ĐÃ ĐƯỢC THÊM ===
-  void updateServings(String value) {
-    state = state.copyWith(servings: value);
-  }
-
-  void updateCookingTime(String value) {
-    state = state.copyWith(cookingTime: value);
-  }
-
-  void updateDifficulty(String value) {
-    state = state.copyWith(difficulty: value);
-  }
-  // ==========================================
-
-  void updateTitle(String title) {
-    state = state.copyWith(title: title);
-  }
-
-  void updateDescription(String description) {
-    state = state.copyWith(description: description);
-  }
+  // Reset lỗi khi người dùng nhập
+  void updateTitle(String title) => state = state.copyWith(title: title, nameError: null);
+  void updateDescription(String description) => state = state.copyWith(description: description, descriptionError: null);
+  void updateServings(String? value) => state = state.copyWith(servings: value, servingsError: null);
+  void updateCookingTime(String? value) => state = state.copyWith(cookingTime: value, cookingTimeError: null);
+  void updateDifficulty(String? value) => state = state.copyWith(difficulty: value, difficultyError: null);
 
   void addImage(String path) {
-    if (state.images.length < 5) {
+    if (state.images.length < 6) {
       state = state.copyWith(images: [...state.images, path]);
     }
   }
@@ -86,24 +116,159 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     state = state.copyWith(images: newList);
   }
 
+  void updateVideo(String path) => state = state.copyWith(video: path);
+  void clearVideo() => state = state.copyWith(video: null);
+
   void addIngredient() {
-    state = state.copyWith(ingredients: [...state.ingredients, '']);
+    state = state.copyWith(
+      ingredients: [...state.ingredients, ''],
+      ingredientErrors: [...state.ingredientErrors, null],
+    );
   }
 
   void updateIngredient(int index, String value) {
     final newList = [...state.ingredients];
+    final newErrors = [...state.ingredientErrors];
     newList[index] = value;
-    state = state.copyWith(ingredients: newList);
+    newErrors[index] = null; // xóa lỗi khi người dùng nhập
+    state = state.copyWith(ingredients: newList, ingredientErrors: newErrors);
   }
 
   void addStep() {
-    state = state.copyWith(steps: [...state.steps, '']);
+    state = state.copyWith(
+      steps: [...state.steps, ''],
+      stepImages: [...state.stepImages, null],
+      stepErrors: [...state.stepErrors, null],
+    );
   }
 
   void updateStep(int index, String value) {
     final newList = [...state.steps];
+    final newErrors = [...state.stepErrors];
     newList[index] = value;
-    state = state.copyWith(steps: newList);
+    newErrors[index] = null;
+    state = state.copyWith(steps: newList, stepErrors: newErrors);
+  }
+
+  void removeStep(int index) {
+    final newSteps = List<String>.from(state.steps)..removeAt(index);
+    final newImages = List<String?>.from(state.stepImages)..removeAt(index);
+    final newErrors = List<String?>.from(state.stepErrors)..removeAt(index);
+    state = state.copyWith(steps: newSteps, stepImages: newImages, stepErrors: newErrors);
+  }
+
+  void updateStepImage(int index, String path) {
+    final newImages = [...state.stepImages];
+    newImages[index] = path;
+    state = state.copyWith(stepImages: newImages);
+  }
+
+  void clearStepImage(int index) {
+    final newImages = [...state.stepImages];
+    newImages[index] = null;
+    state = state.copyWith(stepImages: newImages);
+  }
+
+  // VALIDATE CHI TIẾT + HIỆN LỖI ĐỎ
+  Future<bool> validateAndSubmit(BuildContext context) async {
+    final errors = <String>[];
+    final ingredientErrors = <String?>[];
+    final stepErrors = <String?>[];
+
+    // Reset lỗi
+    state = state.copyWith(
+      nameError: null,
+      descriptionError: null,
+      servingsError: null,
+      cookingTimeError: null,
+      difficultyError: null,
+      ingredientErrors: List.filled(state.ingredients.length, null),
+      stepErrors: List.filled(state.steps.length, null),
+    );
+
+    if (state.title.trim().isEmpty) {
+      state = state.copyWith(nameError: 'Vui lòng nhập tên công thức');
+      errors.add('tên công thức');
+    }
+    if (state.description.trim().isEmpty) {
+      state = state.copyWith(descriptionError: 'Vui lòng nhập mô tả');
+      errors.add('mô tả');
+    }
+    if (state.images.isEmpty) errors.add('ảnh minh hoạ');
+    if (state.video == null || state.video!.isEmpty) errors.add('video minh hoạ');
+
+    if (state.servings == null) {
+      state = state.copyWith(servingsError: 'Vui lòng chọn khẩu phần');
+      errors.add('khẩu phần');
+    }
+    if (state.cookingTime == null) {
+      state = state.copyWith(cookingTimeError: 'Vui lòng chọn thời gian nấu');
+      errors.add('thời gian nấu');
+    }
+    if (state.difficulty == null) {
+      state = state.copyWith(difficultyError: 'Vui lòng chọn độ khó');
+      errors.add('độ khó');
+    }
+
+    // Nguyên liệu
+    if (state.ingredients.isEmpty) {
+      errors.add('nguyên liệu');
+    } else {
+      for (int i = 0; i < state.ingredients.length; i++) {
+        if (state.ingredients[i].trim().isEmpty) {
+          ingredientErrors.add('Vui lòng nhập nguyên liệu');
+          errors.add('nguyên liệu');
+        } else {
+          ingredientErrors.add(null);
+        }
+      }
+      state = state.copyWith(ingredientErrors: ingredientErrors);
+    }
+
+    // Bước làm
+    if (state.steps.isEmpty) {
+      errors.add('bước làm');
+    } else {
+      for (int i = 0; i < state.steps.length; i++) {
+        if (state.steps[i].trim().isEmpty) {
+          stepErrors.add('Vui lòng nhập mô tả bước này');
+          errors.add('bước làm');
+        } else {
+          stepErrors.add(null);
+        }
+      }
+      state = state.copyWith(stepErrors: stepErrors);
+    }
+
+    if (errors.isNotEmpty) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+          title: Row(
+            children: [
+              Icon(Icons.error_outline, color: const Color(0xFFFF3B30), size: 28.sp),
+              SizedBox(width: 10.w),
+              const Text('Thiếu thông tin', style: TextStyle(fontWeight: FontWeight.bold)),
+            ],
+          ),
+          content: Text('Vui lòng nhập đầy đủ:\n• ${errors.toSet().join('\n• ')}'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Đóng', style: TextStyle(color: const Color(0xFFFE724C), fontSize: 16.sp)),
+            ),
+          ],
+        ),
+      );
+      return false;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Đăng bài thành công!'), backgroundColor: Colors.green),
+    );
+    return true;
   }
 }
 

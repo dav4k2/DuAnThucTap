@@ -57,6 +57,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   dotted_border: ^2.1.0
   image_picker: ^1.0.7
+  permission_handler: ^11.3.1
 
 
 

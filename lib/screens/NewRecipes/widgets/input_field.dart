@@ -1,5 +1,4 @@
 // lib/features/add_recipe/widgets/input_field.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -10,6 +9,7 @@ class InputField extends StatefulWidget {
   final TextEditingController controller;
   final int? maxLines;
   final Widget? suffixIcon;
+  final String? errorText;
 
   const InputField({
     Key? key,
@@ -19,6 +19,7 @@ class InputField extends StatefulWidget {
     this.isMultiline = false,
     this.maxLines,
     this.suffixIcon,
+    this.errorText,
   }) : super(key: key);
 
   @override
@@ -55,6 +56,8 @@ class _InputFieldState extends State<InputField> {
 
   @override
   Widget build(BuildContext context) {
+    final hasError = widget.errorText != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -71,8 +74,9 @@ class _InputFieldState extends State<InputField> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: const Color(0xFFEBEBEB),
+              color: hasError ? const Color(0xFFFFE6E6) : const Color(0xFFEBEBEB),
               borderRadius: BorderRadius.circular(30.r),
+              border: hasError ? Border.all(color: const Color(0xFFFF3B30), width: 1.5) : null,
             ),
             child: TextField(
               controller: widget.controller,
@@ -85,12 +89,20 @@ class _InputFieldState extends State<InputField> {
                   fontFamily: 'SF Pro Rounded',
                 ),
                 border: InputBorder.none,
-                counterText: widget.isMultiline ? counterText : null, // Đã an toàn
+                counterText: widget.isMultiline ? counterText : null,
                 suffixIcon: widget.suffixIcon,
               ),
             ),
           ),
         ),
+        if (hasError)
+          Padding(
+            padding: EdgeInsets.only(left: 35.w, top: 6.h),
+            child: Text(
+              widget.errorText!,
+              style: TextStyle(color: const Color(0xFFFF3B30), fontSize: 13.sp),
+            ),
+          ),
       ],
     );
   }
