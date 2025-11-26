@@ -21,22 +21,16 @@ class AddRecipeScreen extends ConsumerWidget {
     final state = ref.watch(addRecipeProvider);
     final notifier = ref.read(addRecipeProvider.notifier);
 
-    // FIX: Khai báo controller TRƯỚC khi dùng
+    // Controller đồng bộ 2 chiều
     final nameController = TextEditingController(text: state.title);
     final descriptionController = TextEditingController(text: state.description);
 
-    // Đồng bộ 2 chiều
     nameController.addListener(() => notifier.updateTitle(nameController.text));
     descriptionController.addListener(() => notifier.updateDescription(descriptionController.text));
 
-    // Giữ text đồng bộ khi state thay đổi từ nơi khác
     ref.listen(addRecipeProvider, (_, next) {
-      if (nameController.text != next.title) {
-        nameController.text = next.title;
-      }
-      if (descriptionController.text != next.description) {
-        descriptionController.text = next.description;
-      }
+      if (nameController.text != next.title) nameController.text = next.title;
+      if (descriptionController.text != next.description) descriptionController.text = next.description;
     });
 
     return Scaffold(
@@ -47,80 +41,44 @@ class AddRecipeScreen extends ConsumerWidget {
           children: [
             Column(
               children: [
-                // HEADER CỐ ĐỊNH + POPUP KHI BẤM BACK
-                Positioned(
-                  child: Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.fromLTRB(1.w, 1.h, 1.w, 1.h),
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: BackButtonWidget(
-                            onPressed: () async {
-                              final shouldExit = await showDialog<bool>(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (_) => AlertDialog(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-                                  title: Row(
-                                    children: [
-                                      Icon(Icons.help_outline_rounded, color: Colors.orange, size: 28.sp),
-                                      SizedBox(width: 1.w),
-                                      Text('Thoát mà không lưu?', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-                                    ],
-                                  ),
-                                  content: Text('Bạn có muốn lưu công thức dưới dạng nháp trước khi thoát?', style: TextStyle(fontSize: 15.sp)),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, false),
-                                      child: Text('Không lưu', style: TextStyle(color: Colors.grey[700])),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, null),
-                                      child: Text('Hủy', style: TextStyle(color: const Color(0xFFFE724C), fontWeight: FontWeight.bold)),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        // TODO: Gọi hàm lưu nháp ở đây sau
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Đã lưu nháp thành công!'), backgroundColor: Colors.green),
-                                        );
-                                        Navigator.pop(context, true);
-                                      },
-                                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFE724C)),
-                                      child: Text('Lưu nháp', style: TextStyle(color: Colors.white)),
-                                    ),
-                                  ],
-                                ),
-                              );
-
-                              if (shouldExit == true) {
-                                if (context.mounted) Navigator.of(context).pop();
-                              }
-                            },
-                          ),
+                // HEADER
+                Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: BackButtonWidget(
+                          onPressed: () => notifier.handleBackPressed(context), // CHỈ THAY ĐỔI DÒNG NÀY
                         ),
-                        const Center(child: TitleSection()),
-                        SizedBox(width: 48.w),
-                      ],
-                    ),
+                      ),
+                      const Center(child: TitleSection()),
+                      SizedBox(width: 48.w),
+                    ],
                   ),
                 ),
+
+                // BODY
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(bottom: 20.h),
+                    padding: EdgeInsets.only(bottom: 10.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
-
-
-                        // Nội dung giữ nguyên 100%
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 1.h), child: Text('Thêm ảnh minh hoạ', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: Colors.black87))),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 12.h),
+                          child: Text('Thêm ảnh minh hoạ',
+                              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: Colors.black87)),
+                        ),
                         const ImageGallery(),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 1.h), child: Text('Thêm Video minh hoạ', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: Colors.black87))),
+
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 12.h),
+                          child: Text('Thêm Video minh hoạ',
+                              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: Colors.black87)),
+                        ),
                         const VideoUpload(),
 
                         InputField(
@@ -149,14 +107,14 @@ class AddRecipeScreen extends ConsumerWidget {
                           value: state.cookingTime,
                           items: const ['Dưới 15 phút', '15-30 phút', '30-60 phút', 'Trên 1 tiếng'],
                           onChanged: notifier.updateCookingTime,
-                          errorText: state.servingsError,
+                          errorText: state.cookingTimeError,
                         ),
                         DropdownRow(
                           label: 'Độ khó',
                           value: state.difficulty,
                           items: const ['Dễ', 'Trung bình', 'Khó'],
                           onChanged: notifier.updateDifficulty,
-                          errorText: state.servingsError,
+                          errorText: state.difficultyError,
                         ),
 
                         // Nguyên liệu
@@ -173,10 +131,10 @@ class AddRecipeScreen extends ConsumerWidget {
                               index: i,
                               text: t,
                               onChanged: (v) => notifier.updateIngredient(i, v),
-                              onDelete: () {
-                                final newList = List<String>.from(state.ingredients)..removeAt(i);
-                                notifier.state = notifier.state.copyWith(ingredients: newList);
-                              },
+                              onDelete: () => notifier.state = notifier.state.copyWith(
+                                ingredients: List<String>.from(state.ingredients)..removeAt(i),
+                                ingredientErrors: List<String?>.from(state.ingredientErrors)..removeAt(i),
+                              ),
                             );
                           }).toList()
                         else
@@ -200,7 +158,7 @@ class AddRecipeScreen extends ConsumerWidget {
                           child: Divider(height: 1.h, thickness: 0.8, color: Colors.grey.shade300, indent: 36.w, endIndent: 36.w),
                         ),
 
-// Cách làm
+                        // Cách làm
                         Padding(
                           padding: EdgeInsets.only(left: 36.w, top: 50.h),
                           child: Text('Cách làm', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
@@ -211,7 +169,7 @@ class AddRecipeScreen extends ConsumerWidget {
                             final t = e.value;
                             return StepItem(
                               key: ValueKey('step_$i'),
-                              index: i ,
+                              index: i,
                               description: t,
                               onChanged: (v) => notifier.updateStep(i, v),
                               onDelete: () => notifier.removeStep(i),
@@ -232,17 +190,14 @@ class AddRecipeScreen extends ConsumerWidget {
                                 style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500, color: const Color(0xFFFE724C))),
                           ),
                         ),
-
-                        // Nút Đăng
                         Positioned(
-
                           child: GestureDetector(
                             onTapDown: (details) {
                               if (details.globalPosition.dx > MediaQuery.of(context).size.width / 2) {
                                 notifier.validateAndSubmit(context);
                               }
                             },
-                            child: BottomButtons(),
+                            child: const BottomButtons(),
                           ),
                         ),
                       ],
@@ -252,6 +207,7 @@ class AddRecipeScreen extends ConsumerWidget {
               ],
             ),
 
+            // Nút Đăng (giữ nguyên vị trí cũ)
 
           ],
         ),

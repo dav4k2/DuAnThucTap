@@ -1,7 +1,11 @@
 // lib/features/add_recipe/logic/add_recipe_provider.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../widgets/exit_confirmation_dialog.dart';
+import '../widgets/missing_info_dialog.dart';
 
 class AddRecipeState {
   final List<String> images;
@@ -21,8 +25,8 @@ class AddRecipeState {
   final String? servingsError;
   final String? cookingTimeError;
   final String? difficultyError;
-  final List<String?> ingredientErrors;     // lỗi từng nguyên liệu
-  final List<String?> stepErrors;           // lỗi từng bước làm
+  final List<String?> ingredientErrors; // lỗi từng nguyên liệu
+  final List<String?> stepErrors; // lỗi từng bước làm
 
   AddRecipeState({
     this.images = const [],
@@ -98,11 +102,32 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     stepErrors: [],
   ));
 
-  // Reset lỗi khi người dùng nhập
+  // ==================== HÀM XỬ LÝ NÚT BACK ====================
+// Trong file add_recipe_provider.dart – chỉ thay đúng hàm này thôi
+
+  Future<void> handleBackPressed(BuildContext context) async {
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const ExitConfirmationDialog(),
+    );
+
+    if (shouldExit == true || shouldExit == false) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Thoát màn hình thêm công thức
+      }
+    }
+  }
+
+  // ==================== CÁC HÀM CẬP NHẬT DỮ LIỆU ====================
   void updateTitle(String title) => state = state.copyWith(title: title, nameError: null);
+
   void updateDescription(String description) => state = state.copyWith(description: description, descriptionError: null);
+
   void updateServings(String? value) => state = state.copyWith(servings: value, servingsError: null);
+
   void updateCookingTime(String? value) => state = state.copyWith(cookingTime: value, cookingTimeError: null);
+
   void updateDifficulty(String? value) => state = state.copyWith(difficulty: value, difficultyError: null);
 
   void addImage(String path) {
@@ -117,6 +142,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
   }
 
   void updateVideo(String path) => state = state.copyWith(video: path);
+
   void clearVideo() => state = state.copyWith(video: null);
 
   void addIngredient() {
@@ -130,7 +156,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     final newList = [...state.ingredients];
     final newErrors = [...state.ingredientErrors];
     newList[index] = value;
-    newErrors[index] = null; // xóa lỗi khi người dùng nhập
+    newErrors[index] = null;
     state = state.copyWith(ingredients: newList, ingredientErrors: newErrors);
   }
 
@@ -169,7 +195,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     state = state.copyWith(stepImages: newImages);
   }
 
-  // VALIDATE CHI TIẾT + HIỆN LỖI ĐỎ
+  // ==================== VALIDATE & SUBMIT ====================
   Future<bool> validateAndSubmit(BuildContext context) async {
     final errors = <String>[];
     final ingredientErrors = <String?>[];
@@ -244,23 +270,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-          title: Row(
-            children: [
-              Icon(Icons.error_outline, color: const Color(0xFFFF3B30), size: 28.sp),
-              SizedBox(width: 10.w),
-              const Text('Thiếu thông tin', style: TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
-          content: Text('Vui lòng nhập đầy đủ:\n• ${errors.toSet().join('\n• ')}'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Đóng', style: TextStyle(color: const Color(0xFFFE724C), fontSize: 16.sp)),
-            ),
-          ],
-        ),
+        builder: (_) => MissingInfoDialog(missingFields: errors.toSet()),
       );
       return false;
     }
