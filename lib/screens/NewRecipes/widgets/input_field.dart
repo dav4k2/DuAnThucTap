@@ -6,7 +6,8 @@ class InputField extends StatefulWidget {
   final String label;
   final String hintText;
   final bool isMultiline;
-  final TextEditingController controller;
+  final String? initialValue;
+  final void Function(String)? onChanged;
   final int? maxLines;
   final Widget? suffixIcon;
   final String? errorText;
@@ -15,8 +16,9 @@ class InputField extends StatefulWidget {
     Key? key,
     required this.label,
     required this.hintText,
-    required this.controller,
     this.isMultiline = false,
+    this.initialValue,
+    this.onChanged,
     this.maxLines,
     this.suffixIcon,
     this.errorText,
@@ -27,36 +29,37 @@ class InputField extends StatefulWidget {
 }
 
 class _InputFieldState extends State<InputField> {
-  late String counterText;
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    counterText = _getCounterText();
-    widget.controller.addListener(_updateCounter);
+    _controller = TextEditingController(text: widget.initialValue ?? '');
+  }
+
+  @override
+  void didUpdateWidget(covariant InputField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Chỉ update text khi initialValue thay đổi từ bên ngoài (Riverpod)
+    if (oldWidget.initialValue != widget.initialValue) {
+      _controller.text = widget.initialValue ?? '';
+      // Đặt con trỏ về cuối
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length),
+      );
+    }
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_updateCounter);
+    _controller.dispose();
     super.dispose();
-  }
-
-  void _updateCounter() {
-    if (mounted) {
-      setState(() {
-        counterText = _getCounterText();
-      });
-    }
-  }
-
-  String _getCounterText() {
-    return widget.isMultiline ? '${widget.controller.text.length}/200' : '';
   }
 
   @override
   Widget build(BuildContext context) {
     final hasError = widget.errorText != null;
+    final currentLength = _controller.text.length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,21 +79,30 @@ class _InputFieldState extends State<InputField> {
             decoration: BoxDecoration(
               color: hasError ? const Color(0xFFFFE6E6) : const Color(0xFFEBEBEB),
               borderRadius: BorderRadius.circular(30.r),
-              border: hasError ? Border.all(color: const Color(0xFFFF3B30), width: 1.5) : null,
+              border: hasError
+                  ? Border.all(color: const Color(0xFFFF3B30), width: 1.5)
+                  : null,
             ),
-            child: TextField(
-              controller: widget.controller,
-              maxLines: widget.isMultiline ? (widget.maxLines ?? 6) : 1,
-              decoration: InputDecoration(
-                hintText: widget.hintText,
-                hintStyle: TextStyle(
-                  color: Colors.black.withOpacity(0.5),
-                  fontSize: 16.sp,
-                  fontFamily: 'SF Pro Rounded',
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: TextField(
+                controller: _controller,        // DÙNG LẠI CONTROLLER CŨ – KHÔNG TẠO MỚI
+                onChanged: widget.onChanged,
+                maxLines: widget.isMultiline ? (widget.maxLines ?? 6) : 1,
+                maxLength: widget.isMultiline ? 200 : null,
+                textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  hintText: widget.hintText,
+                  hintTextDirection: TextDirection.ltr,
+                  hintStyle: TextStyle(
+                    color: Colors.black.withOpacity(0.5),
+                    fontSize: 16.sp,
+                    fontFamily: 'SF Pro Rounded',
+                  ),
+                  border: InputBorder.none,
+                  counterText: widget.isMultiline ? '$currentLength/200' : null,
+                  suffixIcon: widget.suffixIcon,
                 ),
-                border: InputBorder.none,
-                counterText: widget.isMultiline ? counterText : null,
-                suffixIcon: widget.suffixIcon,
               ),
             ),
           ),

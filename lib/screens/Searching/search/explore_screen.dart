@@ -70,20 +70,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             ],
           ),
 
-          // ==================== NAVBAR FIXED Ở ĐÁY ====================
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SafeArea(
-              bottom: false, // tránh tạo khoảng trắng trong dark mode
-              child: SmartNavBar(
-                currentIndex: 1,
-                scrollController: _scrollController,
-                onTap: (index) {},
-              ),
-            ),
-          ),
+
         ],
       ),
     );

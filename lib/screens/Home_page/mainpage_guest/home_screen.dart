@@ -86,12 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      // 🔸 Thanh điều hướng (không bọc Container để giữ hiệu ứng trong suốt)
-      bottomNavigationBar: SmartNavBar(
-        currentIndex: _currentIndex,
-        onTap: _onItemTapped,
-        scrollController: _scrollController,
-      ),
+
     );
   }
 }

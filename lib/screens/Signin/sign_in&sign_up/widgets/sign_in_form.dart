@@ -20,7 +20,6 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
-
   bool _isPasswordVisible = false;
 
   @override
@@ -33,29 +32,25 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
   Future<void> _signIn() async {
     final authNotifier = ref.read(authProvider.notifier);
-
-    // Nếu không có lỗi input format
-    authNotifier.setError(null); // Xóa lỗi cũ
+    authNotifier.setError(null);
     setState(() => _isLoading = true);
 
     try {
-      // Bắt AuthResponse từ API
       final AuthResponse response = await AuthServices.signIn(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
       if (mounted) {
-        if (response.success) { // KIỂM TRA ĐĂNG NHẬP THÀNH CÔNG (CÓ TOKEN)
+        if (response.success) {
           authNotifier.setError(null);
           await StorageService.saveToken(response.token!);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const AuthGate()),
-                (route) => false, // Xóa sạch lịch sử để người dùng không bấm nút Back quay lại trang Login được
+                (route) => false,
           );
         } else {
-          // Đăng nhập thất bại (API trả lời với message lỗi)
           authNotifier.setError(response.message);
         }
       }
@@ -157,10 +152,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                 bottom: -4,
                 left: 0,
                 right: 0,
-                child: Container(
-                  height: 6,
-                  color: Colors.black,
-                ),
+                child: Container(height: 6, color: Colors.black),
               ),
             ],
           ),
@@ -170,8 +162,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   }
 }
 
-/// -------------------- Widget --------------------
-
+// ==================== INPUT FIELD ĐÃ ĐƯỢC SỬA GIỐNG HỆT SIGN UP ====================
 class InputField extends StatelessWidget {
   final String hintText;
   final bool obscure;
@@ -193,7 +184,7 @@ class InputField extends StatelessWidget {
     return Container(
       width: width,
       height: 65.h,
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center, // giống SignUp (center thay vì centerLeft)
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
         color: const Color(0xFFEBEBEB),
@@ -203,7 +194,9 @@ class InputField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+        cursorColor: Colors.black,
         decoration: InputDecoration(
+          isDense: true,
           border: InputBorder.none,
           hintText: hintText,
           hintStyle: TextStyle(
@@ -214,20 +207,22 @@ class InputField extends StatelessWidget {
           ),
           suffixIcon: suffixIcon,
         ),
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 24.sp,
+          fontFamily: 'SF Pro Rounded',
+          fontWeight: FontWeight.w700, // ĐẬM Y HỆT SIGN UP
+        ),
       ),
     );
   }
 }
 
+// Các widget còn lại giữ nguyên 100%
 class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;
-
-  const ErrorMessage({
-    super.key,
-    required this.message,
-    required this.width,
-  });
+  const ErrorMessage({super.key, required this.message, required this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -236,15 +231,12 @@ class ErrorMessage extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: ShapeDecoration(
         color: const Color(0xA8F0A4A4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.warning_amber_rounded,
-              color: const Color(0xFFF01E1E), size: 22.sp),
+          Icon(Icons.warning_amber_rounded, color: const Color(0xFFF01E1E), size: 22.sp),
           SizedBox(width: 10.w),
           Flexible(
             child: Text(
@@ -268,12 +260,7 @@ class ErrorMessage extends StatelessWidget {
 class PrimaryButton extends StatelessWidget {
   final String text;
   final double width;
-
-  const PrimaryButton({
-    super.key,
-    required this.text,
-    required this.width,
-  });
+  const PrimaryButton({super.key, required this.text, required this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -325,10 +312,7 @@ class ForgotPasswordLink extends StatelessWidget {
                 bottom: -4,
                 left: 0,
                 right: 0,
-                child: Container(
-                  height: 6,
-                  color: Color(0xFFFFB901),
-                ),
+                child: Container(height: 6, color: Color(0xFFFFB901)),
               ),
             ],
           ),
@@ -340,11 +324,8 @@ class ForgotPasswordLink extends StatelessWidget {
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Admin Dashboard')),
-    );
+    return const Scaffold(body: Center(child: Text('Admin Dashboard')));
   }
 }
