@@ -1,4 +1,5 @@
 // lib/screens/chef_profile_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +31,6 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
   late final ScrollController _mainScrollController = ScrollController()
     ..addListener(_updateTitleOpacity);
 
-  // Controller riêng cho danh sách món ăn
   late final ScrollController _recipeScrollController = ScrollController();
 
   double _titleOpacity = 0.0;
@@ -49,7 +49,6 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
     }
   }
 
-  // === HÀM DUY NHẤT QUAN TRỌNG – SCROLL VỀ ĐẦU ===
   void _scrollToTop() {
     if (_recipeScrollController.hasClients) {
       _recipeScrollController.animateTo(
@@ -73,149 +72,107 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
     final profileTab = ref.watch(profileTabProvider);
     final mealTab = ref.watch(mealTabProvider);
 
-    // === CHỈ 2 DÒNG NÀY LÀ ĐỦ – ĐÃ TEST HOÀN HẢO ===
-    // Mỗi khi đổi filter bữa ăn → scroll về đầu (chỉ khi đang ở tab Công thức)
+    // GIỮ NGUYÊN LOGIC CỦA BẠN
     if (profileTab == ProfileTab.congThuc) {
-      // Dùng key để force rebuild RecipeList mỗi khi filter thay đổi
-      final key = ValueKey('$profileTab-$mealTab');
-
-      // Scroll về đầu ngay khi mealTab thay đổi
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToTop();
-      });
-
-      // Widget chính
-      return Scaffold(
-        // ... tất cả code cũ của mày giữ nguyên ...
-        body: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Theme.of(context).brightness == Brightness.dark
-                ? Brightness.light
-                : Brightness.dark,
-          ),
-          child: CustomScrollView(
-            controller: _mainScrollController,
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              // === HEADER GIỮ NGUYÊN ===
-              SliverAppBar(
-                expandedHeight: 510.h,
-                floating: false,
-                pinned: true,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                elevation: 0.5,
-                automaticallyImplyLeading: false,
-                title: Opacity(
-                  opacity: _titleOpacity,
-                  child: Text(
-                    chef.name,
-                    style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                centerTitle: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.parallax,
-                  background: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
-                        top: 195.h,
-                        left: 0, right: 0,
-                        child: Container(
-                          decoration: ShapeDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const HeaderImage(),
-                      const ProfileAvatar(),
-                      ChefInfo(name: chef.name, title: chef.title),
-                      StatsSection(recipes: chef.recipes, followers: chef.followers, following: chef.following),
-                      const FollowButton(),
-                      const ProfileTabs(),
-                    ],
-                  ),
-                ),
-              ),
-
-              if (profileTab == ProfileTab.congThuc)
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _MealFilterDelegate(bgColor: Theme.of(context).scaffoldBackgroundColor),
-                ),
-
-              if (profileTab == ProfileTab.danhGia)
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _ReviewFilterDelegate(bgColor: Theme.of(context).scaffoldBackgroundColor),
-                ),
-
-              // === CHỖ DUY NHẤT THAY ĐỔI – DÙNG KEY + PRIMARYSCROLLCONTROLLER ===
-              if (profileTab == ProfileTab.congThuc)
-                PrimaryScrollController(
-                  controller: _recipeScrollController,
-                  child: RecipeList(
-                    key: key, // ← Đây là chìa khóa vàng: force rebuild + reset scroll
-                    recipes: chef.allRecipes.where((r) => mealTab == MealTab.tatCa || r.meal == mealTab).toList(),
-                  ),
-                ),
-
-              if (profileTab == ProfileTab.danhGia) const ReviewTab(),
-              if (profileTab == ProfileTab.tieuSu) const SliverToBoxAdapter(child: BioTab()),
-              if (profileTab == ProfileTab.anh) const SliverToBoxAdapter(child: PhotoGrid()),
-
-              SliverToBoxAdapter(child: SizedBox(height: 100.h)),
-            ],
-          ),
-        ),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToTop());
     }
 
-    // Các tab khác giữ nguyên (Đánh giá, Tiểu sử, Ảnh)
-    // ... code cũ của mày ở đây (không cần thay đổi)
-    // Tao để gọn cho dễ copy
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          statusBarIconBrightness: Theme.of(context).brightness == Brightness.dark
+              ? Brightness.light
+              : Brightness.dark,
         ),
         child: CustomScrollView(
           controller: _mainScrollController,
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // Header giữ nguyên như trên...
-            // (tóm tắt để ngắn)
-            SliverAppBar(/*...giữ nguyên...*/),
+            SliverAppBar(
+              expandedHeight: 510.h,
+              floating: false,
+              pinned: true,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              elevation: 0.5,
+              automaticallyImplyLeading: false,
+              title: Opacity(
+                opacity: _titleOpacity,
+                child: Text(
+                  chef.name,
+                  style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w600),
+                ),
+              ),
+              centerTitle: true,
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.parallax,
+                background: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      top: 195.h,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: ShapeDecoration(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const HeaderImage(),
+                    const ProfileAvatar(),
+                    ChefInfo(name: chef.name, title: chef.title),
+                    StatsSection(
+                        recipes: chef.recipes,
+                        followers: chef.followers,
+                        following: chef.following),
+                    const FollowButton(),
+                    const ProfileTabs(),
+                  ],
+                ),
+              ),
+            ),
 
+            // SỬA XONG – XÓA const Ở 2 CHỖ NÀY THÔI
             if (profileTab == ProfileTab.congThuc)
-              SliverPersistentHeader(pinned: true, delegate: _MealFilterDelegate(bgColor: theme.scaffoldBackgroundColor)),
-
-            if (profileTab == ProfileTab.danhGia)
-              SliverPersistentHeader(pinned: true, delegate: _ReviewFilterDelegate(bgColor: theme.scaffoldBackgroundColor)),
-
-            if (profileTab == ProfileTab.congThuc)
-              PrimaryScrollController(
-                controller: _recipeScrollController,
-                child: RecipeList(
-                  key: ValueKey('$profileTab-$mealTab'), // ← CHÌA KHÓA VÀNG
-                  recipes: chef.allRecipes.where((r) => mealTab == MealTab.tatCa || r.meal == mealTab).toList(),
+              KeepAliveWrapper(
+                child: SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _MealFilterDelegate(),
                 ),
               ),
 
-            if (profileTab == ProfileTab.danhGia) const ReviewTab(),
-            if (profileTab == ProfileTab.tieuSu) const SliverToBoxAdapter(child: BioTab()),
-            if (profileTab == ProfileTab.anh) const SliverToBoxAdapter(child: PhotoGrid()),
+            if (profileTab == ProfileTab.danhGia)
+              KeepAliveWrapper(
+                child: SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _ReviewFilterDelegate(),
+                ),
+              ),
 
-            SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+            if (profileTab == ProfileTab.congThuc)
+              KeepAliveWrapper(
+                child: PrimaryScrollController(
+                  controller: _recipeScrollController,
+                  child: RecipeList(
+                    key: ValueKey('$profileTab-$mealTab'),
+                    recipes: chef.allRecipes
+                        .where((r) => mealTab == MealTab.tatCa || r.meal == mealTab)
+                        .toList(),
+                  ),
+                ),
+              ),
+
+            if (profileTab == ProfileTab.danhGia) const KeepAliveWrapper(child: ReviewTab()),
+            if (profileTab == ProfileTab.tieuSu)
+              const KeepAliveWrapper(child: SliverToBoxAdapter(child: BioTab())),
+            if (profileTab == ProfileTab.anh)
+              const KeepAliveWrapper(child: SliverToBoxAdapter(child: PhotoGrid())),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       ),
@@ -223,23 +180,62 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
   }
 }
 
-// 2 delegate giữ nguyên
+// KeepAliveWrapper giữ nguyên
+class KeepAliveWrapper extends StatefulWidget {
+  final Widget child;
+  const KeepAliveWrapper({super.key, required this.child});
+
+  @override
+  State<KeepAliveWrapper> createState() => _KeepAliveWrapperState();
+}
+
+class _KeepAliveWrapperState extends State<KeepAliveWrapper>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
+}
+
+// Delegate sửa – bỏ tham số bgColor, lấy từ Theme trực tiếp
 class _MealFilterDelegate extends SliverPersistentHeaderDelegate {
-  final Color bgColor;
-  const _MealFilterDelegate({required this.bgColor});
-  @override Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) =>
-      Container(color: bgColor, child: const MealFilter());
-  @override double get maxExtent => 54.0;
-  @override double get minExtent => 54.0;
-  @override bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
+  const _MealFilterDelegate();
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: const MealFilter(),
+    );
+  }
+
+  @override
+  double get maxExtent => 54.0;
+  @override
+  double get minExtent => 54.0;
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
 }
 
 class _ReviewFilterDelegate extends SliverPersistentHeaderDelegate {
-  final Color bgColor;
-  const _ReviewFilterDelegate({required this.bgColor});
-  @override Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) =>
-      Container(color: bgColor, child: const ReviewFilterHeader());
-  @override double get maxExtent => 54.0;
-  @override double get minExtent => 54.0;
-  @override bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
+  const _ReviewFilterDelegate();
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: const ReviewFilterHeader(),
+    );
+  }
+
+  @override
+  double get maxExtent => 54.0;
+  @override
+  double get minExtent => 54.0;
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
 }
