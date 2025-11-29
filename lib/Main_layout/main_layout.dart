@@ -5,7 +5,9 @@ import '../screens/Home_page/mainpage_guest/home_screen.dart';
 import '../screens/NewRecipes/add_recipe_screen.dart';
 import '../screens/Searching/search/explore_screen.dart';
 import '../screens/Setting/settings/settings_screen.dart';
-import '../screens/user_profile/chef_profile_screen.dart';
+import '../screens/user_profile/MyUser_profile/my_profile_screen.dart';
+import '../screens/user_profile/User_profile/chef_profile_screen.dart';
+
 
 
 class MainLayout extends StatefulWidget {
@@ -23,7 +25,7 @@ class _MainLayoutState extends State<MainLayout> {
     HomeScreen(),
     ExploreScreen(),
     AddRecipeScreen(),
-    ChefProfileScreen(),
+    MyProfileScreen(),
     SettingsScreen(),
   ];
 

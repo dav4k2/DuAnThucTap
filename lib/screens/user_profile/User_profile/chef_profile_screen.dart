@@ -4,19 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/bio_tab.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/chef_info.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/follow_button.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/header_image.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/meal_filter.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/photo_grid.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/profile_avatar.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/profile_tabs.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/recipe_list.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/review_filter_header.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/review_tab.dart';
+import 'package:fontend/screens/user_profile/User_profile/widgets/stats_section.dart';
 
-import 'package:fontend/screens/user_profile/widgets/bio_tab.dart';
-import 'package:fontend/screens/user_profile/widgets/chef_info.dart';
-import 'package:fontend/screens/user_profile/widgets/follow_button.dart';
-import 'package:fontend/screens/user_profile/widgets/header_image.dart';
-import 'package:fontend/screens/user_profile/widgets/meal_filter.dart';
-import 'package:fontend/screens/user_profile/widgets/photo_grid.dart';
-import 'package:fontend/screens/user_profile/widgets/profile_avatar.dart';
-import 'package:fontend/screens/user_profile/widgets/profile_tabs.dart';
-import 'package:fontend/screens/user_profile/widgets/recipe_list.dart';
-import 'package:fontend/screens/user_profile/widgets/review_tab.dart';
-import 'package:fontend/screens/user_profile/widgets/review_filter_header.dart';
-import 'package:fontend/screens/user_profile/widgets/stats_section.dart';
+
 import 'logic/chef_provider.dart';
 
 class ChefProfileScreen extends ConsumerStatefulWidget {

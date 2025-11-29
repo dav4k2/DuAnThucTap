@@ -18,8 +18,8 @@ class StatsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
     final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
-    final secondaryColor = textColor.withOpacity(0.6); // Màu phụ (60% opacity)
-    final dividerColor = textColor.withOpacity(0.3); // Vạch ngăn (30% opacity)
+    final secondaryColor = textColor.withOpacity(0.6);
+    final dividerColor = textColor.withOpacity(0.3);
 
     return Stack(
       children: [

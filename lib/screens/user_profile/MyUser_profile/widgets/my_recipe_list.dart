@@ -1,15 +1,19 @@
-// lib/widgets/recipe_list.dart
+// lib/widgets/my_recipe_list.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../logic/chef_provider.dart';
-import 'recipe_card.dart';
+import '../logic/my_profile_provider.dart';        // dùng my_profile_provider
+import 'my_recipe_card.dart';                     // dùng MyRecipeCard
 
-class RecipeList extends ConsumerWidget {
+class MyRecipeList extends ConsumerWidget {
   final List<Recipe> recipes;
-  final ScrollController? controller; // ← thêm controller
+  final ScrollController? controller;
 
-  const RecipeList({super.key, required this.recipes, this.controller});
+  const MyRecipeList({
+    super.key,
+    required this.recipes,
+    this.controller,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,26 +21,29 @@ class RecipeList extends ConsumerWidget {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
     }
 
-    final totalRecipes = ref.read(chefProvider).allRecipes.length;
+    // Lấy tổng số công thức của chính mình
+    final totalRecipes = ref.read(myChefProvider).allRecipes.length;
 
-    // Dùng CustomScrollView + controller ở đây, nhưng vì ngoài đã có CustomScrollView rồi
-    // nên chỉ cần gán controller cho SliverList bằng NestedScrollView hoặc PrimaryScrollController
     return SliverList(
       delegate: SliverChildBuilderDelegate(
             (context, index) {
+          // Index 0 = Header
           if (index == 0) {
             return _buildHeader(totalRecipes);
           }
+
           final recipe = recipes[index - 1];
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: RecipeCard(
+            child: MyRecipeCard(
               recipe: recipe,
-              onTap: () {},
+              onTap: () {
+                // TODO: mở chi tiết công thức (giữ nguyên như cũ)
+              },
             ),
           );
         },
-        childCount: recipes.length + 1,
+        childCount: recipes.length + 1, // +1 vì có header
       ),
     );
   }
@@ -57,7 +64,9 @@ class RecipeList extends ConsumerWidget {
                 TextSpan(
                   text: ' ($totalRecipes)',
                   style: TextStyle(
-                      fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
+                    fontSize: 15.sp,
+                    color: Colors.black.withOpacity(0.6),
+                  ),
                 ),
               ],
             ),
