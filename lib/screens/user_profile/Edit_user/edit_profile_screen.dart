@@ -23,11 +23,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   String selectedCountry = 'Việt Nam';
 
   final levels = [
-    'Người mới',
-    'Nấu ăn tại nhà',
-    'Đầu bếp bán chuyên',
+    'Mới tập nấu',
+    'Nghiệp dư',
+    'Đầu bếp tại gia',
     'Đầu bếp chuyên nghiệp',
-    'Master Chef'
+    'Không chắc chắn'
   ];
   final countries = [
     'Việt Nam',
@@ -68,9 +68,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       body: SafeArea(
-        top: false, // header đã kéo lên top, tránh double padding
+        top: false,
+        // THAY ĐỔI: Đặt bottom: false để loại bỏ padding ở dưới đáy
+        bottom: false,
         child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(), // tránh overscroll
+          physics: const ClampingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -79,6 +81,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 children: [
                   const EditHeader(),
                   Positioned(
+                    // Lưu ý: top đã được tính đúng do top: false được đặt ở SafeArea
                     top: MediaQuery.of(context).padding.top + 20.h,
                     left: 10.w,
                     child: GestureDetector(
@@ -167,7 +170,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 30.h),
+              // Thêm padding cho bottom Safe Area
+              SizedBox(height: 30.h + MediaQuery.of(context).padding.bottom),
             ],
           ),
         ),

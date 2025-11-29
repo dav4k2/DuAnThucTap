@@ -49,7 +49,7 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
   void updateHeader(File file) => state = state.copyWith(headerFile: file);
 
   Future<void> save() async {
-    // TODO: upload avatarFile + headerFile + cập nhật Firestore
+
   }
 }
 

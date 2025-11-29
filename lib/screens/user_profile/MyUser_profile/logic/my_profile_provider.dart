@@ -1,4 +1,3 @@
-// lib/logic/my_profile_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // === ENUMS (giữ nguyên, dùng chung toàn app) ===
@@ -59,6 +58,7 @@ class MyChef {
   final String? email;
   final String? joinedDate;
   final String avatarUrl;
+  final String headerImage; // <- thêm field header image
 
   MyChef({
     required this.id,
@@ -73,6 +73,7 @@ class MyChef {
     this.email,
     this.joinedDate,
     this.avatarUrl = "image/avatar.png",
+    this.headerImage = "image/profile_bg.png", // <- giá trị mặc định
   });
 }
 
@@ -96,7 +97,7 @@ final myChefProvider = Provider<MyChef>((ref) {
   ];
 
   return MyChef(
-    id: "my_chef_id",               // sau này thay = currentUser.uid
+    id: "my_chef_id",
     name: "Kong Fuong",
     title: "Đầu bếp chuyên nghiệp",
     recipes: 7,
@@ -105,7 +106,12 @@ final myChefProvider = Provider<MyChef>((ref) {
     bio: "Một đầu bếp xuất thân từ đường phố, không trải qua đào tạo bài bản, chỉ có niềm tin vào câu nói “Ai cũng có thể nấu” của Auguste Gusteau. Tôi đã thành công và thậm chí còn khiến cho Arsene Wenger phải khen món ăn của mình.",
     email: "kongfuongchef@gmail.com",
     joinedDate: "10/09/2024",
+    avatarUrl: "image/avatar.png",
+    headerImage: "image/profile_bg.png", // <- thêm header image
     allRecipes: [
+      Recipe(title: "Gà rán KFC", time: "30 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.8, reviews: 1000, meal: MealTab.tatCa, imageAsset: "image/garan.png"),
+      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
+      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
       Recipe(title: "Gà rán KFC", time: "30 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.8, reviews: 1000, meal: MealTab.tatCa, imageAsset: "image/garan.png"),
       Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
       Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
@@ -145,3 +151,6 @@ final myFilteredReviewsProvider = Provider<List<Review>>((ref) {
   }
   return sorted;
 });
+
+
+

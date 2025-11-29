@@ -1,10 +1,11 @@
-// lib/widgets/edit_header.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../MyUser_profile/logic/my_profile_provider.dart';
 import '../logic/edit_profile_provider.dart'; // provider để lưu ảnh
+
 
 class EditHeader extends ConsumerWidget {
   const EditHeader({super.key});
@@ -12,6 +13,7 @@ class EditHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(editProfileProvider);
+    final chef = ref.watch(myChefProvider); // lấy dữ liệu MyChef
 
     return Stack(
       clipBehavior: Clip.none,
@@ -24,7 +26,7 @@ class EditHeader extends ConsumerWidget {
             image: DecorationImage(
               image: state.headerFile != null
                   ? FileImage(state.headerFile!) as ImageProvider
-                  : AssetImage("image/profile_bg.png"),
+                  : AssetImage(chef.headerImage), // <- dùng ảnh từ provider
               fit: BoxFit.cover,
             ),
           ),
@@ -44,9 +46,9 @@ class EditHeader extends ConsumerWidget {
           ),
         ),
 
-        // 3. Nút chọn ảnh nền → cuối cùng trong Stack → luôn nằm trên cùng
+        // 3. Nút chọn ảnh nền
         Positioned(
-          top: 220.h - 40.h - 10.h, // 10.h là margin nhỏ nhô vào
+          top: 220.h - 40.h - 10.h,
           right: 15.w,
           child: GestureDetector(
             onTap: () => _pickHeaderImage(ref),
@@ -63,7 +65,6 @@ class EditHeader extends ConsumerWidget {
         ),
       ],
     );
-
   }
 
   void _pickHeaderImage(WidgetRef ref) async {
