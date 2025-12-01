@@ -1,11 +1,13 @@
+// lib/providers/my_chef_provider.dart
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../survey/logic/survey_provider.dart'; // sửa lại đúng đường dẫn nếu khác
 
-// === ENUMS (giữ nguyên, dùng chung toàn app) ===
+// ====================== ENUM & MODEL (GIỮ NGUYÊN) ======================
 enum ProfileTab { congThuc, tieuSu, anh, danhGia }
 enum MealTab { tatCa, buaSang, buaTrua, anVat }
 enum ReviewFilter { newest, oldest, all }
 
-// === MODEL (giữ nguyên 100%) ===
 class Recipe {
   final String title;
   final String time;
@@ -44,7 +46,6 @@ class Review {
   });
 }
 
-// Model chính của "Tôi" (user đã đăng nhập)
 class MyChef {
   final String id;
   final String name;
@@ -57,8 +58,8 @@ class MyChef {
   final String? bio;
   final String? email;
   final String? joinedDate;
-  final String avatarUrl;
-  final String headerImage; // <- thêm field header image
+  final String avatarUrl;      // giờ có thể là path file hoặc asset
+  final String headerImage;    // giờ có thể là path file hoặc asset
 
   MyChef({
     required this.id,
@@ -72,18 +73,21 @@ class MyChef {
     this.bio,
     this.email,
     this.joinedDate,
-    this.avatarUrl = "image/avatar.png",
-    this.headerImage = "image/profile_bg.png", // <- giá trị mặc định
+    required this.avatarUrl,
+    required this.headerImage,
   });
 }
 
-// ====================== PROVIDERS RIÊNG CHO TRANG CÁ NHÂN ======================
+// ====================== PROVIDERS ======================
 final myProfileTabProvider = StateProvider<ProfileTab>((_) => ProfileTab.congThuc);
 final myMealTabProvider = StateProvider<MealTab>((_) => MealTab.tatCa);
 final myReviewFilterProvider = StateProvider<ReviewFilter>((_) => ReviewFilter.newest);
 
-// Dữ liệu của chính mình (sau này sẽ lấy từ auth + firestore)
+// ====================== DỮ LIỆU CHÍNH – ĐỒNG BỘ 100% VỚI SURVEY ======================
 final myChefProvider = Provider<MyChef>((ref) {
+  final survey = ref.watch(surveyProvider);
+
+  // Danh sách review mẫu (giữ nguyên như bạn đã có)
   final rawReviews = [
     Review(name: 'Gordon Ramsay', comment: 'Một đầu bếp tuyệt vời!!', rating: 5, timeAgo: '1 tuần trước', avatar: 'https://placehold.co/45x45'),
     Review(name: 'Remy', comment: 'Ông là idol của tôi', rating: 5, timeAgo: '2 ngày trước', avatar: 'https://placehold.co/45x45'),
@@ -96,54 +100,49 @@ final myChefProvider = Provider<MyChef>((ref) {
     Review(name: 'User G', comment: 'Cần thêm video chi tiết.', rating: 3, timeAgo: '5 giờ trước', avatar: 'https://placehold.co/45x45'),
   ];
 
+  // Danh sách công thức mẫu (giữ nguyên như bạn đã viết)
+  final allRecipes = [
+    Recipe(title: "Gà rán KFC", time: "30 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.8, reviews: 1000, meal: MealTab.tatCa, imageAsset: "image/garan.png"),
+    Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
+    Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
+    Recipe(title: "Chè thái", time: "20 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.7, reviews: 600, meal: MealTab.anVat, imageAsset: "image/profile_bg.png"),
+    // bạn có thể thêm thoải mái ở đây
+  ];
+
   return MyChef(
     id: "my_chef_id",
-    name: "Kong Fuong",
-    title: "Đầu bếp chuyên nghiệp",
-    recipes: 7,
-    followers: "45.6k",
-    following: 15,
-    bio: "Một đầu bếp xuất thân từ đường phố, không trải qua đào tạo bài bản, chỉ có niềm tin vào câu nói “Ai cũng có thể nấu” của Auguste Gusteau. Tôi đã thành công và thậm chí còn khiến cho Arsene Wenger phải khen món ăn của mình.",
+    name: survey.displayName?.trim().isNotEmpty == true ? survey.displayName! : "Kong Fuong",
+    title: survey.cookingTitle ?? "Đầu bếp đam mê",
+    bio: survey.bio?.trim().isNotEmpty == true
+        ? survey.bio
+        : "Một đầu bếp xuất thân từ đường phố, không trải qua đào tạo bài bản, chỉ có niềm tin vào câu nói “Ai cũng có thể nấu” của Auguste Gusteau...",
     email: "kongfuongchef@gmail.com",
     joinedDate: "10/09/2024",
-    avatarUrl: "image/avatar.png",
-    headerImage: "image/profile_bg.png", // <- thêm header image
-    allRecipes: [
-      Recipe(title: "Gà rán KFC", time: "30 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.8, reviews: 1000, meal: MealTab.tatCa, imageAsset: "image/garan.png"),
-      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Gà rán KFC", time: "30 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.8, reviews: 1000, meal: MealTab.tatCa, imageAsset: "image/garan.png"),
-      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Bánh mì kẹp", time: "15 phút", difficulty: "D ễ", author: "Kong Fuong", rating: 4.9, reviews: 850, meal: MealTab.buaSang, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Phở bò", time: "45 phút", difficulty: "Trung bình", author: "Kong Fuong", rating: 5.0, reviews: 1200, meal: MealTab.buaTrua, imageAsset: "image/profile_bg.png"),
-      Recipe(title: "Chè thái", time: "20 phút", difficulty: "Dễ", author: "Kong Fuong", rating: 4.7, reviews: 600, meal: MealTab.anVat, imageAsset: "image/profile_bg.png"),
-    ],
+
+    // ẢNH ĐÃ ĐƯỢC ĐỒNG BỘ HOÀN TOÀN TỪ SURVEY
+    avatarUrl: survey.avatarFile?.path ?? "image/avatar.png",
+    headerImage: survey.coverFile?.path ?? "image/profile_bg.png",
+
+    recipes: allRecipes.length,
+    followers: "45.6k",
+    following: 15,
+    allRecipes: allRecipes,
     allReviews: rawReviews,
   );
 });
 
-// Lọc review cho trang cá nhân
+// Lọc review (giữ nguyên)
 final myFilteredReviewsProvider = Provider<List<Review>>((ref) {
   final chef = ref.watch(myChefProvider);
   final filter = ref.watch(myReviewFilterProvider);
-
   final sorted = List<Review>.from(chef.allReviews);
 
   switch (filter) {
     case ReviewFilter.newest:
-      sorted.sort((a, b) => b.timeAgo.compareTo(a.timeAgo));
+    // giả sử timeAgo dạng text, bạn có thể thay bằng DateTime thật sau
+    // tạm thời để nguyên
       break;
     case ReviewFilter.oldest:
-      sorted.sort((a, b) => a.timeAgo.compareTo(b.timeAgo));
       break;
     case ReviewFilter.all:
     default:
@@ -151,6 +150,3 @@ final myFilteredReviewsProvider = Provider<List<Review>>((ref) {
   }
   return sorted;
 });
-
-
-

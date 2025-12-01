@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fontend/screens/survey/survey_1/widgets/cook_header.dart';
-import 'package:fontend/screens/survey/survey_1/widgets/cook_next_button.dart';
-import 'package:fontend/screens/survey/survey_1/widgets/cook_option_button.dart';
-import 'package:fontend/screens/survey/survey_1/widgets/cook_title.dart';
+
+import 'package:fontend/screens/surveylozlzsi/survey_1/widgets/cook_header.dart';
+import 'package:fontend/screens/surveylozlzsi/survey_1/widgets/cook_next_button.dart';
+import 'package:fontend/screens/surveylozlzsi/survey_1/widgets/cook_option_button.dart';
+import 'package:fontend/screens/surveylozlzsi/survey_1/widgets/cook_title.dart';
 
 
 class CookingLevelScreen extends ConsumerWidget {

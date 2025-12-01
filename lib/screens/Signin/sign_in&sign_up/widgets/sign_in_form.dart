@@ -162,7 +162,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   }
 }
 
-// ==================== INPUT FIELD ĐÃ ĐƯỢC SỬA GIỐNG HỆT SIGN UP ====================
+// ==================== INPUT FIELD  ====================
 class InputField extends StatelessWidget {
   final String hintText;
   final bool obscure;
@@ -184,7 +184,7 @@ class InputField extends StatelessWidget {
     return Container(
       width: width,
       height: 65.h,
-      alignment: Alignment.center, // giống SignUp (center thay vì centerLeft)
+      alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
         color: const Color(0xFFEBEBEB),
@@ -218,7 +218,7 @@ class InputField extends StatelessWidget {
   }
 }
 
-// Các widget còn lại giữ nguyên 100%
+
 class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;

@@ -12,6 +12,8 @@ import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_gate.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/sign_in_screen.dart';
 import 'package:fontend/screens/Start/welcome/welcome_screen.dart';
 import 'package:fontend/screens/Start/welcome/widgets/splash_page.dart';
+import 'package:fontend/screens/survey/survey_0.dart';
+import 'package:fontend/screens/survey/survey_flow_screen.dart';
 import 'package:fontend/theme/app_localizations.dart';
 import 'package:fontend/theme/language_provider.dart';
 import 'package:fontend/theme/theme_provider.dart';
@@ -72,7 +74,7 @@ class MyApp extends ConsumerWidget {
               child: widget!,
             );
           },
-          home: const WelcomeScreen(),
+          home:  SurveyStartScreen(),
           routes: {
             '/welcome': (context) => const WelcomeScreen(),
             '/signin': (context) => const SignInScreen(),

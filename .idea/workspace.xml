@@ -3,6 +3,7 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
+<<<<<<< Updated upstream
   <component name="ChangeListManager">
 <<<<<<< Updated upstream
     <list default="true" id="76453bad-4f73-4297-b52a-45dd6650a8b6" name="Changes" comment="">
@@ -168,5 +169,7 @@
     </task>
     <servers />
   </component>
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 </project>
