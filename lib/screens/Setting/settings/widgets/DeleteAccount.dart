@@ -13,7 +13,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 402.w,
-      height: 249.h,
+      height: 309.h,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -37,7 +37,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
         children: [
           // Tiêu đề
           Positioned(
-            top: 27.h,
+            top: 35.h,
             left: 26.w,
             child: SizedBox(
               width: 349.w,
@@ -57,7 +57,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
 
           // Dòng gạch ngang trên
           Positioned(
-            top: 14.h,
+            top: 10.h,
             left: 140.w,
             child: Container(
               width: 122.w,
@@ -68,7 +68,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
 
           // Dòng gạch ngang dưới
           Positioned(
-            top: 64.h,
+            top: 84.h,
             left: 0,
             child: Container(
               width: 402.w,
@@ -79,7 +79,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
 
           // Text buồn
           Positioned(
-            top: 74.h,
+            top: 104.h,
             left: 55.w,
             child: SizedBox(
               width: 292.w,
@@ -99,7 +99,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
 
           // Nút Hủy
           Positioned(
-            top: 159.h,
+            top: 200.h,
             left: 26.w,
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
@@ -127,7 +127,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
 
           // Nút Xóa tài khoản
           Positioned(
-            top: 159.h,
+            top: 200.h,
             left: 212.w,
             child: GestureDetector(
               onTap: () {

@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/Setting/settings/widgets/DeleteAccount.dart';
+import 'package:fontend/screens/Setting/settings/widgets/Help/HelpCenterScreen.dart';
+import 'package:fontend/screens/Setting/settings/widgets/reset_pass/password_reset_screen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/setting_item.dart';
 import 'package:fontend/screens/Setting/settings/widgets/title_header.dart';
 import '../../../theme/app_localizations.dart';
 import '../../../theme/language_provider.dart';
 import '../../../theme/theme_provider.dart';
+import '../notification_setting/NotificationSettingsScreen.dart';
+import 'widgets/terms_and_conditions/about_us.dart';
+import 'widgets/terms_and_conditions/terms.dart';
 import 'logic/settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -50,46 +55,104 @@ class SettingsScreen extends ConsumerWidget {
                   children: [
                     const TitleHeader(),
 
-                    // Các mục cũ giữ nguyên
+                    // Điều khoản
                     SettingItem(
                       iconPath: 'image/setting_term.png',
                       title: l10n.translate('terms'),
                       iconLeft: 10.5,
                       iconTop: 100,
-                      onTap: () => _showInfo(context, l10n.translate('terms')),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => TermsPage()),
+                        );
+                      },
+
                     ),
+
+                    //Thông báo
                     SettingItem(
                       iconPath: 'image/setting_noti.png',
                       title: l10n.translate('notifications'),
                       iconLeft: 10.5,
                       iconTop: 170,
-                      onTap: () => _showInfo(context, l10n.translate('notifications')),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => NotificationSettingsScreen()),
+                        );
+                      },
                     ),
+
+                    //Dark mode
                     SettingItem(
                       iconPath: 'image/setting_darkmode.png',
                       title: l10n.translate('dark_mode'),
                       iconLeft: 9.5,
                       iconTop: 240,
                       showArrow: false,
-                      trailing: Switch(
-                        value: isDark,
-                        onChanged: (_) => ref.read(themeProvider.notifier).toggle(),
-                        activeColor: const Color(0xFFD4A017),
+
+                      trailing: GestureDetector(
+                        onTap: () => ref.read(themeProvider.notifier).toggle(),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: 76,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+
+                            color: isDark ? const Color(0xFFFFB901) : Colors.grey.shade300,
+                          ),
+                          padding: const EdgeInsets.all(3),
+                          child: AnimatedAlign(
+                            duration: const Duration(milliseconds: 300),
+
+                            alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
+                            child: Container(
+                              width: 36,
+                              height: 36,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2))],
+                              ),
+                              child: Icon(
+
+                                isDark ? Icons.brightness_2_rounded : Icons.wb_sunny_rounded,
+                                size: 20,
+
+                                color: isDark ? const Color(0xFFFFB901) : Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
+
+                    //Giới thiệu
                     SettingItem(
                       iconPath: 'image/setting_in4.png',
                       title: l10n.translate('about'),
                       iconLeft: 11,
                       iconTop: 310,
-                      onTap: () => _showInfo(context, l10n.translate('about')),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => AboutUs()),
+                        );
+                      },
                     ),
                     SettingItem(
                       iconPath: 'image/setting_pass.png',
                       title: l10n.translate('password'),
                       iconLeft: 11,
                       iconTop: 380,
-                      onTap: () => _showInfo(context, l10n.translate('password')),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => PasswordResetScreen()),
+                        );
+                      },
                     ),
                     SettingItem(
                       iconPath: 'image/setting_lang.png',
@@ -107,7 +170,12 @@ class SettingsScreen extends ConsumerWidget {
                       title: l10n.translate('help'),
                       iconLeft: 7.5,
                       iconTop: 520,
-                      onTap: () => _showInfo(context, l10n.translate('help')),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => HelpCenterApp()),
+                        );
+                      },
                     ),
                     SettingItem(
                       iconPath: 'image/setting_logout.png',

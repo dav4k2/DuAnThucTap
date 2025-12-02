@@ -29,11 +29,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // bắt buộc để đẩy nội dung khi mở bàn phím
+      resizeToAvoidBottomInset: true,
       body: SignInBackground(
         child: Stack(
           children: [
-            // =================== NỘI DUNG CHÍNH (có padding 30.w) ===================
+            // =================== NỘI DUNG CHÍNH ===================
             SafeArea(
               top: false,
               bottom: false,
@@ -68,7 +68,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                               child: isSignIn ? const SignInForm() : const SignUpForm(),
                             ),
 
-                            // Khoảng cách để khi bàn phím mở, nút Google không đè lên nút Đăng nhập
+
                             SizedBox(height: 80.h),
                           ],
                         ),
@@ -79,12 +79,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               ),
             ),
 
-            // =================== NÚT GOOGLE & iCLOUD — FULL WIDTH, ĂN LUÔN SAFEAREA DƯỚI ===================
+            // =================== NÚT GOOGLE & iCLOUD — FULL WIDTH ===================
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: SignInSocialButtons(), // BỎ SafeArea ở đây → để nó ăn trọn phần dưới
+              child: SignInSocialButtons(),
             ),
 
             // =================== NÚT BACK ===================

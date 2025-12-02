@@ -1,0 +1,266 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../Remove/enter_verification_code/widgets/error_message.dart';
+import '../../logic/password_reset_provider.dart';
+
+// THÊM 2 DÒNG NÀY – ĐƯỜNG DẪN ĐẾN MÀN HÌNH BẠN MUỐN CHUYỂN TỚI
+import '../../settings_screen.dart';
+// hoặc ví dụ:
+// import '../../../home/home_screen.dart';  // nếu muốn về trang chủ
+
+const Color kPrimaryColor = Color(0xFFFFB901);
+
+class PasswordResetScreen extends ConsumerStatefulWidget {
+  const PasswordResetScreen({super.key});
+
+  @override
+  ConsumerState<PasswordResetScreen> createState() => _PasswordResetScreenState();
+}
+
+class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
+  final _currentPassController = TextEditingController();
+  final _newPassController = TextEditingController();
+  final _confirmPassController = TextEditingController();
+
+  bool _isCurrentPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
+  String _currentPassError = '';
+  String _newPassError = '';
+  String _confirmPassError = '';
+
+  @override
+  void dispose() {
+    _currentPassController.dispose();
+    _newPassController.dispose();
+    _confirmPassController.dispose();
+    super.dispose();
+  }
+
+  void _submitReset() async {
+    setState(() {
+      _currentPassError = '';
+      _newPassError = '';
+      _confirmPassError = '';
+    });
+
+    final controller = ref.read(passwordResetProvider.notifier);
+    await controller.resetPassword(
+      currentPassword: _currentPassController.text.trim(),
+      newPassword: _newPassController.text.trim(),
+      confirmPassword: _confirmPassController.text.trim(),
+    );
+  }
+
+  void _handleProviderErrors(PasswordResetState next) {
+    if (next.errorMessage == null || next.errorMessage!.isEmpty) return;
+
+    setState(() {
+      _currentPassError = '';
+      _newPassError = '';
+      _confirmPassError = '';
+    });
+
+    final error = next.errorMessage!;
+    if (error.contains('không khớp') || error.contains('không trùng')) {
+      _confirmPassError = error;
+    } else if (error.contains('hiện tại') || error.contains('sai') || error.contains('không chính xác')) {
+      _currentPassError = error;
+    } else if (error.contains('ít nhất') || error.contains('ký tự')) {
+      _newPassError = error;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.redAccent),
+      );
+    }
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(passwordResetProvider);
+    final width = MediaQuery.of(context).size.width - 56;
+
+    // QUAN TRỌNG: LẮNG NGHE KẾT QUẢ TỪ PROVIDER → CHUYỂN TRANG KHI THÀNH CÔNG
+    ref.listen<PasswordResetState>(passwordResetProvider, (previous, next) {
+      if (next.errorMessage != null && next.errorMessage!.isNotEmpty) {
+        if (next.errorMessage!.contains('thành công')) {
+          // HIỆN THÔNG BÁO XANH + CHUYỂN TRANG
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đổi mật khẩu thành công!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+
+
+
+          // Cách 1: Mở màn hình thành công (khuyên dùng)
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          );
+
+          // Cách 2: Về trang chủ (nếu muốn)
+          // Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+
+          // Cách 3: Đóng hết và mở trang mới
+          // Navigator.of(context).pushAndRemoveUntil(
+          //   MaterialPageRoute(builder: (_) => const HomeScreen()),
+          //   (route) => false,
+          // );
+        } else {
+          _handleProviderErrors(next);
+        }
+      }
+    });
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Cài đặt mật khẩu',
+          style: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.w700, fontFamily: 'SF Pro'),
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 28.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            _buildLabel('Mật khẩu hiện tại'),
+            _buildPasswordField(
+              controller: _currentPassController,
+              hintText: 'Nhập mật khẩu hiện tại',
+              isVisible: _isCurrentPasswordVisible,
+              toggleVisibility: () {
+                setState(() => _isCurrentPasswordVisible = !_isCurrentPasswordVisible);
+                if (_currentPassError.isNotEmpty) setState(() => _currentPassError = '');
+              },
+            ),
+            const SizedBox(height: 8),
+            if (_currentPassError.isNotEmpty) ...[
+              ErrorMessage(message: _currentPassError, width: width),
+              const SizedBox(height: 8),
+            ],
+
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {},
+                child: const Text(
+                  'Quên mật khẩu ?',
+                  style: TextStyle(color: kPrimaryColor, fontSize: 20, fontWeight: FontWeight.w600, decoration: TextDecoration.underline, fontFamily: 'SF Pro Rounded'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            _buildLabel('Mật khẩu mới'),
+            _buildPasswordField(
+              controller: _newPassController,
+              hintText: 'Nhập mật khẩu mới (tối thiểu 6 ký tự)',
+              isVisible: _isNewPasswordVisible,
+              toggleVisibility: () {
+                setState(() => _isNewPasswordVisible = !_isNewPasswordVisible);
+                if (_newPassError.isNotEmpty) setState(() => _newPassError = '');
+              },
+            ),
+            const SizedBox(height: 8),
+            if (_newPassError.isNotEmpty) ...[
+              ErrorMessage(message: _newPassError, width: width),
+              const SizedBox(height: 8),
+            ],
+
+            const SizedBox(height: 24),
+
+            _buildLabel('Nhập lại mật khẩu'),
+            _buildPasswordField(
+              controller: _confirmPassController,
+              hintText: 'Nhập lại mật khẩu mới',
+              isVisible: _isConfirmPasswordVisible,
+              toggleVisibility: () {
+                setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible);
+                if (_confirmPassError.isNotEmpty) setState(() => _confirmPassError = '');
+              },
+            ),
+            const SizedBox(height: 8),
+            if (_confirmPassError.isNotEmpty) ...[
+              ErrorMessage(message: _confirmPassError, width: width),
+              const SizedBox(height: 8),
+            ],
+
+            const SizedBox(height: 50),
+
+            // NÚT LUÔN ẤN ĐƯỢC
+            GestureDetector(
+              onTap: _submitReset,
+              child: Container(
+                height: 65,
+                width: double.infinity,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: kPrimaryColor,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: state.isLoading
+                    ? const SizedBox(width: 30, height: 30, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 3))
+                    : const Text(
+                  'CẬP NHẬT',
+                  style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w800, fontFamily: 'SF Pro Rounded'),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) => Padding(
+    padding: const EdgeInsets.only(left: 10, bottom: 8),
+    child: Text(text, style: const TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'SF Pro Rounded', fontWeight: FontWeight.w500)),
+  );
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String hintText,
+    required bool isVisible,
+    required VoidCallback toggleVisibility,
+  }) {
+    return Container(
+      height: 65,
+      decoration: BoxDecoration(
+        color: const Color(0xFFEBEBEB),
+        borderRadius: BorderRadius.circular(50),
+        border: Border.all(color: Colors.black.withOpacity(0.4)),
+      ),
+      child: TextFormField(
+        controller: controller,
+        obscureText: !isVisible,
+        style: const TextStyle(fontSize: 20, fontFamily: 'SF Pro Rounded', fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 18),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          suffixIcon: IconButton(
+            icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off, color: kPrimaryColor),
+            onPressed: toggleVisibility,
+          ),
+        ),
+      ),
+    );
+  }
+}

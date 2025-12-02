@@ -43,7 +43,7 @@ class TermsPage extends StatelessWidget {
             Text(
               'Điều khoản',
               style: TextStyle(
-                color: Colors.black.withOpacity(0.6),
+                color: Color(0xFFFFB901),
                 fontSize: subtitleFontSize,
                 fontFamily: 'SF Pro',
                 fontWeight: FontWeight.w500,

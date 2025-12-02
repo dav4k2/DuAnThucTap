@@ -135,7 +135,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             ref.read(authProvider.notifier).setError(null);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const MainLayout()),
             );
           },
           child: Stack(
