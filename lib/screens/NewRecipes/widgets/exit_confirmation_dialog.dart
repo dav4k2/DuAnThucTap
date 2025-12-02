@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../logic/add_recipe_provider.dart';
 
-class ExitConfirmationDialog extends StatelessWidget {
+class ExitConfirmationDialog extends ConsumerWidget {
   const ExitConfirmationDialog({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 32.w),
@@ -24,7 +26,6 @@ class ExitConfirmationDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Icon tròn cam
             Container(
               width: 80.w,
               height: 80.w,
@@ -38,9 +39,7 @@ class ExitConfirmationDialog extends StatelessWidget {
                 size: 44.sp,
               ),
             ),
-
             SizedBox(height: 24.h),
-
             Text(
               'Thoát mà không lưu?',
               style: TextStyle(
@@ -50,9 +49,7 @@ class ExitConfirmationDialog extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-
             SizedBox(height: 12.h),
-
             Text(
               'Bạn có muốn lưu công thức dưới dạng nháp\ntrước khi thoát không?',
               style: TextStyle(
@@ -62,16 +59,17 @@ class ExitConfirmationDialog extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-
             SizedBox(height: 32.h),
-
-            // 3 nút
             Row(
               children: [
                 // Không lưu
                 Expanded(
                   child: TextButton(
-                    onPressed: () => Navigator.pop(context, false),
+                    onPressed: () async {
+                      // Xoá nháp & reset form
+                      await ref.read(addRecipeProvider.notifier).clearDraftAndReset();
+                      Navigator.pop(context, false);
+                    },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
                       shape: RoundedRectangleBorder(
@@ -116,20 +114,11 @@ class ExitConfirmationDialog extends StatelessWidget {
 
                 SizedBox(width: 12.w),
 
-
+                // Lưu nháp
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Đã lưu nháp thành công!'),
-                          backgroundColor: Colors.green,
-                          behavior: SnackBarBehavior.floating,
-                          margin: EdgeInsets.all(16.w),
-                          shape: const StadiumBorder(),
-                        ),
-                      );
-                      Navigator.pop(context, true);
+                    onPressed: () async {
+                      await ref.read(addRecipeProvider.notifier).saveAsDraft(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFE724C),

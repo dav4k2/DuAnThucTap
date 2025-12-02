@@ -2,8 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../AI/logic/draft_provider.dart';
+import '../../AI/logic/draft_recipe.dart';
 import '../widgets/exit_confirmation_dialog.dart';
 import '../widgets/missing_info_dialog.dart';
 
@@ -19,14 +20,13 @@ class AddRecipeState {
   final List<String> steps;
   final List<String?> stepImages;
 
-  // LỖI CHI TIẾT CHO TỪNG PHẦN
   final String? nameError;
   final String? descriptionError;
   final String? servingsError;
   final String? cookingTimeError;
   final String? difficultyError;
-  final List<String?> ingredientErrors; // lỗi từng nguyên liệu
-  final List<String?> stepErrors; // lỗi từng bước làm
+  final List<String?> ingredientErrors;
+  final List<String?> stepErrors;
 
   AddRecipeState({
     this.images = const [],
@@ -92,7 +92,9 @@ class AddRecipeState {
 }
 
 class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
-  AddRecipeNotifier()
+  final Ref ref; // ← cần có ref để gọi provider khác
+
+  AddRecipeNotifier(this.ref)
       : super(AddRecipeState(
     servings: null,
     cookingTime: null,
@@ -102,9 +104,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     stepErrors: [],
   ));
 
-  // ==================== HÀM XỬ LÝ NÚT BACK ====================
-// Trong file add_recipe_provider.dart – chỉ thay đúng hàm này thôi
-
+  // ==================== HÀM BACK ====================
   Future<void> handleBackPressed(BuildContext context) async {
     final shouldExit = await showDialog<bool>(
       context: context,
@@ -114,26 +114,101 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
 
     if (shouldExit == true || shouldExit == false) {
       if (context.mounted) {
-        Navigator.of(context).pop(); // Thoát màn hình thêm công thức
+        Navigator.of(context).pop();
       }
     }
   }
 
-  // ==================== CÁC HÀM CẬP NHẬT DỮ LIỆU ====================
+  // ==================== XOÁ NHÁP & RESET FORM ====================
+// ==================== XOÁ NHÁP & RESET FORM ====================
+  Future<void> clearDraftAndReset() async {
+    // Nếu đã lưu draft trước đó (dùng title làm key)
+    final draftKey = state.title.isEmpty ? 'Công thức chưa đặt tên' : state.title;
+
+    // Xoá draft qua provider, truyền key (String)
+    await ref.read(recipeDraftProvider.notifier).deleteDraft(draftKey);
+
+    // Reset form
+    state = AddRecipeState(
+      servings: null,
+      cookingTime: null,
+      difficulty: null,
+      stepImages: [],
+      ingredientErrors: [],
+      stepErrors: [],
+    );
+  }
+
+
+
+
+  // ==================== LƯU NHÁP ====================
+  Future<void> saveAsDraft(BuildContext context) async {
+    final draft = DraftRecipe(
+      title: state.title.trim().isEmpty ? 'Công thức chưa đặt tên' : state.title,
+      description: state.description,
+      images: state.images,
+      video: state.video,
+      servings: state.servings,
+      cookingTime: state.cookingTime,
+      difficulty: state.difficulty,
+      ingredients: state.ingredients.where((e) => e.trim().isNotEmpty).toList(),
+      steps: state.steps.where((e) => e.trim().isNotEmpty).toList(),
+    );
+
+    // Lưu nháp vào provider nháp
+    await ref.read(recipeDraftProvider.notifier).saveDraft(draft);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã lưu bản nháp!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.of(context).pop();
+    }
+  }
+
+  // ==================== LOAD TỪ NHÁP ====================
+  void loadFromDraft(DraftRecipe draft) {
+    state = state.copyWith(
+      title: draft.title == 'Công thức chưa đặt tên' ? '' : draft.title,
+      description: draft.description,
+      images: draft.images,
+      video: draft.video,
+      servings: draft.servings,
+      cookingTime: draft.cookingTime,
+      difficulty: draft.difficulty,
+      ingredients: draft.ingredients,
+      steps: draft.steps,
+      // reset lỗi
+      nameError: null,
+      descriptionError: null,
+      servingsError: null,
+      cookingTimeError: null,
+      difficultyError: null,
+      ingredientErrors: List.filled(draft.ingredients.length, null),
+      stepErrors: List.filled(draft.steps.length, null),
+    );
+  }
+
+  // ==================== CẬP NHẬT DỮ LIỆU ====================
   void updateTitle(String title) => state = state.copyWith(title: title, nameError: null);
 
-  void updateDescription(String description) => state = state.copyWith(description: description, descriptionError: null);
+  void updateDescription(String description) =>
+      state = state.copyWith(description: description, descriptionError: null);
 
   void updateServings(String? value) => state = state.copyWith(servings: value, servingsError: null);
 
-  void updateCookingTime(String? value) => state = state.copyWith(cookingTime: value, cookingTimeError: null);
+  void updateCookingTime(String? value) =>
+      state = state.copyWith(cookingTime: value, cookingTimeError: null);
 
-  void updateDifficulty(String? value) => state = state.copyWith(difficulty: value, difficultyError: null);
+  void updateDifficulty(String? value) =>
+      state = state.copyWith(difficulty: value, difficultyError: null);
 
   void addImage(String path) {
-    if (state.images.length < 6) {
-      state = state.copyWith(images: [...state.images, path]);
-    }
+    if (state.images.length < 6) state = state.copyWith(images: [...state.images, path]);
   }
 
   void removeImage(int index) {
@@ -195,13 +270,13 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     state = state.copyWith(stepImages: newImages);
   }
 
+
   // ==================== VALIDATE & SUBMIT ====================
   Future<bool> validateAndSubmit(BuildContext context) async {
     final errors = <String>[];
     final ingredientErrors = <String?>[];
     final stepErrors = <String?>[];
 
-    // Reset lỗi
     state = state.copyWith(
       nameError: null,
       descriptionError: null,
@@ -283,5 +358,5 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
 }
 
 final addRecipeProvider = StateNotifierProvider<AddRecipeNotifier, AddRecipeState>((ref) {
-  return AddRecipeNotifier();
+  return AddRecipeNotifier(ref);
 });

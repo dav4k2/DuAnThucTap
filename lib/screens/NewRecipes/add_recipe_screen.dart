@@ -215,19 +215,52 @@ class AddRecipeScreen extends ConsumerWidget {
 
                     // ===================== BOTTOM BUTTONS (ĐÃ ĐƯA VÀO ĐÂY) =====================
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0.w, 0.h, 0.w, 20.h), // cách đều đẹp như cũ
-                      child: GestureDetector(
-                        onTapDown: (details) {
-                          final tapX = details.globalPosition.dx;
-                          final screenWidth = MediaQuery.of(context).size.width;
-                          if (tapX > screenWidth / 2) {
-                            notifier.validateAndSubmit(context);
-                          }
-                          // Bên trái để trống hoặc thêm lưu nháp sau
-                        },
-                        child: const BottomButtons(),
+                      padding: EdgeInsets.symmetric(horizontal: 26.w), // padding 2 bên lề
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => ref.read(addRecipeProvider.notifier).saveAsDraft(context),
+                              child: Container(
+                                height: 66.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.black, width: 1.5), // viền đen
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Lưu nháp',
+                                    style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => ref.read(addRecipeProvider.notifier).validateAndSubmit(context),
+                              child: Container(
+                                height: 66.h,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFFB901),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.black, width: 1.5), // thêm viền đen nếu muốn
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Đăng',
+                                    style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600, color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                    )
+
                   ],
                 ),
               ),
