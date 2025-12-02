@@ -58,6 +58,7 @@ dependencies:
   dotted_border: ^2.1.0
   image_picker: ^1.0.7
   permission_handler: ^11.3.1
+  font_awesome_flutter: ^10.7.0
 
 
 

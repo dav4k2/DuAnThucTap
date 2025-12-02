@@ -1,13 +1,12 @@
-// lib/screens/Setting/settings/widgets/delete_account_bottom_sheet.dart
-// Hoặc dán thẳng vào cuối file SettingsScreen.dart cũng được
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class DeleteAccountBottomSheet extends StatelessWidget {
+class LogoutBottomSheett extends StatelessWidget {
   final VoidCallback onConfirm;
 
-  const DeleteAccountBottomSheet({super.key, required this.onConfirm});
+  const LogoutBottomSheett({super.key, required this.onConfirm});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,6 @@ class DeleteAccountBottomSheet extends StatelessWidget {
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30.r),
           topRight: Radius.circular(30.r),
-
         ),
         border: Border.all(
           color: Colors.black.withOpacity(0.30),
@@ -38,11 +36,11 @@ class DeleteAccountBottomSheet extends StatelessWidget {
           // Tiêu đề
           Positioned(
             top: 35.h,
-            left: 16.w,
+            left: 26.w,
             child: SizedBox(
-              width: 369.w,
+              width: 349.w,
               child: Text(
-                'Bạn có chắc muốn xóa tài khoản?',
+                'Bạn có muốn đăng xuất?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
@@ -55,7 +53,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             ),
           ),
 
-          // Dòng gạch ngang trên
+          // Gạch ngang trên (cái thanh kéo)
           Positioned(
             top: 10.h,
             left: 140.w,
@@ -66,9 +64,9 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             ),
           ),
 
-          // Dòng gạch ngang dưới
+          // Gạch ngang dưới tiêu đề
           Positioned(
-            top: 94.h,
+            top: 84.h,
             left: 0,
             child: Container(
               width: 402.w,
@@ -77,14 +75,14 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             ),
           ),
 
-          // Text buồn
+          // Dòng text buồn
           Positioned(
             top: 104.h,
             left: 55.w,
             child: SizedBox(
               width: 292.w,
               child: Text(
-                'Chúng tôi rất buồn khi thấy bạn rời đi :’(',
+                'Hẹn gặp lại bạn sớm nhé!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black.withOpacity(0.50),
@@ -125,27 +123,27 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             ),
           ),
 
-          // Nút Xóa tài khoản
+          // Nút Đăng xuất
           Positioned(
             top: 200.h,
             left: 212.w,
             child: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
-                onConfirm();
+                Navigator.pop(context); // đóng bottom sheet
+                onConfirm();            // thực hiện logout
               },
               child: Container(
                 width: 169.w,
                 height: 58.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFF5959),
+                  color: const Color(0xFFFFB901),
                   borderRadius: BorderRadius.circular(50.r),
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'Xóa tài khoản',
+                  'Đăng xuất',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 22.sp,
                     fontFamily: 'SF Pro',
                     fontWeight: FontWeight.w600,
