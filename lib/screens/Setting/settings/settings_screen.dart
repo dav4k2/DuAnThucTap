@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fontend/screens/Setting/settings/widgets/DeleteAccount.dart';
+import 'package:fontend/screens/Setting/settings/widgets/DeleteAccountScreen/widgets/DeleteAccount.dart';
+import 'package:fontend/screens/Setting/settings/widgets/DeleteAccountScreen/DeleteAccountScreen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/Help/HelpCenterScreen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/logout_bottom_sheet.dart';
 import 'package:fontend/screens/Setting/settings/widgets/reset_pass/password_reset_screen.dart';
@@ -174,16 +175,7 @@ class SettingsScreen extends ConsumerWidget {
                       customArrow: Icons.delete_forever,
                       forceIconColor: const Color(0xFFEB3D32),
                       forceTextColor: const Color(0xFFEB3D32),
-                      onTap: () => _showCustomBottomSheet(
-                        context,
-                        DeleteAccountBottomSheet(
-                          onConfirm: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Đang xử lý xóa tài khoản...')),
-                            );
-                          },
-                        ),
-                      ),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DeleteAccountScreen())),
                     ),
                   ],
                 ),
