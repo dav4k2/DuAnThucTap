@@ -1,4 +1,4 @@
-
+/*
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,11 +88,12 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
+*/
 
 
-/*
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
 import 'screens/notification/notification_screen.dart';
 
 void main() => runApp(const ProviderScope(child: MyApp()));
@@ -112,8 +113,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      home: const NotificationScreen(),
+      home: const RecipeDetailPage(),
     );
   }
 }
-*/
