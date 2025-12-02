@@ -94,6 +94,9 @@ class MyApp extends ConsumerWidget {
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
+import 'package:fontend/screens/prepare/prepare_page/prepare_screen.dart';
+import 'package:fontend/screens/prepare/step_0/step_screen.dart';
+import 'package:fontend/screens/prepare/step_1/step_time_screen.dart';
 import 'screens/notification/notification_screen.dart';
 
 void main() => runApp(const ProviderScope(child: MyApp()));
@@ -113,7 +116,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      home: const RecipeDetailPage(),
+      home: const StepTimerScreen(),
     );
   }
 }
