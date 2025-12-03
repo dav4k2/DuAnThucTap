@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fontend/screens/prepare/step_0/widgets/step_bottom.dart';
-import 'package:fontend/screens/prepare/step_0/widgets/step_description.dart';
-import 'package:fontend/screens/prepare/step_0/widgets/step_header.dart';
-import 'package:fontend/screens/prepare/step_0/widgets/step_image.dart';
-import 'package:fontend/screens/prepare/step_0/widgets/step_title.dart';
-
+import 'package:fontend/screens/prepare/step_3/widgets/step3_bottom.dart';
+import 'package:fontend/screens/prepare/step_3/widgets/step3_description.dart';
+import 'package:fontend/screens/prepare/step_3/widgets/step3_header.dart';
+import 'package:fontend/screens/prepare/step_3/widgets/step3_image.dart';
+import 'package:fontend/screens/prepare/step_3/widgets/step3_title.dart';
 import 'logic/step3_provider.dart';
 
 class StepScreen3 extends ConsumerWidget {
@@ -31,15 +30,15 @@ class StepScreen3 extends ConsumerWidget {
           ),
           child: Stack(
             children: [
-              StepHeader(width: width),
+              StepHeader3(width: width),
 
-              StepTitle(step: step),
+              StepTitle3(step: step),
 
-              StepDescription(),
+              StepDescription3(),
 
-              StepImage(width: width),
+              StepImage3(width: width),
 
-              StepBottomCard(
+              StepBottomCard3(
                 width: width,
                 height: height,
               ),

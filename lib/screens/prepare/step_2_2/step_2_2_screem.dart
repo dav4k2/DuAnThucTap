@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fontend/screens/prepare/step_1/widgets/background.dart';
-import 'package:fontend/screens/prepare/step_1/widgets/bottom_panel.dart';
-import 'package:fontend/screens/prepare/step_1/widgets/description.dart';
-import 'package:fontend/screens/prepare/step_1/widgets/header.dart';
-import 'package:fontend/screens/prepare/step_1/widgets/image.dart';
+import 'package:fontend/screens/prepare/step_2_2/widgets/background2.dart';
+import 'package:fontend/screens/prepare/step_2_2/widgets/bottom_panel2.dart';
+import 'package:fontend/screens/prepare/step_2_2/widgets/description2.dart';
+import 'package:fontend/screens/prepare/step_2_2/widgets/header2.dart';
+import 'package:fontend/screens/prepare/step_2_2/widgets/image2.dart';
 
 import '../step_0/widgets/step_title.dart';
 import 'logic/step2_2_provider.dart';
@@ -21,14 +21,14 @@ class StepTimerScreen2 extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       body: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(50)),
-        child: StepBackground1(
+        child: StepBackground2(
           child: Stack(
             children: [
-              StepHeader1(),
+              StepHeader2(),
               StepTitle(step: step),
-              const StepDescription1(),
-              StepImage1(size: size),
-              StepBottomPanel1(
+              const StepDescription2(),
+              StepImage2(size: size),
+              StepBottomPanel2(
                 size: size,
               ),
             ],

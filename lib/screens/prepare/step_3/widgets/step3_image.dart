@@ -16,7 +16,7 @@ class StepImage3 extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
           image: const DecorationImage(
-            image: AssetImage("image/p1.png"), 
+            image: AssetImage("image/p1.png"),
             fit: BoxFit.cover,
           ),
         ),

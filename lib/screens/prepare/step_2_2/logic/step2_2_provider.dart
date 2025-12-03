@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Provider cho index bước
-final stepIndexProvider = StateProvider<int>((ref) => 1);
+final stepIndexProvider = StateProvider<int>((ref) => 2);
 
 // Provider cho timer controller
 final stepTimerProvider = StateNotifierProvider<StepTimerNotifier, TimerState>((ref) {

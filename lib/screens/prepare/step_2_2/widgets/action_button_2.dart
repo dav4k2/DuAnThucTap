@@ -49,6 +49,7 @@ class StepActionButtons2 extends ConsumerWidget {
                 ),
               );
             },
+            child: const _TextButton(label: "Bỏ qua"),
           ),
         ),
       ],

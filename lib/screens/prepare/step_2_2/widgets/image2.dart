@@ -27,7 +27,7 @@ class StepImage2 extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Image.asset(
-            "image/p4.png",
+            "image/p3.png",
             fit: BoxFit.cover,
           ),
         ),

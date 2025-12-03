@@ -10,7 +10,7 @@ class StepDescription2 extends StatelessWidget {
       left: 22,
       right: 22,
       child: Text(
-        'Hành mùi rửa sạch thái nhỏ, xương bò rửa sạch rồi cho vào nồi...',
+        'Thêm nước vào nồi, đun đến khi sôi thì vớt hết bọt, thêm gói vị phở rồi ninh 30p',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 16,
