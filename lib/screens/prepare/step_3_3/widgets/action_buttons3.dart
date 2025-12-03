@@ -1,12 +1,11 @@
 // lib/screens/prepare/step_1/widgets/action_buttons.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../step_2/step_2_screen.dart';
-import '../logic/step_provider1.dart';
+import '../../finish/finish_screen.dart';
+import '../logic/step3_3_provider.dart';
 
-class StepActionButtons1 extends ConsumerWidget {
-  const StepActionButtons1({super.key});
+class StepActionButtons3 extends ConsumerWidget {
+  const StepActionButtons3({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,21 +35,19 @@ class StepActionButtons1 extends ConsumerWidget {
           child: _TextButton(label: "Trước đó"),
         ),
 
-        // Nút "Bỏ qua" - Chuyển sang trang tiếp
+        // Nút "Bỏ qua"
         Positioned(
           top: 838 - 597,
           right: 54,
           child: GestureDetector(
             onTap: () {
-              // Chuyển sang trang tiếp theo
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const StepScreen2(), // Thay NextScreen bằng tên trang của bạn
+                  builder: (context) => const FinishRecipeScreen(),
                 ),
               );
             },
-            child: const _TextButton(label: "Bỏ qua"),
           ),
         ),
       ],

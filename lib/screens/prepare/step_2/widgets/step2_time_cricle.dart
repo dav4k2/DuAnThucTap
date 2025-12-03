@@ -2,16 +2,16 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import '../../step_1/step_time_screen.dart';
+import '../../step_2_2/step_2_2_screem.dart';
 
-class StepTimerCircle extends StatefulWidget {
-  const StepTimerCircle({super.key});
+class StepTimerCircle2 extends StatefulWidget {
+  const StepTimerCircle2({super.key});
 
   @override
-  State<StepTimerCircle> createState() => _StepTimerCircleState();
+  State<StepTimerCircle2> createState() => _StepTimerCircleState();
 }
 
-class _StepTimerCircleState extends State<StepTimerCircle> {
+class _StepTimerCircleState extends State<StepTimerCircle2> {
   int _timeLeft = 5;
   final int _totalTime = 5;
   Timer? _timer;
@@ -114,17 +114,15 @@ class _StepTimerCircleState extends State<StepTimerCircle> {
             // 2. Khoảng cách giữa vòng tròn và nút
             const SizedBox(width: 32),
 
-            // 3. Mũi tên ">" bên phải - Chuyển sang trang tiếp
+            // 3. Mũi tên ">" bên phải
             GestureDetector(
               onTap: () {
-                // Hủy timer trước khi chuyển trang
                 _timer?.cancel();
 
-                // Chuyển sang trang tiếp theo
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const StepTimerScreen(), // Thay NextScreen bằng tên trang của bạn
+                      builder: (context) => const StepTimerScreen2(),
                   ),
                 );
               },

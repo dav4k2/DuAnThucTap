@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class StepHeader extends StatelessWidget {
+class StepHeader3 extends StatelessWidget {
   final double width;
 
-  const StepHeader({super.key, required this.width});
+  const StepHeader3({super.key, required this.width});
 
   @override
   Widget build(BuildContext context) {

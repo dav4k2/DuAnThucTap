@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../step_0/step_screen.dart';
 import '../logic//prepare_provider.dart';
 
 class BottomSection extends ConsumerWidget {
@@ -67,6 +68,12 @@ class BottomSection extends ConsumerWidget {
                 GestureDetector(
                   onTap: () {
                     // TODO: chuyển sang màn tiếp theo tại đây
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StepScreen(),
+                        ),
+                    );
                   },
                   child: const Icon(
                     Icons.arrow_forward_ios,
