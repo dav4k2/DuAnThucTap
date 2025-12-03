@@ -31,6 +31,9 @@ class StepItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final stepImagePath = ref.watch(
       addRecipeProvider.select((s) => s.stepImages.length > index ? s.stepImages[index] : null),
     );
@@ -39,13 +42,18 @@ class StepItem extends ConsumerWidget {
       addRecipeProvider.select((s) => s.stepErrors.length > index ? s.stepErrors[index] : null),
     );
 
+    // Màu background ô nhập
+    final fieldBgColor = isDark ? Color(0xFF2C2C2C) : Color(0xFFEBEBEB);
+    final fieldTextColor = isDark ? Colors.white : Colors.black87;
+    final placeholderColor = isDark ? Colors.grey[500]! : Colors.grey.shade400;
+
     return Padding(
       padding: EdgeInsets.only(top: 30.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(width: 15.w),
-          Text('${index + 1}', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold)),
+          Text('${index + 1}', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: fieldTextColor)),
           SizedBox(width: 20.w),
           Container(width: 3.w, height: 46.h, color: const Color(0xFF21DB53)),
           SizedBox(width: 20.w),
@@ -56,32 +64,33 @@ class StepItem extends ConsumerWidget {
                 // Ô NHẬP + LỖI ĐỎ KHÔNG BỊ CHỒNG
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEBEBEB),
+                    color: fieldBgColor,
                     borderRadius: BorderRadius.circular(20.r),
                     border: errorText != null ? Border.all(color: Colors.red, width: 1.5) : null,
                   ),
                   child: TextField(
                     controller: TextEditingController(text: description)
                       ..selection = TextSelection.fromPosition(TextPosition(offset: description.length)),
-                    style: TextStyle(fontSize: 15.sp, color: Colors.black87),
+                    style: TextStyle(fontSize: 15.sp, color: fieldTextColor),
                     decoration: InputDecoration(
                       hintText: 'Mô tả chi tiết bước này...',
-                      hintStyle: TextStyle(color: Colors.grey.shade400),
+                      hintStyle: TextStyle(color: placeholderColor),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 14.h),
-
                     ),
                     maxLines: null,
                     onChanged: onChanged,
                   ),
                 ),
 
-
-                 if (errorText != null)
-                   Padding(
+                if (errorText != null)
+                  Padding(
                     padding: EdgeInsets.only(top: 6.h),
-                    child: Text(errorText, style: TextStyle(color: Colors.red, fontSize: 12.sp)),
+                    child: Text(
+                      errorText,
+                      style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                    ),
                   ),
 
                 SizedBox(height: 12.h),
@@ -99,7 +108,7 @@ class StepItem extends ConsumerWidget {
                       width: 68.w,
                       height: 68.h,
                       decoration: BoxDecoration(
-                        color: const Color(0x51D4D4D4),
+                        color: isDark ? Color(0x33D4D4D4) : const Color(0x51D4D4D4),
                         borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: stepImagePath == null
@@ -111,7 +120,8 @@ class StepItem extends ConsumerWidget {
                             child: Image.file(File(stepImagePath), width: 68.w, height: 68.h, fit: BoxFit.cover),
                           ),
                           Positioned(
-                            top: 4, right: 4,
+                            top: 4,
+                            right: 4,
                             child: GestureDetector(
                               onTap: () => ref.read(addRecipeProvider.notifier).clearStepImage(index),
                               child: Container(
@@ -131,7 +141,7 @@ class StepItem extends ConsumerWidget {
           ),
           if (onDelete != null)
             IconButton(
-              icon: Icon(Icons.close, size: 20.sp, color: Colors.grey.shade600),
+              icon: Icon(Icons.close, size: 20.sp, color: isDark ? Colors.grey[400] : Colors.grey.shade600),
               onPressed: onDelete,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),

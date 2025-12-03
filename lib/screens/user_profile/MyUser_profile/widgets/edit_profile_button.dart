@@ -1,26 +1,31 @@
-// lib/widgets/edit_profile_button.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../theme/theme_provider.dart';
 
 import '../../Edit_user/edit_profile_screen.dart';
 
-// Thay tên này thành trang chỉnh sửa profile của bạn
-//import '../screens/edit_profile_screen.dart';   // <-- CHỈ CẦN ĐỔI ĐƯỜNG DẪN NÀY LÀ CHẠY NGON
-
-class EditProfileButton extends StatelessWidget {
+class EditProfileButton extends ConsumerWidget {
   const EditProfileButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(themeProvider);
+
+    // Nền nút: Light mode trắng, Dark mode vàng FFC836
+    final bgColor = isDarkMode ? const Color(0xFFFFC836) : Colors.white;
+
+    // Màu chữ, icon, border: Light mode vàng, Dark mode đen tương phản
+    final contentColor = isDarkMode ? Colors.black87 : const Color(0xFFFFB901);
+
     return Positioned(
       left: 62.w,
       top: 437.h,
       child: GestureDetector(
         onTap: () {
-          // Mở trang chỉnh sửa profile
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => const EditProfileScreen(), // <-- tên class trang chỉnh sửa
+              builder: (_) => const EditProfileScreen(),
             ),
           );
         },
@@ -28,11 +33,11 @@ class EditProfileButton extends StatelessWidget {
           width: 277.w,
           height: 39.h,
           decoration: ShapeDecoration(
-            color: Colors.white,                           // luôn trắng (giống nút "Đã theo dõi")
+            color: bgColor,
             shape: RoundedRectangleBorder(
-              side: const BorderSide(
+              side: BorderSide(
                 width: 1,
-                color: Color(0xFFFFB901),
+                color: contentColor,
               ),
               borderRadius: BorderRadius.circular(30.r),
             ),
@@ -41,27 +46,26 @@ class EditProfileButton extends StatelessWidget {
                 color: Color(0x3F000000),
                 blurRadius: 4,
                 offset: Offset(0, 4),
-              )
+              ),
             ],
           ),
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Icon chỉnh sửa (biểu tượng bút chì)
+              // Icon chỉnh sửa
               Positioned(
                 left: 20.w,
                 child: Icon(
                   Icons.edit_outlined,
                   size: 20.sp,
-                  color: const Color(0xFFFFB901),
+                  color: contentColor,
                 ),
               ),
-
               // Text
               Text(
                 'Chỉnh sửa hồ sơ',
                 style: TextStyle(
-                  color: const Color(0xFFFFB901),
+                  color: contentColor,
                   fontSize: 20.sp,
                   fontFamily: 'SF Pro Rounded',
                   fontWeight: FontWeight.w600,

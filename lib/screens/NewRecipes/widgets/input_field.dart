@@ -1,4 +1,3 @@
-// lib/features/add_recipe/widgets/input_field.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -40,10 +39,8 @@ class _InputFieldState extends State<InputField> {
   @override
   void didUpdateWidget(covariant InputField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Chỉ update text khi initialValue thay đổi từ bên ngoài (Riverpod)
     if (oldWidget.initialValue != widget.initialValue) {
       _controller.text = widget.initialValue ?? '';
-      // Đặt con trỏ về cuối
       _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length),
       );
@@ -58,8 +55,18 @@ class _InputFieldState extends State<InputField> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final hasError = widget.errorText != null;
     final currentLength = _controller.text.length;
+
+    final bgColor = hasError
+        ? const Color(0xFFFFE6E6)
+        : (isDark ? Colors.grey[800] : const Color(0xFFEBEBEB));
+    final borderColor = hasError ? const Color(0xFFFF3B30) : Colors.transparent;
+    final textColor = isDark ? Colors.white70 : Colors.black87;
+    final hintColor = Colors.black.withOpacity(0.5);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +75,7 @@ class _InputFieldState extends State<InputField> {
           padding: EdgeInsets.only(left: 28.w, top: 30.h),
           child: Text(
             widget.label,
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500, color: textColor),
           ),
         ),
         SizedBox(height: 8.h),
@@ -77,28 +84,22 @@ class _InputFieldState extends State<InputField> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: hasError ? const Color(0xFFFFE6E6) : const Color(0xFFEBEBEB),
+              color: bgColor,
               borderRadius: BorderRadius.circular(30.r),
-              border: hasError
-                  ? Border.all(color: const Color(0xFFFF3B30), width: 1.5)
-                  : null,
+              border: Border.all(color: borderColor, width: hasError ? 1.5 : 0),
             ),
             child: Directionality(
               textDirection: TextDirection.ltr,
               child: TextField(
-                controller: _controller,        // DÙNG LẠI CONTROLLER CŨ – KHÔNG TẠO MỚI
+                controller: _controller,
                 onChanged: widget.onChanged,
                 maxLines: widget.isMultiline ? (widget.maxLines ?? 6) : 1,
                 maxLength: widget.isMultiline ? 200 : null,
                 textAlign: TextAlign.left,
+                style: TextStyle(color: textColor, fontSize: 16.sp),
                 decoration: InputDecoration(
                   hintText: widget.hintText,
-                  hintTextDirection: TextDirection.ltr,
-                  hintStyle: TextStyle(
-                    color: Colors.black.withOpacity(0.5),
-                    fontSize: 16.sp,
-                    fontFamily: 'SF Pro Rounded',
-                  ),
+                  hintStyle: TextStyle(color: hintColor, fontSize: 16.sp, fontFamily: 'SF Pro Rounded'),
                   border: InputBorder.none,
                   counterText: widget.isMultiline ? '$currentLength/200' : null,
                   suffixIcon: widget.suffixIcon,

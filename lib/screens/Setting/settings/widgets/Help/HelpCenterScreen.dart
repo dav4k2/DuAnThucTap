@@ -7,7 +7,6 @@ import 'package:fontend/screens/Setting/settings/widgets/Help/widgets/faq_tab.da
 import '../../settings_screen.dart';
 
 const Color kPrimaryYellow = Color(0xFFFFB901);
-const Color kBorderGrey = Color(0xFF666666);
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +26,15 @@ class HelpCenterApp extends StatelessWidget {
         primarySwatch: Colors.yellow,
         fontFamily: 'SF Pro',
         useMaterial3: true,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.yellow,
+        fontFamily: 'SF Pro',
+        useMaterial3: true,
+      ),
+      themeMode: ThemeMode.system,
       home: const HelpCenterScreen(),
     );
   }
@@ -53,15 +60,19 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark ? Colors.black : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _buildCustomAppBar(context),
+        backgroundColor: backgroundColor,
+        appBar: _buildCustomAppBar(context, textColor),
         body: Column(
           children: [
-            _buildSearchBar(),
-            _buildCustomTabBar(),
+            _buildSearchBar(isDark: isDark),
+            _buildCustomTabBar(isDark: isDark),
             Expanded(
               child: TabBarView(
                 children: [
@@ -76,60 +87,64 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     );
   }
 
-  PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
+  PreferredSizeWidget _buildCustomAppBar(BuildContext context, Color textColor) {
     return AppBar(
       toolbarHeight: 80,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
-      title: const Text(
+      title: Text(
         'Trung tâm trợ giúp',
-        style: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.w700),
+        style: TextStyle(color: textColor, fontSize: 24, fontWeight: FontWeight.w700),
       ),
       centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios, color: textColor),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 
+  Widget _buildSearchBar({required bool isDark}) {
+    final borderColor = isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4);
+    final hintColor = isDark ? Colors.white70 : const Color.fromRGBO(0, 0, 0, 0.5);
+    final iconColor = isDark ? Colors.white70 : Colors.grey;
 
-  Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: Container(
         height: 42,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey[900] : Colors.white,
           borderRadius: BorderRadius.circular(50),
-          border: Border.all(color: Colors.black.withOpacity(0.40), width: 1),
+          border: Border.all(color: borderColor, width: 1),
         ),
-        child: const TextField(
+        child: TextField(
+          style: TextStyle(color: hintColor),
           decoration: InputDecoration(
             hintText: 'Tìm kiếm',
-            hintStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.5), fontSize: 15, fontWeight: FontWeight.w500),
-            prefixIcon: Icon(Icons.search, color: Colors.grey),
+            hintStyle: TextStyle(color: hintColor, fontSize: 15, fontWeight: FontWeight.w500),
+            prefixIcon: Icon(Icons.search, color: iconColor),
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCustomTabBar() {
-    return const Padding(
-      padding: EdgeInsets.only(bottom: 10.0),
+  Widget _buildCustomTabBar({required bool isDark}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
       child: TabBar(
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: kPrimaryYellow,
-        unselectedLabelColor: Colors.black,
+        unselectedLabelColor: isDark ? Colors.white70 : Colors.black,
         indicatorColor: kPrimaryYellow,
         indicatorWeight: 4,
         dividerColor: Colors.transparent,
-        tabs: [
+        tabs: const [
           Tab(child: Text('FAQ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.10))),
           Tab(child: Text('Liên hệ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.10))),
         ],

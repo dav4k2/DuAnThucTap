@@ -1,5 +1,4 @@
 // lib/features/add_recipe/widgets/missing_info_dialog.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,12 +12,27 @@ class MissingInfoDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu nền dialog
+    final backgroundColor = isDark ? Color(0xFF1E1E1E) : Colors.white;
+    // Màu text chính
+    final primaryTextColor = isDark ? Colors.white : Colors.black87;
+    // Màu text phụ
+    final secondaryTextColor = isDark ? Colors.grey[300]! : Colors.grey[800]!;
+    // Màu icon lỗi
+    final errorIconColor = Color(0xFFE53935);
+    final errorIconBg = isDark ? Color(0x66E53935) : Color(0xFFFFEBEE);
+    // Màu nút
+    final buttonColor = const Color(0xFFFE724C);
+
     return Center(
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 32.w),
         padding: EdgeInsets.fromLTRB(28.w, 36.h, 28.w, 28.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(28.r),
           boxShadow: [
             BoxShadow(
@@ -35,13 +49,13 @@ class MissingInfoDialog extends StatelessWidget {
             Container(
               width: 90.w,
               height: 90.w,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFEBEE),
+              decoration: BoxDecoration(
+                color: errorIconBg,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.error_outline_rounded,
-                color: const Color(0xFFE53935),
+                color: errorIconColor,
                 size: 50.sp,
               ),
             ),
@@ -50,11 +64,11 @@ class MissingInfoDialog extends StatelessWidget {
 
             // Tiêu đề
             Text(
-              'Đăng cái con cặc',
+              'Đăng cái con cặc', // giữ nguyên text cũ
               style: TextStyle(
                 fontSize: 22.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: primaryTextColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -66,7 +80,7 @@ class MissingInfoDialog extends StatelessWidget {
               'Nhập đủ thông tin vào đi thằng l',
               style: TextStyle(
                 fontSize: 16.sp,
-                color: Colors.grey[800],
+                color: secondaryTextColor,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -82,8 +96,8 @@ class MissingInfoDialog extends StatelessWidget {
                   Container(
                     width: 8.w,
                     height: 8.w,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE53935),
+                    decoration: BoxDecoration(
+                      color: errorIconColor,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -92,13 +106,13 @@ class MissingInfoDialog extends StatelessWidget {
                     field,
                     style: TextStyle(
                       fontSize: 16.sp,
-                      color: Colors.black87,
+                      color: primaryTextColor,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
-            )).toList(),
+            )),
 
             SizedBox(height: 36.h),
 
@@ -108,13 +122,13 @@ class MissingInfoDialog extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFE724C),
+                  backgroundColor: buttonColor,
                   padding: EdgeInsets.symmetric(vertical: 18.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   elevation: 8,
-                  shadowColor: const Color(0xFFFE724C).withOpacity(0.4),
+                  shadowColor: buttonColor.withOpacity(0.4),
                 ),
                 child: Text(
                   'OK! bố mày biết rồi',

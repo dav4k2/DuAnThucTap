@@ -1,4 +1,3 @@
-// lib/features/add_recipe/widgets/image_gallery.dart
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +19,6 @@ class ImageGallery extends ConsumerWidget {
     );
 
     if (pickedFile != null) {
-      // Dùng hàm có sẵn trong provider thay vì tự xử lý list
       ref.read(addRecipeProvider.notifier).addImage(pickedFile.path);
     }
   }
@@ -28,10 +26,13 @@ class ImageGallery extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final images = ref.watch(addRecipeProvider).images;
-
-    // Tạo danh sách 6 phần tử (có ảnh hoặc rỗng)
     final displayImages = List<String>.from(images);
     while (displayImages.length < 6) displayImages.add('');
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final boxBg = isDark ? Colors.grey[800] : const Color(0xFFEBEBEB);
+    final dottedColor = const Color(0xFFFFB901);
 
     return Padding(
       padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 30.h),
@@ -43,7 +44,6 @@ class ImageGallery extends ConsumerWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // HÀNG 1: Ảnh lớn + 2 ô nhỏ
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -53,6 +53,8 @@ class ImageGallery extends ConsumerWidget {
                     index: 0,
                     ref: ref,
                     onTap: () => _pickImage(ref, 0),
+                    boxBg: boxBg,
+                    dottedColor: dottedColor,
                   ),
                   SizedBox(width: spacing),
                   Column(
@@ -63,6 +65,8 @@ class ImageGallery extends ConsumerWidget {
                         index: 1,
                         ref: ref,
                         onTap: () => _pickImage(ref, 1),
+                        boxBg: boxBg,
+                        dottedColor: dottedColor,
                       ),
                       SizedBox(height: spacing),
                       _buildImageBox(
@@ -71,14 +75,14 @@ class ImageGallery extends ConsumerWidget {
                         index: 2,
                         ref: ref,
                         onTap: () => _pickImage(ref, 2),
+                        boxBg: boxBg,
+                        dottedColor: dottedColor,
                       ),
                     ],
                   ),
                 ],
               ),
               SizedBox(height: spacing),
-
-              // HÀNG 2: 3 ô nhỏ
               Row(
                 children: [
                   _buildImageBox(
@@ -88,6 +92,8 @@ class ImageGallery extends ConsumerWidget {
                     ref: ref,
                     onTap: () => _pickImage(ref, 3),
                     margin: EdgeInsets.only(right: spacing),
+                    boxBg: boxBg,
+                    dottedColor: dottedColor,
                   ),
                   _buildImageBox(
                     size: smallBoxSize,
@@ -96,6 +102,8 @@ class ImageGallery extends ConsumerWidget {
                     ref: ref,
                     onTap: () => _pickImage(ref, 4),
                     margin: EdgeInsets.only(right: spacing),
+                    boxBg: boxBg,
+                    dottedColor: dottedColor,
                   ),
                   _buildImageBox(
                     size: smallBoxSize,
@@ -103,6 +111,8 @@ class ImageGallery extends ConsumerWidget {
                     index: 5,
                     ref: ref,
                     onTap: () => _pickImage(ref, 5),
+                    boxBg: boxBg,
+                    dottedColor: dottedColor,
                   ),
                 ],
               ),
@@ -120,6 +130,8 @@ class ImageGallery extends ConsumerWidget {
     required WidgetRef ref,
     required VoidCallback onTap,
     EdgeInsetsGeometry? margin,
+    required Color? boxBg,
+    required Color dottedColor,
   }) {
     final hasImage = imagePath.isNotEmpty;
 
@@ -137,7 +149,6 @@ class ImageGallery extends ConsumerWidget {
               borderRadius: BorderRadius.circular(20.r),
               child: Image.file(File(imagePath), fit: BoxFit.cover),
             ),
-            // NÚT XÓA ẢNH – ĐẸP NHƯ STEPITEM
             Positioned(
               top: 8,
               right: 8,
@@ -158,14 +169,14 @@ class ImageGallery extends ConsumerWidget {
           ],
         )
             : DottedBorder(
-          color: const Color(0xFFFFB901),
+          color: dottedColor,
           strokeWidth: 2,
           dashPattern: const [12, 12],
           borderType: BorderType.RRect,
           radius: Radius.circular(20.r),
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0x51D4D4D4),
+              color: boxBg?.withOpacity(0.32),
               borderRadius: BorderRadius.circular(20.r),
             ),
             child: Center(
@@ -174,9 +185,9 @@ class ImageGallery extends ConsumerWidget {
                 height: 36.sp,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFFFB901), width: 2),
+                  border: Border.all(color: dottedColor, width: 2),
                 ),
-                child: Icon(Icons.add, size: 20.sp, color: const Color(0xFFFFB901)),
+                child: Icon(Icons.add, size: 20.sp, color: dottedColor),
               ),
             ),
           ),

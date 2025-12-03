@@ -1,6 +1,3 @@
-///Sơn
-/// Trang login với google/icloud
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,34 +6,23 @@ import '../auth/auth_provider.dart';
 class SignInSocialButtons extends ConsumerWidget {
   const SignInSocialButtons({super.key});
 
-  ///Xử lý login google với icloud
+  /// Xử lý login Google
   Future<void> _handleGoogleLogin(BuildContext context, WidgetRef ref) async {
-    // Lấy services và notifiers
     final authService = ref.read(authServiceProvider);
     final authNotifier = ref.read(authProvider.notifier);
 
     try {
-      // Xóa lỗi cũ (nếu có)
       authNotifier.setError(null);
-
-      // Thực hiện đăng nhập Google
       final userCredential = await authService.signInWithGoogle();
 
-      // Đăng nhập thành công!
-      // AuthGate sẽ tự động xử lý việc chuyển hướng
-      // đến ExploreScreen vì authStateProvider đã thay đổi.
       if (userCredential != null) {
-        // Đăng nhập thành công, chuyển hướng sang trang chính
         Navigator.pushReplacementNamed(context, '/explore');
       } else {
-        // Đăng nhập bị hủy hoặc thất bại
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Đăng nhập Google bị hủy hoặc thất bại')),
+          const SnackBar(content: Text('Đăng nhập Google bị hủy hoặc thất bại')),
         );
       }
-
     } on Exception catch (e) {
-      // Xử lý lỗi
       final errorMessage = e.toString().contains(':')
           ? e.toString().split(': ').last
           : 'Đăng nhập Google không thành công.';
@@ -44,24 +30,23 @@ class SignInSocialButtons extends ConsumerWidget {
     }
   }
 
+  /// Xử lý login Apple
   Future<void> _handleAppleLogin(BuildContext context) async {
-    // TODO: Gọi Apple Sign-In SDK hoặc API backend để login
     debugPrint('Apple login pressed');
-
-    // cửa sổ test nút
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Đang xử lý đăng nhập iCloud...')),
     );
   }
 
-  ///Xắp xếp widget
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDarkMode ? Colors.grey[900] : const Color(0xFFEBEBEB);
 
     return Container(
       width: double.infinity,
-      color: const Color(0xFFEBEBEB),
+      color: bgColor,
       padding: EdgeInsets.symmetric(vertical: size.height * 0.035),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -70,12 +55,14 @@ class SignInSocialButtons extends ConsumerWidget {
             iconPath: 'image/google_icon.png',
             text: 'Đăng nhập bằng Google',
             onTap: () => _handleGoogleLogin(context, ref),
+            isDarkMode: isDarkMode,
           ),
           const SizedBox(height: 20),
           _SocialButton(
             iconPath: 'image/apple_logo.png',
             text: 'Đăng nhập với iCloud',
             onTap: () => _handleAppleLogin(context),
+            isDarkMode: isDarkMode,
           ),
         ],
       ),
@@ -88,16 +75,22 @@ class _SocialButton extends StatelessWidget {
   final String iconPath;
   final String text;
   final VoidCallback onTap;
+  final bool isDarkMode;
 
   const _SocialButton({
     required this.iconPath,
     required this.text,
     required this.onTap,
+    this.isDarkMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.8;
+    final containerColor = isDarkMode ? Colors.grey[800] : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final borderColor = isDarkMode ? Colors.white70 : Colors.black;
+    final shadowColor = isDarkMode ? Colors.black45 : const Color(0x26000000);
 
     return InkWell(
       onTap: onTap,
@@ -106,14 +99,14 @@ class _SocialButton extends StatelessWidget {
         width: width,
         height: 65,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: containerColor,
           borderRadius: BorderRadius.circular(50),
-          border: Border.all(color: Colors.black),
-          boxShadow: const [
+          border: Border.all(color: borderColor),
+          boxShadow: [
             BoxShadow(
-              color: Color(0x26000000),
+              color: shadowColor,
               blurRadius: 4,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             )
           ],
         ),
@@ -125,8 +118,8 @@ class _SocialButton extends StatelessWidget {
               child: Center(
                 child: Text(
                   text,
-                  style: const TextStyle(
-                    color: Colors.black,
+                  style: TextStyle(
+                    color: textColor,
                     fontSize: 20,
                     fontFamily: 'SF Pro Rounded',
                     fontWeight: FontWeight.w600,

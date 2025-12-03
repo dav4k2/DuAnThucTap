@@ -2,14 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../logic/add_recipe_provider.dart';
 
 class DropdownRow extends ConsumerWidget {
   final String label;
   final String? value;
   final List<String> items;
   final ValueChanged<String?> onChanged;
-  final String? errorText; // THÊM ĐỂ HIỆN LỖI
+  final String? errorText;
 
   const DropdownRow({
     Key? key,
@@ -22,6 +21,14 @@ class DropdownRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final backgroundColor = isDark ? Colors.grey.shade800 : const Color(0xFFEBEBEB);
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final hintColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final iconColor = isDark ? Colors.white70 : Colors.black54;
+
     return Padding(
       padding: EdgeInsets.only(top: 40.h),
       child: Column(
@@ -32,7 +39,7 @@ class DropdownRow extends ConsumerWidget {
               SizedBox(width: 36.w),
               Text(
                 label,
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500, color: textColor),
               ),
               const Spacer(),
               Container(
@@ -40,7 +47,7 @@ class DropdownRow extends ConsumerWidget {
                 height: 48.h,
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEBEBEB),
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(20.r),
                   border: errorText != null
                       ? Border.all(color: Colors.red.withOpacity(0.6), width: 1.5)
@@ -52,19 +59,19 @@ class DropdownRow extends ConsumerWidget {
                     isExpanded: true,
                     hint: Text(
                       'Chọn...',
-                      style: TextStyle(fontSize: 15.sp, color: Colors.grey.shade600),
+                      style: TextStyle(fontSize: 15.sp, color: hintColor),
                     ),
                     icon: Icon(
                       Icons.keyboard_arrow_down_rounded,
                       size: 24.sp,
-                      color: Colors.black54,
+                      color: iconColor,
                     ),
                     style: TextStyle(
                       fontSize: 15.sp,
-                      color: Colors.black87,
+                      color: textColor,
                       fontWeight: FontWeight.w500,
                     ),
-                    dropdownColor: const Color(0xFFEBEBEB),
+                    dropdownColor: backgroundColor,
                     borderRadius: BorderRadius.circular(16.r),
                     items: items.map((String item) {
                       return DropdownMenuItem<String>(

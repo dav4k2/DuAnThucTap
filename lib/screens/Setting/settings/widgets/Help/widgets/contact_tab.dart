@@ -25,6 +25,14 @@ class ContactTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDark ? Colors.grey[900] : Colors.white;
+    final cardShadow = isDark ? Colors.black.withOpacity(0.7) : Colors.black.withOpacity(0.04);
+    final titleColor = isDark ? Colors.white70 : Colors.black54;
+    final valueColor = isDark ? Colors.white : Colors.black87;
+    final trailingColor = isDark ? Colors.white38 : Colors.black38;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
@@ -36,24 +44,104 @@ class ContactTab extends StatelessWidget {
             child: const Icon(Icons.support_agent_rounded, size: 52, color: Colors.white),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7',
-            style: TextStyle(fontSize: 15, color: Colors.black54, height: 1.4),
+            style: TextStyle(fontSize: 15, color: titleColor, height: 1.4),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 48),
 
           // Danh sách liên hệ
-          _buildItem(icon: Icons.phone_outlined, color: Colors.green, title: "Hotline", value: phone, onTap: () => _launch("tel:$phone")),
-          _buildItem(icon: Icons.chat_outlined, color: const Color(0xFF0068FF), title: "Zalo", value: zalo, onTap: () => _launch("https://zalo.me/$zalo")),
-          _buildItem(icon: Icons.email_outlined, color: Colors.red, title: "Email", value: email, onTap: () => _launch("mailto:$email")),
-          _buildItem(icon: FontAwesomeIcons.facebookF, color: const Color(0xFF1877F2), title: "Facebook", value: "Cookhub Official", onTap: () => _launch(facebook)),
-          _buildItem(icon: FontAwesomeIcons.instagram, color: const Color(0xFFE4405F), title: "Instagram", value: "@cookhub.vn", onTap: () => _launch(instagram)),
-          _buildItem(icon: FontAwesomeIcons.xTwitter, color: Colors.black, title: "X (Twitter)", value: "@cookhubvn", onTap: () => _launch(xTwitter)),
-          _buildItem(icon: FontAwesomeIcons.youtube, color: const Color(0xFFFF0000), title: "YouTube", value: "@cookhubvn", onTap: () => _launch(youtube)),
+          _buildItem(
+            icon: Icons.phone_outlined,
+            color: Colors.green,
+            title: "Hotline",
+            value: phone,
+            onTap: () => _launch("tel:$phone"),
+            isDark: isDark,
+            cardShadow: cardShadow,
+            titleColor: titleColor,
+            valueColor: valueColor,
+            trailingColor: trailingColor,
+          ),
+          _buildItem(
+            icon: Icons.chat_outlined,
+            color: const Color(0xFF0068FF),
+            title: "Zalo",
+            value: zalo,
+            onTap: () => _launch("https://zalo.me/$zalo"),
+            isDark: isDark,
+            cardShadow: cardShadow,
+            titleColor: titleColor,
+            valueColor: valueColor,
+            trailingColor: trailingColor,
+          ),
+          _buildItem(
+            icon: Icons.email_outlined,
+            color: Colors.red,
+            title: "Email",
+            value: email,
+            onTap: () => _launch("mailto:$email"),
+            isDark: isDark,
+            cardShadow: cardShadow,
+            titleColor: titleColor,
+            valueColor: valueColor,
+            trailingColor: trailingColor,
+          ),
+          _buildItem(
+            icon: FontAwesomeIcons.facebookF,
+            color: const Color(0xFF1877F2),
+            title: "Facebook",
+            value: "Cookhub Official",
+            onTap: () => _launch(facebook),
+            isDark: isDark,
+            cardShadow: cardShadow,
+            titleColor: titleColor,
+            valueColor: valueColor,
+            trailingColor: trailingColor,
+          ),
+          _buildItem(
+            icon: FontAwesomeIcons.instagram,
+            color: const Color(0xFFE4405F),
+            title: "Instagram",
+            value: "@cookhub.vn",
+            onTap: () => _launch(instagram),
+            isDark: isDark,
+            cardShadow: cardShadow,
+            titleColor: titleColor,
+            valueColor: valueColor,
+            trailingColor: trailingColor,
+          ),
+          _buildItem(
+            icon: FontAwesomeIcons.xTwitter,
+            color: Colors.black,
+            title: "X (Twitter)",
+            value: "@cookhubvn",
+            onTap: () => _launch(xTwitter),
+            isDark: isDark,
+            cardShadow: cardShadow,
+            titleColor: titleColor,
+            valueColor: valueColor,
+            trailingColor: trailingColor,
+          ),
+          _buildItem(
+            icon: FontAwesomeIcons.youtube,
+            color: const Color(0xFFFF0000),
+            title: "YouTube",
+            value: "@cookhubvn",
+            onTap: () => _launch(youtube),
+            isDark: isDark,
+            cardShadow: cardShadow,
+            titleColor: titleColor,
+            valueColor: valueColor,
+            trailingColor: trailingColor,
+          ),
 
           const SizedBox(height: 60),
-          const Text('© 2025 Cookhub. All rights reserved.', style: TextStyle(fontSize: 12, color: Colors.black38)),
+          Text(
+            '© 2025 Cookhub. All rights reserved.',
+            style: TextStyle(fontSize: 12, color: trailingColor),
+          ),
           const SizedBox(height: 40),
         ],
       ),
@@ -66,22 +154,32 @@ class ContactTab extends StatelessWidget {
     required String title,
     required String value,
     required VoidCallback onTap,
+    required bool isDark,
+    required Color cardShadow,
+    required Color titleColor,
+    required Color valueColor,
+    required Color trailingColor,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))],
+        border: Border.all(color: isDark ? Colors.white12 : Colors.grey.shade200),
+        boxShadow: [BoxShadow(color: cardShadow, blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: ListTile(
         onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        leading: Container(width: 48, height: 48, decoration: BoxDecoration(shape: BoxShape.circle, color: color), child: Icon(icon, color: Colors.white, size: 24)),
-        title: Text(title, style: const TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w500)),
-        subtitle: Text(value, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.black87)),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.black38),
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+          child: Icon(icon, color: Colors.white, size: 24),
+        ),
+        title: Text(title, style: TextStyle(fontSize: 14, color: titleColor, fontWeight: FontWeight.w500)),
+        subtitle: Text(value, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: valueColor)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 18, color: trailingColor),
       ),
     );
   }

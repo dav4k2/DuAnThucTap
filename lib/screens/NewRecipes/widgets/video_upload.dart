@@ -13,19 +13,13 @@ class VideoUpload extends ConsumerWidget {
   Future<void> _pickVideo(BuildContext context, WidgetRef ref) async {
     final picker = ImagePicker();
 
-    // image_picker tự động hiện popup xin quyền trên iOS (nếu chưa có)
-    final pickedFile = await picker.pickVideo(
-      source: ImageSource.gallery,
-    );
+    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
 
-    if (pickedFile == null) {
-      return; // Người dùng bấm hủy
-    }
+    if (pickedFile == null) return;
 
     final file = File(pickedFile.path);
     final sizeInMB = file.lengthSync() / (1024 * 1024);
 
-    // Kiểm tra định dạng
     if (!pickedFile.path.toLowerCase().endsWith('.mp4')) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -35,7 +29,6 @@ class VideoUpload extends ConsumerWidget {
       return;
     }
 
-    // Kiểm tra dung lượng
     if (sizeInMB > 100) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -45,14 +38,19 @@ class VideoUpload extends ConsumerWidget {
       return;
     }
 
-    // Thành công → lưu vào provider
     ref.read(addRecipeProvider.notifier).updateVideo(pickedFile.path);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final videoPath = ref.watch(addRecipeProvider.select((s) => s.video));
     final hasVideo = videoPath != null && videoPath.isNotEmpty;
+
+    final placeholderTextColor = isDark ? Colors.grey[400]! : Colors.grey.shade700;
+    final dottedBgColor = isDark ? Color(0x33D4D4D4) : const Color(0x51D4D4D4);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +70,7 @@ class VideoUpload extends ConsumerWidget {
                 width: double.infinity,
                 height: 180.h,
                 decoration: BoxDecoration(
-                  color: const Color(0x51D4D4D4),
+                  color: dottedBgColor,
                   borderRadius: BorderRadius.circular(24.r),
                 ),
                 child: hasVideo
@@ -119,7 +117,11 @@ class VideoUpload extends ConsumerWidget {
                       right: 16.w,
                       child: Text(
                         videoPath.split('/').last,
-                        style: TextStyle(color: Colors.white, fontSize: 13.sp, shadows: const [Shadow(blurRadius: 10, color: Colors.black)]),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13.sp,
+                          shadows: const [Shadow(blurRadius: 10, color: Colors.black)],
+                        ),
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                       ),
@@ -129,11 +131,20 @@ class VideoUpload extends ConsumerWidget {
                     : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('image/video.png', width: 64.sp, height: 64.sp, color: const Color(0xFFFFB901)),
+                    Image.asset(
+                      'image/video.png',
+                      width: 64.sp,
+                      height: 64.sp,
+                      color: const Color(0xFFFFB901),
+                    ),
                     SizedBox(height: 12.h),
                     Text(
                       'file .mp4 dung lượng dưới 100MB',
-                      style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: placeholderTextColor,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),

@@ -1,4 +1,3 @@
-// lib/features/add_recipe/widgets/ingredient_item.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,8 +19,16 @@ class IngredientItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final boxBg = isDark ? Colors.grey[800] : const Color(0xFFEBEBEB);
+    final textColor = isDark ? Colors.white70 : Colors.black87;
+    final hintColor = isDark ? Colors.white38 : Colors.grey.shade400;
+
     final errorText = ref.watch(
-      addRecipeProvider.select((s) => s.ingredientErrors.length > index ? s.ingredientErrors[index] : null),
+      addRecipeProvider.select(
+            (s) => s.ingredientErrors.length > index ? s.ingredientErrors[index] : null,
+      ),
     );
 
     return Padding(
@@ -35,7 +42,10 @@ class IngredientItem extends ConsumerWidget {
               Container(
                 width: 8.w,
                 height: 8.h,
-                decoration: const BoxDecoration(color: Color(0xFFFFB901), shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFB901),
+                  shape: BoxShape.circle,
+                ),
               ),
               SizedBox(width: 20.w),
               Expanded(
@@ -43,7 +53,7 @@ class IngredientItem extends ConsumerWidget {
                   height: 48.h,
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEBEBEB),
+                    color: boxBg,
                     borderRadius: BorderRadius.circular(20.r),
                     border: errorText != null
                         ? Border.all(color: Colors.red, width: 1.5)
@@ -52,14 +62,13 @@ class IngredientItem extends ConsumerWidget {
                   child: TextField(
                     controller: TextEditingController(text: text)
                       ..selection = TextSelection.fromPosition(TextPosition(offset: text.length)),
-                    style: TextStyle(fontSize: 15.sp, color: Colors.black87),
+                    style: TextStyle(fontSize: 15.sp, color: textColor),
                     decoration: InputDecoration(
                       hintText: 'VD: 200g bột mì, 2 quả trứng...',
-                      hintStyle: TextStyle(color: Colors.grey.shade400),
+                      hintStyle: TextStyle(color: hintColor),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 14.h),
-                      // BỎ errorText ở đây → KHÔNG CÒN CHỒNG NỮA!
                     ),
                     onChanged: onChanged,
                   ),
@@ -67,7 +76,7 @@ class IngredientItem extends ConsumerWidget {
               ),
               if (onDelete != null)
                 IconButton(
-                  icon: Icon(Icons.close, size: 20.sp, color: Colors.grey.shade600),
+                  icon: Icon(Icons.close, size: 20.sp, color: isDark ? Colors.white60 : Colors.grey.shade600),
                   onPressed: onDelete,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -75,11 +84,9 @@ class IngredientItem extends ConsumerWidget {
               SizedBox(width: 16.w),
             ],
           ),
-
-
           if (errorText != null)
             Padding(
-              padding: EdgeInsets.only(left: 64.w, top: 6.h), // Căn đẹp với chấm vàng
+              padding: EdgeInsets.only(left: 64.w, top: 6.h),
               child: Text(
                 errorText,
                 style: TextStyle(color: Colors.red, fontSize: 12.sp, fontWeight: FontWeight.w500),

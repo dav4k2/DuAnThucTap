@@ -76,6 +76,13 @@ class _SignInFormState extends ConsumerState<SignInForm> {
     final state = ref.watch(authProvider);
     final inputWidth = 0.85.sw;
     final errorWidth = 0.75.sw;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDarkMode ? Colors.black : Colors.white;
+    final inputColor = isDarkMode ? Colors.grey[850]! : const Color(0xFFEBEBEB);
+    final hintColor = isDarkMode ? Colors.white54 : Colors.black.withOpacity(0.3);
+    final errorBgColor = isDarkMode ? Colors.red.withOpacity(0.5) : const Color(0xA8F0A4A4);
+    final errorTextColor = Colors.red;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,6 +92,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
           hintText: 'Tài khoản',
           controller: _emailController,
           width: inputWidth,
+          isDarkMode: isDarkMode,
         ),
         SizedBox(height: 33.h),
 
@@ -97,16 +105,17 @@ class _SignInFormState extends ConsumerState<SignInForm> {
           suffixIcon: IconButton(
             icon: Icon(
               _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-              color: Colors.black.withOpacity(0.5),
+              color: hintColor,
               size: 26.sp,
             ),
             onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
           ),
+          isDarkMode: isDarkMode,
         ),
         SizedBox(height: 10.h),
 
         /// Quên mật khẩu
-        const ForgotPasswordLink(),
+        ForgotPasswordLink(isDarkMode: isDarkMode),
         SizedBox(height: 33.h),
 
         /// Hiển thị lỗi
@@ -116,6 +125,8 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             child: ErrorMessage(
               message: state.errorMessage!,
               width: errorWidth,
+              bgColor: errorBgColor,
+              textColor: errorTextColor,
             ),
           ),
 
@@ -125,6 +136,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
           child: PrimaryButton(
             text: _isLoading ? 'Đang xử lý...' : 'Đăng nhập',
             width: inputWidth,
+            isDarkMode: isDarkMode,
           ),
         ),
         SizedBox(height: 42.h),
@@ -146,13 +158,17 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                   fontSize: 22.sp,
                   fontFamily: 'SF Pro Rounded',
                   fontWeight: FontWeight.w600,
+                  color: isDarkMode ? Colors.white : Colors.black,
                 ),
               ),
               Positioned(
                 bottom: -4,
                 left: 0,
                 right: 0,
-                child: Container(height: 6, color: Colors.black),
+                child: Container(
+                  height: 6,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
               ),
             ],
           ),
@@ -169,6 +185,7 @@ class InputField extends StatelessWidget {
   final TextEditingController controller;
   final double width;
   final Widget? suffixIcon;
+  final bool isDarkMode;
 
   const InputField({
     super.key,
@@ -177,52 +194,66 @@ class InputField extends StatelessWidget {
     required this.width,
     this.obscure = false,
     this.suffixIcon,
+    this.isDarkMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final inputColor = isDarkMode ? Colors.grey[850]! : const Color(0xFFEBEBEB);
+    final hintColor = isDarkMode ? Colors.white54 : Colors.black.withOpacity(0.3);
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
     return Container(
       width: width,
       height: 65.h,
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFEBEBEB),
+        color: inputColor,
         border: Border.all(color: Colors.black.withOpacity(0.4)),
         borderRadius: BorderRadius.circular(50.r),
       ),
       child: TextField(
         controller: controller,
         obscureText: obscure,
-        cursorColor: Colors.black,
+        cursorColor: textColor,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 24.sp,
+          fontFamily: 'SF Pro Rounded',
+          fontWeight: FontWeight.w700,
+        ),
         decoration: InputDecoration(
           isDense: true,
           border: InputBorder.none,
           hintText: hintText,
           hintStyle: TextStyle(
-            color: Colors.black.withOpacity(0.3),
+            color: hintColor,
             fontSize: 24.sp,
             fontFamily: 'SF Pro Rounded',
             fontWeight: FontWeight.w700,
           ),
           suffixIcon: suffixIcon,
         ),
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 24.sp,
-          fontFamily: 'SF Pro Rounded',
-          fontWeight: FontWeight.w700, // ĐẬM Y HỆT SIGN UP
-        ),
       ),
     );
   }
 }
 
-
+// ==================== ERROR MESSAGE  ====================
 class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;
-  const ErrorMessage({super.key, required this.message, required this.width});
+  final Color bgColor;
+  final Color textColor;
+
+  const ErrorMessage({
+    super.key,
+    required this.message,
+    required this.width,
+    required this.bgColor,
+    required this.textColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -230,20 +261,20 @@ class ErrorMessage extends StatelessWidget {
       width: width,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: ShapeDecoration(
-        color: const Color(0xA8F0A4A4),
+        color: bgColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.r)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.warning_amber_rounded, color: const Color(0xFFF01E1E), size: 22.sp),
+          Icon(Icons.warning_amber_rounded, color: textColor, size: 22.sp),
           SizedBox(width: 10.w),
           Flexible(
             child: Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: const Color(0xFFF01E1E),
+                color: textColor,
                 fontSize: 13.sp,
                 fontFamily: 'SF Pro Rounded',
                 fontWeight: FontWeight.w400,
@@ -257,26 +288,32 @@ class ErrorMessage extends StatelessWidget {
   }
 }
 
+// ==================== PRIMARY BUTTON  ====================
 class PrimaryButton extends StatelessWidget {
   final String text;
   final double width;
-  const PrimaryButton({super.key, required this.text, required this.width});
+  final bool isDarkMode;
+
+  const PrimaryButton({super.key, required this.text, required this.width, this.isDarkMode = false});
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = const Color(0xFFFFB901);
+    final textColor = Colors.black;
+
     return Container(
       width: width,
       height: 65.h,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFB901),
+        color: bgColor,
         borderRadius: BorderRadius.circular(50.r),
-        border: Border.all(color: Colors.black, width: 2.w),
+        border: Border.all(color: textColor, width: 2.w),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontSize: 24.sp,
           fontFamily: 'SF Pro Rounded',
           fontWeight: FontWeight.w700,
@@ -286,8 +323,10 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
+// ==================== FORGOT PASSWORD  ====================
 class ForgotPasswordLink extends StatelessWidget {
-  const ForgotPasswordLink({super.key});
+  final bool isDarkMode;
+  const ForgotPasswordLink({super.key, this.isDarkMode = false});
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +341,7 @@ class ForgotPasswordLink extends StatelessWidget {
               Text(
                 'Quên mật khẩu ?',
                 style: TextStyle(
-                  color: Color(0xFFFFB901),
+                  color: const Color(0xFFFFB901),
                   fontSize: 20.sp,
                   fontFamily: 'SF Pro Rounded',
                   fontWeight: FontWeight.w600,
@@ -312,7 +351,7 @@ class ForgotPasswordLink extends StatelessWidget {
                 bottom: -4,
                 left: 0,
                 right: 0,
-                child: Container(height: 6, color: Color(0xFFFFB901)),
+                child: Container(height: 6, color: const Color(0xFFFFB901)),
               ),
             ],
           ),

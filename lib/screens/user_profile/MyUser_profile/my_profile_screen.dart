@@ -185,7 +185,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
             // === TAB ẢNH ===
             if (profileTab == ProfileTab.anh)
               const KeepAliveWrapper(
-                child: SliverToBoxAdapter(child: MyPhotoGrid()),
+                child: SliverToBoxAdapter(child: MyPendingRecipesList()),
               ),
 
             // Khoảng trống cuối

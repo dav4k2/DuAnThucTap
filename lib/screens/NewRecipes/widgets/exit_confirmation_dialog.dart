@@ -8,12 +8,21 @@ class ExitConfirmationDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu nền dialog
+    final dialogBg = isDark ? Colors.grey[850] : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final secondaryTextColor = isDark ? Colors.grey[300] : Colors.grey[700];
+    final buttonBgColor = isDark ? Colors.grey[700] : Colors.grey[100];
+
     return Center(
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 32.w),
         padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 24.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: dialogBg,
           borderRadius: BorderRadius.circular(24.r),
           boxShadow: [
             BoxShadow(
@@ -45,7 +54,7 @@ class ExitConfirmationDialog extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: textColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -54,7 +63,7 @@ class ExitConfirmationDialog extends ConsumerWidget {
               'Bạn có muốn lưu công thức dưới dạng nháp\ntrước khi thoát không?',
               style: TextStyle(
                 fontSize: 15.5.sp,
-                color: Colors.grey[700],
+                color: secondaryTextColor,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -66,7 +75,6 @@ class ExitConfirmationDialog extends ConsumerWidget {
                 Expanded(
                   child: TextButton(
                     onPressed: () async {
-                      // Xoá nháp & reset form
                       await ref.read(addRecipeProvider.notifier).clearDraftAndReset();
                       Navigator.pop(context, false);
                     },
@@ -74,14 +82,14 @@ class ExitConfirmationDialog extends ConsumerWidget {
                       padding: EdgeInsets.symmetric(vertical: 14.h),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.r),
-                        side: BorderSide(color: Colors.grey[300]!),
+                        side: BorderSide(color: isDark ? Colors.grey[600]! : Colors.grey[300]!),
                       ),
                     ),
                     child: Text(
                       'Không lưu',
                       style: TextStyle(
                         fontSize: 16.sp,
-                        color: Colors.grey[700],
+                        color: secondaryTextColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -96,7 +104,7 @@ class ExitConfirmationDialog extends ConsumerWidget {
                     onPressed: () => Navigator.pop(context, null),
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
-                      backgroundColor: Colors.grey[100],
+                      backgroundColor: buttonBgColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.r),
                       ),
@@ -119,6 +127,7 @@ class ExitConfirmationDialog extends ConsumerWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       await ref.read(addRecipeProvider.notifier).saveAsDraft(context);
+                      Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFE724C),

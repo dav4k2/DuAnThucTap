@@ -2,53 +2,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../logic/my_profile_provider.dart';   // import provider mới
+import '../../../../theme/theme_provider.dart'; // thêm import theme
+import '../logic/my_profile_provider.dart';
 
 class MyBioTab extends ConsumerWidget {
   const MyBioTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chef = ref.watch(myChefProvider);   // dùng myChefProvider
+    final chef = ref.watch(myChefProvider);
+    final isDarkMode = ref.watch(themeProvider);
+
+    // Màu nền & chữ theo light/dark mode
+    final bgColor = isDarkMode ? const Color(0xFF1F1F1F) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final subTextColor = isDarkMode ? Colors.white.withOpacity(0.8) : Colors.black.withOpacity(0.8);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      color: Colors.white,
+      color: bgColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // === GIỚI THIỆU ===
-          _buildSectionTitle('Giới thiệu'),
+          _buildSectionTitle('Giới thiệu', textColor),
           SizedBox(height: 8.h),
-          _buildExpandableBio(chef.bio ?? _defaultBio),
+          _buildExpandableBio(chef.bio ?? _defaultBio, subTextColor),
           SizedBox(height: 24.h),
 
-          // === LIÊN HỆ ===
-          _buildSectionTitle('Liên hệ'),
+          _buildSectionTitle('Liên hệ', textColor),
           SizedBox(height: 8.h),
-          _buildContactInfo(chef.email ?? 'kongfuongchef@gmail.com'),
+          _buildContactInfo(chef.email ?? 'kongfuongchef@gmail.com', subTextColor),
           SizedBox(height: 16.h),
 
-          // === ĐÃ THAM GIA ===
-          _buildJoinedDate(chef.joinedDate ?? '10/09/2024'),
+          _buildJoinedDate(chef.joinedDate ?? '10/09/2024', subTextColor),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, Color color) {
     return Text(
       title,
       style: TextStyle(
         fontSize: 16.sp,
         fontWeight: FontWeight.w400,
-        color: Colors.black,
+        color: color,
         height: 1.31,
       ),
     );
   }
 
-  Widget _buildExpandableBio(String fullText) {
+  Widget _buildExpandableBio(String fullText, Color color) {
     const int maxLines = 3;
     const String viewMore = 'Xem thêm';
 
@@ -59,7 +63,7 @@ class MyBioTab extends ConsumerWidget {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w300,
-            color: Colors.black.withOpacity(0.8),
+            color: color,
             height: 1.31,
           ),
         );
@@ -79,7 +83,7 @@ class MyBioTab extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w300,
-                    color: Colors.black.withOpacity(0.8),
+                    color: color,
                     height: 1.31,
                   ),
                 ),
@@ -88,7 +92,7 @@ class MyBioTab extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w300,
-                    color: const Color(0xFFFFB901),
+                    color: const Color(0xFFFFB901), // vàng nổi bật
                     height: 1.31,
                   ),
                 ),
@@ -104,7 +108,7 @@ class MyBioTab extends ConsumerWidget {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w300,
-            color: Colors.black.withOpacity(0.8),
+            color: color,
             height: 1.31,
           ),
         );
@@ -112,25 +116,25 @@ class MyBioTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildContactInfo(String email) {
+  Widget _buildContactInfo(String email, Color color) {
     return Text(
       'Email: $email',
       style: TextStyle(
         fontSize: 15.sp,
         fontWeight: FontWeight.w300,
-        color: Colors.black.withOpacity(0.8),
+        color: color,
         height: 1.40,
       ),
     );
   }
 
-  Widget _buildJoinedDate(String date) {
+  Widget _buildJoinedDate(String date, Color color) {
     return Text(
       'Đã tham gia vào $date',
       style: TextStyle(
         fontSize: 13.sp,
         fontWeight: FontWeight.w300,
-        color: Colors.black.withOpacity(0.8),
+        color: color,
         height: 1.62,
       ),
     );

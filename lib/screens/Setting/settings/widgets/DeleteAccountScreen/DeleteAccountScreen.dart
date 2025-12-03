@@ -42,20 +42,25 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra dark mode từ theme
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDarkMode ? Colors.black : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Xóa tài khoản',
           style: TextStyle(
-            color: Colors.black,
+            color: textColor,
             fontSize: 20,
             fontWeight: FontWeight.w700,
             fontFamily: 'SF Pro Rounded',
@@ -93,15 +98,15 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                 selectedReason: selectedReason,
                 otherReasonText: selectedReason == 4 ? _otherController.text : null,
                 onDeleteConfirmed: () {
-
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const AccountDeletionSuccessScreen()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                        const AccountDeletionSuccessScreen()),
                         (route) => false, // xóa tất cả các trang trước
                   );
                 },
               ),
-
 
               const SizedBox(height: 40),
             ],

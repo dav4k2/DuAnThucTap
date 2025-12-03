@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/Setting/settings/widgets/DeleteAccountScreen/widgets/DeleteAccount.dart';
 import 'package:fontend/screens/Setting/settings/widgets/DeleteAccountScreen/DeleteAccountScreen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/Help/HelpCenterScreen.dart';
+import 'package:fontend/screens/Setting/settings/widgets/language.dart';
 import 'package:fontend/screens/Setting/settings/widgets/logout_bottom_sheet.dart';
 import 'package:fontend/screens/Setting/settings/widgets/reset_pass/password_reset_screen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/setting_item.dart';
@@ -137,9 +138,22 @@ class SettingsScreen extends ConsumerWidget {
                       title: l10n.translate('language'),
                       iconLeft: 11,
                       iconTop: 450,
-                      onTap: () => _selectLanguage(context, ref),
-                      trailing: Text(lang.toUpperCase(), style: TextStyle(fontSize: 24.sp, color: textColor.withOpacity(0.6))),
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => const LanguageBottomSheet(),
+                        );
+                      },
+                      trailing: Text(
+                        lang.toUpperCase(),
+                        style: TextStyle(fontSize: 24.sp, color: textColor.withOpacity(0.6)),
+                      ),
                     ),
+
+
+
 
                     SettingItem(
                       iconPath: 'image/setting_help.png',
@@ -206,90 +220,7 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _selectLanguage(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
 
-    _showCustomBottomSheet(
-      context,
-      Container(
-        width: 402.w,
-        height: 360.h, // cao hơn tí để đẹp
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.r),
-            topRight: Radius.circular(30.r),
-          ),
-          border: Border.all(color: Colors.black.withOpacity(0.30), width: 1),
-          boxShadow: [
-            BoxShadow(color: const Color(0x3F000000), blurRadius: 4, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Stack(
-          children: [
-            // Thanh kéo
-            Positioned(
-              top: 10.h,
-              left: 140.w,
-              child: Container(width: 122.w, height: 2.h, color: Colors.black.withOpacity(0.50)),
-            ),
-
-            // Tiêu đề
-            Positioned(
-              top: 35.h,
-              left: 26.w,
-              child: SizedBox(
-                width: 349.w,
-                child: Text(
-                  l10n.translate('language'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w600, height: 1.36),
-                ),
-              ),
-            ),
-
-            // Gạch ngang dưới tiêu đề
-            Positioned(
-              top: 84.h,
-              left: 0,
-              child: Container(width: 402.w, height: 1.h, color: Colors.black.withOpacity(0.15)),
-            ),
-
-            // Danh sách ngôn ngữ
-            Positioned(
-              top: 100.h,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: [
-                  _buildLanguageOption(
-                    context: context,
-                    title: 'Tiếng Việt',
-                    subtitle: 'Vietnamese',
-                    isSelected: ref.read(languageProvider) == 'vi',
-                    onTap: () {
-                      ref.read(languageProvider.notifier).set('vi');
-                      Navigator.pop(context);
-                    },
-                  ),
-                  _buildLanguageOption(
-                    context: context,
-                    title: 'English',
-                    subtitle: 'English',
-                    isSelected: ref.read(languageProvider) == 'en',
-                    onTap: () {
-                      ref.read(languageProvider.notifier).set('en');
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
 // Widget con để tái sử dụng
   Widget _buildLanguageOption({

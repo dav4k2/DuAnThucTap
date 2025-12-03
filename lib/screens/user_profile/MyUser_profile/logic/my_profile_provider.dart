@@ -150,3 +150,46 @@ final myFilteredReviewsProvider = Provider<List<Review>>((ref) {
   }
   return sorted;
 });
+
+
+//Danh sách chờ duyệt
+final pendingRecipesSample = [
+  Recipe(
+    title: "Bánh cuốn thanh trì nhân tôm",
+    time: "40 phút",
+    difficulty: "Khó",
+    author: "Kong Fuong",
+    rating: 0.0,        // chưa có đánh giá vì đang chờ duyệt
+    reviews: 0,
+    meal: MealTab.buaSang,
+    imageAsset: "image/profile_bg.png",
+  ),
+  Recipe(
+    title: "Cá kho tộ kiểu miền Tây",
+    time: "1 giờ",
+    difficulty: "Trung bình",
+    author: "Kong Fuong",
+    rating: 0.0,
+    reviews: 0,
+    meal: MealTab.buaTrua,
+    imageAsset: "image/garan.png",
+  ),
+  Recipe(
+    title: "Sinh tố bơ dừa hạt chia",
+    time: "10 phút",
+    difficulty: "Dễ",
+    author: "Kong Fuong",
+    rating: 0.0,
+    reviews: 0,
+    meal: MealTab.anVat,
+    imageAsset: "image/profile_bg.png",
+  ),
+];
+final myPendingRecipesProvider = Provider<List<Recipe>>((ref) {
+  // TODO: Sau này bạn thay bằng Firestore query:
+  // final userId = ref.watch(currentUserProvider).id;
+  // return await fetchPendingRecipesFromFirestore(userId);
+
+  // Hiện tại dùng dữ liệu mẫu
+  return pendingRecipesSample;
+});

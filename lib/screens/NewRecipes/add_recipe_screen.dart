@@ -22,15 +22,23 @@ class AddRecipeScreen extends ConsumerWidget {
     final state = ref.watch(addRecipeProvider);
     final notifier = ref.read(addRecipeProvider.notifier);
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
+    final textColor = isDark ? Colors.white70 : Colors.black87;
+    final subtitleColor = isDark ? Colors.grey[400]! : Colors.grey.shade700;
+    final borderColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
+    final sectionTitleColor = isDark ? Colors.white : Colors.black87;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true, // vẫn giữ để khi mở bàn phím đẩy nội dung lên
+      backgroundColor: bgColor,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(
           children: [
             // ===================== HEADER =====================
             Container(
-              color: Colors.white,
+              color: bgColor,
               padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
               child: Stack(
                 children: [
@@ -38,6 +46,7 @@ class AddRecipeScreen extends ConsumerWidget {
                     alignment: Alignment.centerLeft,
                     child: BackButtonWidget(
                       onPressed: () => notifier.handleBackPressed(context),
+
                     ),
                   ),
                   const Center(child: TitleSection()),
@@ -50,7 +59,6 @@ class AddRecipeScreen extends ConsumerWidget {
             Expanded(
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                // Đã bỏ padding bottom 100.h vì nút giờ nằm trong scroll
                 padding: EdgeInsets.zero,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +68,7 @@ class AddRecipeScreen extends ConsumerWidget {
                       padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 12.h),
                       child: Text(
                         'Thêm ảnh minh hoạ',
-                        style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: sectionTitleColor),
                       ),
                     ),
                     const ImageGallery(),
@@ -70,7 +78,7 @@ class AddRecipeScreen extends ConsumerWidget {
                       padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 12.h),
                       child: Text(
                         'Thêm Video minh hoạ',
-                        style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: sectionTitleColor),
                       ),
                     ),
                     const VideoUpload(),
@@ -118,7 +126,7 @@ class AddRecipeScreen extends ConsumerWidget {
                       padding: EdgeInsets.only(left: 36.w, top: 40.h),
                       child: Text(
                         'Nguyên liệu',
-                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500, color: sectionTitleColor),
                       ),
                     ),
                     if (state.ingredients.isNotEmpty)
@@ -141,7 +149,7 @@ class AddRecipeScreen extends ConsumerWidget {
                         padding: EdgeInsets.only(left: 53.w, top: 16.h),
                         child: Text(
                           'Chưa có nguyên liệu nào',
-                          style: TextStyle(fontSize: 15.sp, color: Colors.grey.shade500),
+                          style: TextStyle(fontSize: 15.sp, color: subtitleColor),
                         ),
                       ),
                     Padding(
@@ -164,7 +172,7 @@ class AddRecipeScreen extends ConsumerWidget {
                       child: Divider(
                         height: 1.h,
                         thickness: 0.8,
-                        color: Colors.grey.shade300,
+                        color: borderColor,
                         indent: 36.w,
                         endIndent: 36.w,
                       ),
@@ -175,7 +183,7 @@ class AddRecipeScreen extends ConsumerWidget {
                       padding: EdgeInsets.only(left: 36.w, top: 50.h),
                       child: Text(
                         'Cách làm',
-                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: sectionTitleColor),
                       ),
                     ),
                     if (state.steps.isNotEmpty)
@@ -195,7 +203,7 @@ class AddRecipeScreen extends ConsumerWidget {
                         padding: EdgeInsets.only(left: 57.w, top: 16.h),
                         child: Text(
                           'Chưa có bước nào',
-                          style: TextStyle(fontSize: 15.sp, color: Colors.grey.shade500),
+                          style: TextStyle(fontSize: 15.sp, color: subtitleColor),
                         ),
                       ),
                     Padding(
@@ -213,25 +221,29 @@ class AddRecipeScreen extends ConsumerWidget {
                       ),
                     ),
 
-                    // ===================== BOTTOM BUTTONS (ĐÃ ĐƯA VÀO ĐÂY) =====================
+                    // ===================== BOTTOM BUTTONS =====================
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 26.w), // padding 2 bên lề
+                      padding: EdgeInsets.symmetric(horizontal: 26.w),
                       child: Row(
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              onTap: () => ref.read(addRecipeProvider.notifier).saveAsDraft(context),
+                              onTap: () => notifier.saveAsDraft(context),
                               child: Container(
                                 height: 66.h,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade200,
+                                  color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.black, width: 1.5), // viền đen
+                                  border: Border.all(color: isDark ? Colors.white : Colors.black, width: 1.5),
                                 ),
                                 child: Center(
                                   child: Text(
                                     'Lưu nháp',
-                                    style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark ? Colors.white70 : Colors.black87,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -240,18 +252,22 @@ class AddRecipeScreen extends ConsumerWidget {
                           SizedBox(width: 12.w),
                           Expanded(
                             child: GestureDetector(
-                              onTap: () => ref.read(addRecipeProvider.notifier).validateAndSubmit(context),
+                              onTap: () => notifier.validateAndSubmit(context),
                               child: Container(
                                 height: 66.h,
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFFB901),
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.black, width: 1.5), // thêm viền đen nếu muốn
+                                  border: Border.all(color: isDark ? Colors.white : Colors.black, width: 1.5),
                                 ),
                                 child: Center(
                                   child: Text(
                                     'Đăng',
-                                    style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600, color: Colors.black),
+                                    style: TextStyle(
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -259,8 +275,9 @@ class AddRecipeScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                    )
+                    ),
 
+                    SizedBox(height: 30.h), // padding cuối để scroll thoải mái
                   ],
                 ),
               ),

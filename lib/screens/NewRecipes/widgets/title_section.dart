@@ -7,13 +7,15 @@ class TitleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Text(
       'Thêm công thức mới',
       style: TextStyle(
         fontFamily: 'SF Pro',
         fontSize: 24.sp,
         fontWeight: FontWeight.w600,
-        color: Colors.black,
+        color: isDark ? Colors.white : Colors.black,
       ),
     );
   }

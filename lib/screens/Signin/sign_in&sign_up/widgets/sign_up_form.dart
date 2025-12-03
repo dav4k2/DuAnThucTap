@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_service.dart';
+import '../../../../theme/theme_provider.dart';
 import '../auth/auth_provider.dart';
 import '../sign_in_screen.dart';
 
@@ -31,7 +32,6 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   Future<void> _signUp() async {
     final authNotifier = ref.read(authProvider.notifier);
 
-    // --- Dùng provider kiểm tra dữ liệu trước khi gọi AuthServices ---
     final error = authNotifier.signup(
       _usernameController.text,
       _passwordController.text,
@@ -47,25 +47,22 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     setState(() => _isLoading = true);
 
     try {
-      // SỬA ĐỔI: Bắt kết quả trả về và kiểm tra lỗi từ backend
       final result = await AuthServices.signUp(
-        _emailController.text.trim(),      // Tham số 1: Email
-        _passwordController.text.trim(),   // Tham số 2: Password
-        _usernameController.text.trim(),   // Tham số 3: Username
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _usernameController.text.trim(),
       );
 
-      // KIỂM TRA LỖI TRẢ VỀ TỪ BACKEND
       if (result.containsKey('error')) {
-        throw Exception(result['error']); // Ném lỗi để bắt ở catch block
+        throw Exception(result['error']);
       }
 
-      // Đăng ký thành công (Nếu không có key 'error' và không có exception)
       if (mounted) {
         authNotifier.setError(null);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const SignInScreen(initialTab: true),/// Nếu đăng ký thành công quay lại đăng nhâoj
+            builder: (context) => const SignInScreen(initialTab: true),
           ),
         );
       }
@@ -91,8 +88,14 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(authProvider);
+    final isDarkMode = ref.watch(themeProvider);
     final inputWidth = 0.85.sw;
     final errorWidth = 0.75.sw;
+
+    final bgColor = isDarkMode ? Colors.grey[850]! : const Color(0xFFEBEBEB);
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final borderColor = isDarkMode ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4);
+    final primaryButtonColor = isDarkMode ? Colors.amber[700]! : const Color(0xFFFFB901);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,6 +108,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             hintText: "Tài khoản",
             controller: _usernameController,
             width: inputWidth,
+            bgColor: bgColor,
+            textColor: textColor,
+            borderColor: borderColor,
           ),
         ),
         SizedBox(height: 9.h),
@@ -115,6 +121,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             hintText: "Email hoặc SĐT",
             controller: _emailController,
             width: inputWidth,
+            bgColor: bgColor,
+            textColor: textColor,
+            borderColor: borderColor,
           ),
         ),
         SizedBox(height: 9.h),
@@ -126,10 +135,13 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             controller: _passwordController,
             obscure: !state.showPassword,
             width: inputWidth,
+            bgColor: bgColor,
+            textColor: textColor,
+            borderColor: borderColor,
             suffixIcon: IconButton(
               icon: Icon(
                 state.showPassword ? Icons.visibility_off : Icons.visibility,
-                color: Colors.black.withOpacity(0.5),
+                color: textColor.withOpacity(0.5),
                 size: 26.sp,
               ),
               onPressed: () => ref.read(authProvider.notifier).togglePassword(),
@@ -145,16 +157,16 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             controller: _confirmController,
             obscure: !state.showConfirmPassword,
             width: inputWidth,
+            bgColor: bgColor,
+            textColor: textColor,
+            borderColor: borderColor,
             suffixIcon: IconButton(
               icon: Icon(
-                state.showConfirmPassword
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                color: Colors.black.withOpacity(0.5),
+                state.showConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                color: textColor.withOpacity(0.5),
                 size: 26.sp,
               ),
-              onPressed: () =>
-                  ref.read(authProvider.notifier).toggleConfirmPassword(),
+              onPressed: () => ref.read(authProvider.notifier).toggleConfirmPassword(),
             ),
           ),
         ),
@@ -166,6 +178,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
           child: TermsCheckbox(
             isChecked: state.agreeTerms,
             onChanged: (_) => ref.read(authProvider.notifier).toggleTerms(),
+            textColor: textColor,
           ),
         ),
         SizedBox(height: 15.h),
@@ -178,6 +191,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
               child: ErrorMessage(
                 message: state.errorMessage!,
                 width: errorWidth,
+                isDarkMode: isDarkMode,
               ),
             ),
           ),
@@ -189,9 +203,12 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             child: PrimaryButton(
               text: _isLoading ? "Đang xử lý..." : "Đăng ký",
               width: inputWidth,
+              bgColor: const Color(0xFFFFB901),
+              textColor: Colors.black,
             ),
           ),
         ),
+
       ],
     );
   }
@@ -205,6 +222,9 @@ class InputField extends StatelessWidget {
   final TextEditingController controller;
   final double width;
   final Widget? suffixIcon;
+  final Color bgColor;
+  final Color textColor;
+  final Color borderColor;
 
   const InputField({
     super.key,
@@ -213,6 +233,9 @@ class InputField extends StatelessWidget {
     required this.width,
     this.obscure = false,
     this.suffixIcon,
+    required this.bgColor,
+    required this.textColor,
+    required this.borderColor,
   });
 
   @override
@@ -223,20 +246,20 @@ class InputField extends StatelessWidget {
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFEBEBEB),
-        border: Border.all(color: Colors.black.withOpacity(0.4)),
+        color: bgColor,
+        border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(50.r),
       ),
       child: TextField(
         controller: controller,
         obscureText: obscure,
-        cursorColor: Colors.black,
+        cursorColor: textColor,
         decoration: InputDecoration(
           isDense: true,
           border: InputBorder.none,
           hintText: hintText,
           hintStyle: TextStyle(
-            color: Colors.black.withOpacity(0.3),
+            color: textColor.withOpacity(0.3),
             fontSize: 24.sp,
             fontFamily: 'SF Pro Rounded',
             fontWeight: FontWeight.w700,
@@ -244,7 +267,7 @@ class InputField extends StatelessWidget {
           suffixIcon: suffixIcon,
         ),
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontSize: 24.sp,
           fontFamily: 'SF Pro Rounded',
           fontWeight: FontWeight.w700,
@@ -257,11 +280,13 @@ class InputField extends StatelessWidget {
 class TermsCheckbox extends StatelessWidget {
   final bool isChecked;
   final ValueChanged<bool> onChanged;
+  final Color textColor;
 
   const TermsCheckbox({
     super.key,
     required this.isChecked,
     required this.onChanged,
+    required this.textColor,
   });
 
   @override
@@ -278,7 +303,7 @@ class TermsCheckbox extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6.r),
             ),
-            side: BorderSide(color: Colors.black.withOpacity(0.6)),
+            side: BorderSide(color: textColor.withOpacity(0.6)),
             activeColor: Colors.amber,
           ),
         ),
@@ -293,7 +318,7 @@ class TermsCheckbox extends StatelessWidget {
                   fontSize: 15.sp,
                   fontFamily: "SF Pro Rounded",
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: textColor,
                 ),
               ),
               GestureDetector(
@@ -320,20 +345,25 @@ class TermsCheckbox extends StatelessWidget {
 class ErrorMessage extends StatelessWidget {
   final String message;
   final double width;
+  final bool isDarkMode;
 
   const ErrorMessage({
     super.key,
     required this.message,
     required this.width,
+    this.isDarkMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bg = isDarkMode ? Colors.red[900]!.withOpacity(0.6) : const Color(0xA8F0A4A4);
+    final iconColor = isDarkMode ? Colors.red[300]! : const Color(0xFFF01E1E);
+
     return Container(
       width: width,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: ShapeDecoration(
-        color: const Color(0xA8F0A4A4),
+        color: bg,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50.r),
         ),
@@ -341,15 +371,14 @@ class ErrorMessage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.warning_amber_rounded,
-              color: const Color(0xFFF01E1E), size: 22.sp),
+          Icon(Icons.warning_amber_rounded, color: iconColor, size: 22.sp),
           SizedBox(width: 19.w),
           Flexible(
             child: Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: const Color(0xFFF01E1E),
+                color: iconColor,
                 fontSize: 13.sp,
                 fontFamily: 'SF Pro Rounded',
                 fontWeight: FontWeight.w400,
@@ -366,11 +395,15 @@ class ErrorMessage extends StatelessWidget {
 class PrimaryButton extends StatelessWidget {
   final String text;
   final double width;
+  final Color bgColor;
+  final Color textColor;
 
   const PrimaryButton({
     super.key,
     required this.text,
     required this.width,
+    required this.bgColor,
+    required this.textColor,
   });
 
   @override
@@ -380,14 +413,14 @@ class PrimaryButton extends StatelessWidget {
       height: 65.h,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFB901),
+        color: bgColor,
         borderRadius: BorderRadius.circular(50.r),
-        border: Border.all(color: Colors.black, width: 2.w),
+        border: Border.all(color: textColor, width: 2.w),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontSize: 24.sp,
           fontFamily: 'SF Pro Rounded',
           fontWeight: FontWeight.w700,

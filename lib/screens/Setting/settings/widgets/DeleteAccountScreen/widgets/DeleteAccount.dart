@@ -1,5 +1,4 @@
 // lib/screens/delete_account/widgets/delete_account_bottom_sheet.dart
-
 import 'package:flutter/material.dart';
 
 class DeleteAccountBottomSheet extends StatelessWidget {
@@ -12,21 +11,31 @@ class DeleteAccountBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDarkMode ? Colors.grey[900] : Colors.white;
+    final borderColor = isDarkMode ? Colors.white24 : Colors.black26;
+    final dragBarColor = isDarkMode ? Colors.white54 : Colors.black.withOpacity(0.5);
+    final titleColor = isDarkMode ? Colors.white : Colors.black;
+    final subtitleColor = isDarkMode ? Colors.white70 : Colors.black54;
+    final cancelButtonColor = isDarkMode ? Colors.white24 : const Color(0x2B8F8F8F);
+    final cancelTextColor = isDarkMode ? Colors.white70 : Colors.black54;
+
     return Container(
       width: double.infinity,
       height: 309,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
         ),
         border: Border(
-          top: BorderSide(color: Colors.black26, width: 1),
-          left: BorderSide(color: Colors.black26, width: 1),
-          right: BorderSide(color: Colors.black26, width: 1),
+          top: BorderSide(color: borderColor, width: 1),
+          left: BorderSide(color: borderColor, width: 1),
+          right: BorderSide(color: borderColor, width: 1),
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Color(0x3F000000),
             blurRadius: 4,
@@ -44,14 +53,14 @@ class DeleteAccountBottomSheet extends StatelessWidget {
               width: 122,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: dragBarColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
 
           // Tiêu đề
-          const Positioned(
+          Positioned(
             top: 35,
             left: 16,
             right: 16,
@@ -59,7 +68,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
               'Bạn có chắc muốn xóa tài khoản?',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.black,
+                color: titleColor,
                 fontSize: 22,
                 fontFamily: 'SF Pro',
                 fontWeight: FontWeight.w600,
@@ -73,11 +82,11 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             top: 94,
             left: 0,
             right: 0,
-            child: Container(height: 1, color: Colors.black12),
+            child: Container(height: 1, color: borderColor.withOpacity(0.45)),
           ),
 
           // Câu buồn :(
-          const Positioned(
+          Positioned(
             top: 114,
             left: 40,
             right: 40,
@@ -85,7 +94,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
               'Chúng tôi rất buồn khi thấy bạn rời đi :’(',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.black54,
+                color: subtitleColor,
                 fontSize: 22,
                 fontFamily: 'SF Pro',
                 fontWeight: FontWeight.w400,
@@ -104,14 +113,14 @@ class DeleteAccountBottomSheet extends StatelessWidget {
                 width: 169,
                 height: 58,
                 decoration: BoxDecoration(
-                  color: const Color(0x2B8F8F8F),
+                  color: cancelButtonColor,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 alignment: Alignment.center,
-                child: const Text(
+                child: Text(
                   'Hủy',
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: cancelTextColor,
                     fontSize: 22,
                     fontFamily: 'SF Pro',
                     fontWeight: FontWeight.w600,

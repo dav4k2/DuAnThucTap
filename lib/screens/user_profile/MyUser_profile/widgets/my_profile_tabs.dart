@@ -1,8 +1,14 @@
-// lib/widgets/my_profile_tabs.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../logic/my_profile_provider.dart';   // dùng provider của trang cá nhân
+
+// Helper class for tab item data
+class _TabItem {
+  final ProfileTab tab;
+  final String text;
+  const _TabItem(this.tab, this.text);
+}
 
 class MyProfileTabs extends ConsumerStatefulWidget {
   const MyProfileTabs({super.key});
@@ -15,30 +21,104 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
   final Map<ProfileTab, double> _tabWidths = {};
   final Map<ProfileTab, double> _tabLefts = {};
 
+  final double _tabSpacing = 30.w;
+  final double _tabTopPosition = 500.h;
+
+  final List<_TabItem> _tabs = const [
+    _TabItem(ProfileTab.congThuc, 'Công thức'),
+    _TabItem(ProfileTab.tieuSu, 'Tiểu sử'),
+    _TabItem(ProfileTab.anh, 'Chờ duyệt'),
+    _TabItem(ProfileTab.danhGia, 'Đánh giá'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    for (final item in _tabs) {
+      _tabLefts[item.tab] = 0.0;
+    }
+  }
+
+  void _updateTabPositions() {
+    if (_tabWidths.length != _tabs.length) return;
+
+    double totalWidth = 0.0;
+    for (final item in _tabs) {
+      totalWidth += _tabWidths[item.tab]! + _tabSpacing;
+    }
+    totalWidth -= _tabSpacing; // bỏ spacing cuối cùng
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    double startLeft = (screenWidth - totalWidth) / 2; // ⭐ CĂN GIỮA Ở ĐÂY
+
+    double currentLeft = startLeft;
+    bool needsUpdate = false;
+
+    for (final item in _tabs) {
+      final tab = item.tab;
+      final width = _tabWidths[tab]!;
+
+      if (_tabLefts[tab] != currentLeft) {
+        _tabLefts[tab] = currentLeft;
+        needsUpdate = true;
+      }
+
+      currentLeft += width + _tabSpacing;
+    }
+
+    if (needsUpdate && mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final cur = ref.watch(myProfileTabProvider);           // đổi provider
-    final notifier = ref.read(myProfileTabProvider.notifier); // đổi provider
+    final cur = ref.watch(myProfileTabProvider);
+    final notifier = ref.read(myProfileTabProvider.notifier);
 
-    // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
     final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
-    final activeColor = const Color(0xFFFFB901); // VÀNG
+    final activeColor = const Color(0xFFFFB901);
+
+    if (_tabWidths.length == _tabs.length) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _updateTabPositions());
+    }
 
     return Stack(
       children: [
-        // === CÁC TAB ===
-        _buildTab('Công thức', ProfileTab.congThuc, cur, notifier, textColor, activeColor),
-        _buildTab('Tiểu sử', ProfileTab.tieuSu, cur, notifier, textColor, activeColor),
-        _buildTab('Ảnh', ProfileTab.anh, cur, notifier, textColor, activeColor),
-        _buildTab('Đánh giá', ProfileTab.danhGia, cur, notifier, textColor, activeColor),
+        /// =======================
+        ///   DÃY TAB (CĂN GIỮA)
+        /// =======================
+        Positioned(
+          top: _tabTopPosition,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center, // ⭐ CHỈNH Ở ĐÂY
+            mainAxisSize: MainAxisSize.max,
+            children: _tabs.map((item) {
+              final tab = item.tab;
+              final text = item.text;
 
-        // === THANH GẠCH DƯỚI (ANIMATED) ===
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTab(text, tab, cur, notifier, textColor, activeColor),
+                  if (tab != _tabs.last.tab) SizedBox(width: _tabSpacing),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+
+        /// ==========================
+        ///  THANH GẠCH DƯỚI ANIMATION
+        /// ==========================
         if (_tabWidths[cur] != null && _tabLefts[cur] != null)
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOutCubic,
             left: _tabLefts[cur]!,
-            top: _getTop(cur) + 25.h,
+            top: _tabTopPosition + 25.h,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               width: _tabWidths[cur]!,
@@ -63,55 +143,32 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
       ) {
     final isActive = tab == cur;
 
-    return Positioned(
-      left: _getLeft(tab),
-      top: _getTop(tab),
-      child: GestureDetector(
-        onTap: () => notifier.state = tab,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              final renderBox = context.findRenderObject() as RenderBox?;
-              if (renderBox != null && renderBox.hasSize) {
-                final width = renderBox.size.width;
-                final globalOffset = renderBox.localToGlobal(Offset.zero);
-                final relativeLeft = globalOffset.dx;
+    return GestureDetector(
+      onTap: () => notifier.state = tab,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final renderBox = context.findRenderObject() as RenderBox?;
+            final width = renderBox?.size.width ?? 0.0;
 
-                if (_tabWidths[tab] != width || _tabLefts[tab] != relativeLeft) {
-                  setState(() {
-                    _tabWidths[tab] = width;
-                    _tabLefts[tab] = relativeLeft;
-                  });
-                }
-              }
-            });
+            if (_tabWidths[tab] != width && width > 0) {
+              setState(() {
+                _tabWidths[tab] = width;
+              });
+            }
+          });
 
-            return Text(
-              text,
-              style: TextStyle(
-                color: isActive ? activeColor : textColor,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-                height: 1.38,
-              ),
-            );
-          },
-        ),
+          return Text(
+            text,
+            style: TextStyle(
+              color: isActive ? activeColor : textColor,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              height: 1.38,
+            ),
+          );
+        },
       ),
     );
   }
-
-  double _getLeft(ProfileTab tab) => {
-    ProfileTab.congThuc: 30.w,
-    ProfileTab.tieuSu: 138.w,
-    ProfileTab.anh: 224.w,
-    ProfileTab.danhGia: 284.w,
-  }[tab]!;
-
-  double _getTop(ProfileTab tab) => {
-    ProfileTab.congThuc: 500.h,
-    ProfileTab.tieuSu: 500.h,
-    ProfileTab.anh: 500.h,
-    ProfileTab.danhGia: 500.h,
-  }[tab]!;
 }

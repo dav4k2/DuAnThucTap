@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -10,29 +8,50 @@ class LogoutBottomSheett extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDarkMode ? Colors.grey[900] : Colors.white;
+    final borderColor = isDarkMode ? Colors.white24 : Colors.black.withOpacity(0.30);
+    final dragBarColor = isDarkMode ? Colors.white54 : Colors.black.withOpacity(0.5);
+    final titleColor = isDarkMode ? Colors.white : Colors.black;
+    final subtitleColor = isDarkMode ? Colors.white70 : Colors.black.withOpacity(0.5);
+    final cancelButtonColor = isDarkMode ? Colors.white24 : const Color(0x2B8F8F8F);
+    final cancelTextColor = isDarkMode ? Colors.white70 : Colors.black.withOpacity(0.5);
+
     return Container(
       width: 402.w,
       height: 309.h,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: backgroundColor,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30.r),
           topRight: Radius.circular(30.r),
         ),
         border: Border.all(
-          color: Colors.black.withOpacity(0.30),
+          color: borderColor,
           width: 1,
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0x3F000000),
+            color: Color(0x3F000000),
             blurRadius: 4,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Stack(
         children: [
+          // Thanh kéo
+          Positioned(
+            top: 10.h,
+            left: 140.w,
+            child: Container(
+              width: 122.w,
+              height: 2.h,
+              color: dragBarColor,
+            ),
+          ),
+
           // Tiêu đề
           Positioned(
             top: 35.h,
@@ -43,24 +62,13 @@ class LogoutBottomSheett extends StatelessWidget {
                 'Bạn có muốn đăng xuất?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black,
+                  color: titleColor,
                   fontSize: 22.sp,
                   fontFamily: 'SF Pro',
                   fontWeight: FontWeight.w600,
                   height: 1.36,
                 ),
               ),
-            ),
-          ),
-
-          // Gạch ngang trên (cái thanh kéo)
-          Positioned(
-            top: 10.h,
-            left: 140.w,
-            child: Container(
-              width: 122.w,
-              height: 2.h,
-              color: Colors.black.withOpacity(0.50),
             ),
           ),
 
@@ -71,7 +79,7 @@ class LogoutBottomSheett extends StatelessWidget {
             child: Container(
               width: 402.w,
               height: 1.h,
-              color: Colors.black.withOpacity(0.15),
+              color: borderColor.withOpacity(0.5),
             ),
           ),
 
@@ -85,7 +93,7 @@ class LogoutBottomSheett extends StatelessWidget {
                 'Hẹn gặp lại bạn sớm nhé!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black.withOpacity(0.50),
+                  color: subtitleColor,
                   fontSize: 22.sp,
                   fontFamily: 'SF Pro',
                   fontWeight: FontWeight.w400,
@@ -105,14 +113,14 @@ class LogoutBottomSheett extends StatelessWidget {
                 width: 169.w,
                 height: 58.h,
                 decoration: BoxDecoration(
-                  color: const Color(0x2B8F8F8F),
+                  color: cancelButtonColor,
                   borderRadius: BorderRadius.circular(50.r),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'Hủy',
                   style: TextStyle(
-                    color: Colors.black.withOpacity(0.50),
+                    color: cancelTextColor,
                     fontSize: 22.sp,
                     fontFamily: 'SF Pro',
                     fontWeight: FontWeight.w600,

@@ -44,6 +44,16 @@ class _FAQTabState extends State<FAQTab> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final cardColor = isDark ? Colors.grey[850] : Colors.white;
+    final questionTextColor = isDark ? Colors.white : Colors.black87;
+    final answerBgColor = isDark ? Colors.grey[900] : const Color(0xFFF5F5F5);
+    final answerTextColor = isDark ? Colors.white70 : Colors.black87;
+    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
+    final bottomBorderColor = isDark ? Colors.white12 : Colors.grey.shade300;
+    final shadowColor = isDark ? Colors.black.withOpacity(0.7) : Colors.black.withOpacity(0.04);
+
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       itemCount: widget.faqTopics.length,
@@ -52,17 +62,16 @@ class _FAQTabState extends State<FAQTab> {
         final bool isExpanded = _expandedIndices.contains(index);
 
         return AnimatedContainer(
-
           duration: const Duration(milliseconds: 300),
           curve: Curves.fastOutSlowIn,
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: shadowColor,
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -94,20 +103,19 @@ class _FAQTabState extends State<FAQTab> {
                       Expanded(
                         child: Text(
                           question,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
-                            color: Colors.black87,
+                            color: questionTextColor,
                           ),
                         ),
                       ),
-
                       AnimatedRotation(
-                        turns: isExpanded ? 0.5 : 0.0, // 0.5 vòng = 180 độ
+                        turns: isExpanded ? 0.5 : 0.0,
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.fastOutSlowIn,
                         child: const Icon(
-                          Icons.keyboard_arrow_down_rounded, // Luôn dùng icon down
+                          Icons.keyboard_arrow_down_rounded,
                           color: kPrimaryYellow,
                           size: 30,
                         ),
@@ -117,35 +125,30 @@ class _FAQTabState extends State<FAQTab> {
                 ),
               ),
 
-              // === PHẦN TRẢ LỜI  ===
-              //  AnimatedSize
+              // === PHẦN TRẢ LỜI ===
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn,
-                alignment: Alignment.topCenter, // Giãn từ trên xuống
+                alignment: Alignment.topCenter,
                 child: isExpanded
                     ? Container(
                   width: double.infinity,
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(16)),
-                    border: Border(
-                        top: BorderSide(
-                            color: Colors.grey.shade300, width: 1)),
+                    color: answerBgColor,
+                    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+                    border: Border(top: BorderSide(color: bottomBorderColor, width: 1)),
                   ),
                   child: Text(
-                    faqAnswers[question] ??
-                        "Đang cập nhật câu trả lời...",
-                    style: const TextStyle(
+                    faqAnswers[question] ?? "Đang cập nhật câu trả lời...",
+                    style: TextStyle(
                       fontSize: 15,
                       height: 1.6,
-                      color: Colors.black87,
+                      color: answerTextColor,
                     ),
                   ),
                 )
-                    : const SizedBox.shrink(), // Khi đóng, height = 0
+                    : const SizedBox.shrink(),
               ),
             ],
           ),
