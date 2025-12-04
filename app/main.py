@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth
+from app.routers import auth, user
 from app.database import engine
 from app import models
 
@@ -11,6 +11,7 @@ app = FastAPI()
 
 # Bao gồm router xác thực
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(user.router)
 
 @app.get("/")
 def read_root():
