@@ -1,16 +1,17 @@
-// lib/widgets/my_header_image.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../logic/my_profile_provider.dart'; // nhớ import provider
+class MyHeaderImage extends StatelessWidget {
+  final String? imageUrl; // Nhận URL ảnh bìa
 
-class MyHeaderImage extends ConsumerWidget {
-  const MyHeaderImage({super.key});
+  const MyHeaderImage({
+    super.key,
+    this.imageUrl,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final headerImage = ref.watch(myChefProvider).headerImage;
+  Widget build(BuildContext context) {
+    final bool hasImage = imageUrl != null && imageUrl!.isNotEmpty;
 
     return Positioned(
       left: 0,
@@ -19,8 +20,15 @@ class MyHeaderImage extends ConsumerWidget {
         width: 402.w,
         height: 222.h,
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(headerImage), // dùng ảnh từ provider
+          color: Colors.grey[300], // Màu nền khi chưa có ảnh
+          image: hasImage
+              ? DecorationImage(
+            image: NetworkImage(imageUrl!),
+            fit: BoxFit.cover,
+          )
+              : const DecorationImage(
+            // Bạn có thể để 1 ảnh bìa mặc định trong assets
+            image: AssetImage("assets/images/default_cover.png"),
             fit: BoxFit.cover,
           ),
         ),

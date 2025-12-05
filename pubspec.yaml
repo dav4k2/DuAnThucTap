@@ -60,6 +60,7 @@ dependencies:
   permission_handler: ^11.3.1
   font_awesome_flutter: ^10.7.0
   uuid: ^4.2.1
+  dio: ^5.9.0
 
 
 

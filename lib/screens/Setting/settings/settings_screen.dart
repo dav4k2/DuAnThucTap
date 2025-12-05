@@ -12,6 +12,9 @@ import 'package:fontend/screens/Setting/settings/widgets/title_header.dart';
 import '../../../theme/app_localizations.dart';
 import '../../../theme/language_provider.dart';
 import '../../../theme/theme_provider.dart';
+import '../../Signin/sign_in&sign_up/auth/auth_gate.dart';
+import '../../Signin/sign_in&sign_up/auth/auth_provider.dart';
+import '../../Signin/sign_in&sign_up/auth/storage_service.dart';
 import '../notification_setting/NotificationSettingsScreen.dart';
 import 'widgets/terms_and_conditions/about_us.dart';
 import 'widgets/terms_and_conditions/terms.dart';
@@ -174,7 +177,7 @@ class SettingsScreen extends ConsumerWidget {
                       onTap: () => _showCustomBottomSheet(
                         context,
                         LogoutBottomSheett(
-                          onConfirm: () => notifier.logout(context),
+                          onConfirm: () => logOut(context, ref),
                         ),
                       ),
                     ),
@@ -220,6 +223,26 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+// Hàm xử lý đăng xuất
+  Future<void> logOut(BuildContext context, WidgetRef ref) async {
+    // 1. Hiển thị loading hoặc dialog xác nhận (Tùy chọn)
+    // showDialog(...)
+
+    // 2. Xóa Token trong bộ nhớ máy
+    await StorageService.deleteToken();
+
+    // 3. Reset trạng thái của AuthProvider (Riverpod) về mặc định
+    // Điều này giúp xóa các thông tin user cũ đang lưu trong RAM
+    ref.invalidate(authProvider);
+
+    // 4. Điều hướng về AuthGate và xóa sạch lịch sử
+    if (context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const AuthGate()),
+            (route) => false, // Điều kiện false nghĩa là: Xóa HẾT các trang trước đó
+      );
+    }
+  }
 
 
 // Widget con để tái sử dụng

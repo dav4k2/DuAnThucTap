@@ -1,12 +1,19 @@
-// lib/widgets/my_profile_avatar.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MyProfileAvatar extends StatelessWidget {
-  const MyProfileAvatar({super.key});
+  final String? imageUrl; // Nhận URL ảnh từ API
+
+  const MyProfileAvatar({
+    super.key,
+    this.imageUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra xem có link ảnh hợp lệ không
+    final bool hasImage = imageUrl != null && imageUrl!.isNotEmpty;
+
     return Stack(
       children: [
         // Viền trắng bên ngoài
@@ -30,12 +37,15 @@ class MyProfileAvatar extends StatelessWidget {
           child: Container(
             width: 120.w,
             height: 120.h,
-            decoration: const ShapeDecoration(
+            decoration: ShapeDecoration(
               image: DecorationImage(
-                image: AssetImage("image/avatar.png"), // giữ nguyên ảnh
-                fit: BoxFit.fill,
+                // Logic: Nếu có link ảnh -> dùng NetworkImage, ngược lại dùng AssetImage
+                image: hasImage
+                    ? NetworkImage(imageUrl!) as ImageProvider
+                    : const AssetImage("image/avatar.png"), // Ảnh mặc định trong assets
+                fit: BoxFit.cover,
               ),
-              shape: OvalBorder(),
+              shape: const OvalBorder(),
             ),
           ),
         ),

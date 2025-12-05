@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../Service/user_service.dart';
 import 'logic/survey_provider.dart';
 import 'survey_1.dart';
 import 'survey_2.dart';
@@ -142,7 +143,7 @@ class SurveyFlowScreen extends ConsumerWidget {
               left: 17.w,
               right: 17.w,
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
                   if (!canProceed) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -169,8 +170,38 @@ class SurveyFlowScreen extends ConsumerWidget {
                     ref.read(surveyPageProvider.notifier).state =
                         currentPage + 1;
                   } else {
-                    // Hoàn thành survey → về Home
-                    Navigator.pushReplacementNamed(context, '/home');
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (c) => const Center(child: CircularProgressIndicator()),
+                    );
+
+                    // 2. Lấy data từ Provider
+                    final survey = ref.read(surveyProvider);
+                    final userService = UserService();
+
+                    // 3. Gọi API
+                    bool success = await userService.updateProfile(
+                      displayName: survey.displayName!,
+                      bio: survey.bio,
+                      country: survey.country,
+                      cookingLevel: survey.cookingTitle, // Từ Survey 1
+                      categories: survey.favoriteCategories, // Từ Survey 2
+                      avatarFile: survey.avatarFile, // Từ Survey 3
+                      coverFile: survey.coverFile,   // Từ Survey 3
+                    );
+
+                    // 4. Ẩn loading
+                    Navigator.of(context).pop();
+
+                    if (success) {
+                      // Chuyển sang trang Home/Profile
+                      Navigator.pushReplacementNamed(context, '/mainlayout');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Lỗi cập nhật hồ sơ. Vui lòng thử lại!")),
+                      );
+                    }
                   }
                 },
                 child: AnimatedContainer(
