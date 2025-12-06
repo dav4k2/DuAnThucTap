@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../Main_layout/main_layout.dart';
 import '../../Service/user_service.dart';
 import 'logic/survey_provider.dart';
 import 'survey_1.dart';
@@ -195,8 +196,13 @@ class SurveyFlowScreen extends ConsumerWidget {
                     Navigator.of(context).pop();
 
                     if (success) {
-                      // Chuyển sang trang Home/Profile
-                      Navigator.pushReplacementNamed(context, '/mainlayout');
+                      // Chuyển sang AuthGate để nó tự điều hướng vào MainLayout
+                      // Hoặc chuyển thẳng vào MainLayout
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const MainLayout()),
+                            (route) => false,
+                      );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Lỗi cập nhật hồ sơ. Vui lòng thử lại!")),

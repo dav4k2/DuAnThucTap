@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_service.dart';
+import 'package:fontend/screens/survey/survey_0.dart';
 import '../../../../Main_layout/main_layout.dart';
+import '../../../../Service/user_service.dart';
 import '../../../Home_page/mainpage_guest/home_screen.dart';
 import '../../../Searching/search/explore_screen.dart';
+import '../../../survey/survey_flow_screen.dart';
 import '../auth/auth_gate.dart';
 import '../auth/auth_provider.dart';
 import '../auth/storage_service.dart';
@@ -36,6 +39,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
     setState(() => _isLoading = true);
 
     try {
+      // 1. Gọi API Login lấy Token
       final AuthResponse response = await AuthServices.signIn(
         _emailController.text.trim(),
         _passwordController.text.trim(),
@@ -44,20 +48,42 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       if (mounted) {
         if (response.success) {
           authNotifier.setError(null);
+          // 2. Lưu Token
           await StorageService.saveToken(response.token!);
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const AuthGate()),
-                (route) => false,
-          );
+
+          // 3. --- LOGIC MỚI: KIỂM TRA PROFILE ---
+          // Gọi API lấy thông tin user ngay lập tức
+          final user = await UserService().getUserProfile();
+
+          if (user != null) {
+            if (user.isProfileCompleted) {
+              // Nếu đã xong survey -> Vào AuthGate (hoặc MainLayout)
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const AuthGate()),
+                    (route) => false,
+              );
+            } else {
+              // Nếu CHƯA xong survey -> Chuyển hướng sang trang Survey
+              // Reset provider survey nếu cần thiết
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => SurveyStartScreen()),
+                    (route) => false,
+              );
+            }
+          } else {
+            authNotifier.setError("Lỗi lấy thông tin người dùng.");
+          }
         } else {
           authNotifier.setError(response.message);
         }
       }
     } on Exception catch (e) {
+      // ... xử lý lỗi cũ
       final errorMessage = e.toString().contains(':')
           ? e.toString().split(': ').last
-          : 'Đăng nhập không thành công. Vui lòng thử lại.';
+          : 'Đăng nhập không thành công.';
       authNotifier.setError(errorMessage);
     } finally {
       if (mounted) setState(() => _isLoading = false);

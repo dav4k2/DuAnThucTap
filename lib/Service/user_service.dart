@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:fontend/Service/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Service/user_model.dart';
+import '../screens/Signin/sign_in&sign_up/auth/storage_service.dart';
 
 class UserService {
   final Dio _dio = Dio(BaseOptions(
@@ -13,11 +14,10 @@ class UserService {
 
   // Hàm lấy token từ bộ nhớ
   Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token'); // Giả sử bạn lưu key là access_token lúc login
+    // Thay vì dùng SharedPreferences, hãy dùng StorageService
+    return await StorageService.getToken();
   }
 
-  // 1. Update Profile (Gửi Multipart)
   Future<bool> updateProfile({
     required String displayName,
     String? bio,
@@ -31,17 +31,14 @@ class UserService {
       final token = await _getToken();
       if (token == null) return false;
 
-      // Chuẩn bị dữ liệu form
       Map<String, dynamic> mapData = {
         'display_name': displayName,
         'bio': bio ?? '',
         'country': country ?? '',
         'cooking_level': cookingLevel ?? '',
-        // API nhận chuỗi JSON cho list
         'interested_categories': jsonEncode(categories ?? []),
       };
 
-      // Xử lý file
       if (avatarFile != null) {
         mapData['avatar'] = await MultipartFile.fromFile(avatarFile.path);
       }
@@ -71,6 +68,8 @@ class UserService {
   Future<UserModel?> getUserProfile() async {
     try {
       final token = await _getToken();
+      print("Token sent: $token"); // Log để kiểm tra
+
       if (token == null) return null;
 
       final response = await _dio.get(

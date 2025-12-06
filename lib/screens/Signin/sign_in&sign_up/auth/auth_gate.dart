@@ -1,45 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/auth/storage_service.dart';
+import 'package:fontend/screens/survey/survey_0.dart';
 import '../../../../Main_layout/main_layout.dart';
+import '../../../../Service/user_service.dart';
+import '../../../survey/survey_flow_screen.dart';
 import '../sign_in_screen.dart'; // Import màn hình đăng nhập
 import 'storage_service.dart'; // Import service lưu token
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
 
+  // Tạo hàm check logic tách biệt
+  Future<int> _checkAuthState() async {
+    final token = await StorageService.getToken();
+    if (token == null) return 0; // 0: Chưa đăng nhập
+
+    // Có token -> Check tiếp profile đã completed chưa
+    final user = await UserService().getUserProfile();
+    if (user == null) return 0; // Token lỗi hoặc hết hạn
+
+    if (user.isProfileCompleted) {
+      return 1; // 1: Đã đăng nhập & Đã xong profile -> Vào Main
+    } else {
+      return 2; // 2: Đã đăng nhập & CHƯA xong profile -> Vào Survey
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Sử dụng FutureBuilder để chờ việc kiểm tra Token
-    return FutureBuilder<String?>(
-      future: StorageService.getToken(), // Gọi hàm lấy token từ bộ nhớ
+    return FutureBuilder<int>(
+      future: _checkAuthState(),
       builder: (context, snapshot) {
-
-        // 1. TRẠNG THÁI ĐANG KIỂM TRA (Loading)
-        // Đây chính là "Màn hình chờ" của bạn
+        // 1. Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 20),
-                  Text("Đang tải dữ liệu..."),
-                ],
-              ),
+              child: CircularProgressIndicator(), // Màn hình chờ
             ),
           );
         }
 
-        // 2. TRẠNG THÁI ĐÃ CÓ TOKEN (Đã đăng nhập)
-        if (snapshot.hasData && snapshot.data != null) {
-          return const MainLayout();
-        }
+        // 2. Điều hướng dựa trên kết quả
+        final state = snapshot.data ?? 0;
 
-        // 3. TRẠNG THÁI CHƯA CÓ TOKEN (Chưa đăng nhập)
-        // Thường sẽ trả về SignInScreen để người dùng đăng nhập
-        return const SignInScreen();
+        if (state == 1) {
+          return const MainLayout(); // Đã xong hết -> Vào App chính
+        } else if (state == 2) {
+          return SurveyStartScreen(); // Chưa xong survey -> Vào Survey
+        } else {
+          return const SignInScreen(); // Chưa đăng nhập -> Vào Login
+        }
       },
     );
   }

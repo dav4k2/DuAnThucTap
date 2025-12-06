@@ -8,6 +8,7 @@ class UserModel {
   final String? avatarUrl;
   final String? coverUrl;
   final List<String> interestedCategories;
+  final bool isProfileCompleted;
 
   UserModel({
     required this.id,
@@ -19,6 +20,7 @@ class UserModel {
     this.avatarUrl,
     this.coverUrl,
     this.interestedCategories = const [],
+    required this.isProfileCompleted,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class UserModel {
       interestedCategories: json['interested_categories'] != null
           ? List<String>.from(json['interested_categories'])
           : [],
+      isProfileCompleted: json['is_profile_completed'] ?? false,
     );
   }
 }
