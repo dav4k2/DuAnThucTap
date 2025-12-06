@@ -21,12 +21,60 @@ class StepItem extends ConsumerWidget {
     this.onDelete,
   }) : super(key: key);
 
-  Future<void> _pickImage(BuildContext context, WidgetRef ref) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      ref.read(addRecipeProvider.notifier).updateStepImage(index, pickedFile.path);
-    }
+  // Hàm kiểm tra xem đường dẫn là video hay ảnh dựa vào đuôi file
+  bool _isVideo(String path) {
+    final ext = path.split('.').last.toLowerCase();
+    return ['mp4', 'mov', 'avi', 'mkv'].contains(ext);
+  }
+
+  // Hiển thị lựa chọn: Ảnh hoặc Video
+  void _showMediaPicker(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.image, color: Colors.blue),
+                title: Text('Chọn Ảnh', style: TextStyle(color: isDark ? Colors.white : Colors.black)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final picker = ImagePicker();
+                  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    // Lưu ý: Provider cần đổi tên hàm này thành updateStepMedia để hợp lý hơn
+                    ref.read(addRecipeProvider.notifier).updateStepImage(index, pickedFile.path);
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.videocam, color: Colors.red),
+                title: Text('Chọn Video', style: TextStyle(color: isDark ? Colors.white : Colors.black)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final picker = ImagePicker();
+                  // Chọn video
+                  final pickedFile = await picker.pickVideo(
+                    source: ImageSource.gallery,
+                    maxDuration: const Duration(minutes: 5), // Giới hạn độ dài nếu cần
+                  );
+                  if (pickedFile != null) {
+                    ref.read(addRecipeProvider.notifier).updateStepImage(index, pickedFile.path);
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -34,7 +82,8 @@ class StepItem extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final stepImagePath = ref.watch(
+    // Lấy đường dẫn file (ảnh hoặc video)
+    final stepMediaPath = ref.watch(
       addRecipeProvider.select((s) => s.stepImages.length > index ? s.stepImages[index] : null),
     );
 
@@ -42,10 +91,10 @@ class StepItem extends ConsumerWidget {
       addRecipeProvider.select((s) => s.stepErrors.length > index ? s.stepErrors[index] : null),
     );
 
-    // Màu background ô nhập
-    final fieldBgColor = isDark ? Color(0xFF2C2C2C) : Color(0xFFEBEBEB);
+    final fieldBgColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFEBEBEB);
     final fieldTextColor = isDark ? Colors.white : Colors.black87;
     final placeholderColor = isDark ? Colors.grey[500]! : Colors.grey.shade400;
+    final primaryColor = const Color(0xFFFFB901);
 
     return Padding(
       padding: EdgeInsets.only(top: 30.h),
@@ -61,7 +110,7 @@ class StepItem extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Ô NHẬP + LỖI ĐỎ KHÔNG BỊ CHỒNG
+                // Ô NHẬP TEXT
                 Container(
                   decoration: BoxDecoration(
                     color: fieldBgColor,
@@ -87,19 +136,16 @@ class StepItem extends ConsumerWidget {
                 if (errorText != null)
                   Padding(
                     padding: EdgeInsets.only(top: 6.h),
-                    child: Text(
-                      errorText,
-                      style: TextStyle(color: Colors.red, fontSize: 12.sp),
-                    ),
+                    child: Text(errorText, style: TextStyle(color: Colors.red, fontSize: 12.sp)),
                   ),
 
                 SizedBox(height: 12.h),
 
-                // Ô ẢNH BƯỚC
+                // Ô MEDIA (ẢNH HOẶC VIDEO)
                 GestureDetector(
-                  onTap: () => _pickImage(context, ref),
+                  onTap: () => _showMediaPicker(context, ref),
                   child: DottedBorder(
-                    color: const Color(0xFFFFB901),
+                    color: primaryColor,
                     strokeWidth: 2.5,
                     dashPattern: const [8, 5],
                     borderType: BorderType.RRect,
@@ -108,17 +154,46 @@ class StepItem extends ConsumerWidget {
                       width: 68.w,
                       height: 68.h,
                       decoration: BoxDecoration(
-                        color: isDark ? Color(0x33D4D4D4) : const Color(0x51D4D4D4),
+                        color: isDark ? const Color(0x33D4D4D4) : const Color(0x51D4D4D4),
                         borderRadius: BorderRadius.circular(20.r),
                       ),
-                      child: stepImagePath == null
-                          ? Center(child: Icon(Icons.add, size: 28.sp, color: const Color(0xFFFFB901)))
+                      child: stepMediaPath == null
+                          ? Center(child: Icon(Icons.add_a_photo_outlined, size: 28.sp, color: primaryColor))
                           : Stack(
+                        alignment: Alignment.center,
                         children: [
+                          // Hiển thị nội dung
                           ClipRRect(
                             borderRadius: BorderRadius.circular(20.r),
-                            child: Image.file(File(stepImagePath), width: 68.w, height: 68.h, fit: BoxFit.cover),
+                            child: _isVideo(stepMediaPath)
+                                ? Container(
+                              width: 68.w,
+                              height: 68.h,
+                              color: Colors.black, // Nền đen cho video
+                              child: Center(
+                                child: Icon(Icons.videocam, color: Colors.white, size: 30.sp),
+                              ),
+                            )
+                                : Image.file(
+                              File(stepMediaPath),
+                              width: 68.w,
+                              height: 68.h,
+                              fit: BoxFit.cover,
+                            ),
                           ),
+
+                          // Icon Play nhỏ nếu là video (để dễ nhận biết)
+                          if (_isVideo(stepMediaPath))
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(4.w),
+                              child: Icon(Icons.play_arrow, color: primaryColor, size: 20.sp),
+                            ),
+
+                          // Nút xóa
                           Positioned(
                             top: 4,
                             right: 4,

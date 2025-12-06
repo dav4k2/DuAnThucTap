@@ -61,7 +61,7 @@ class AboutUs extends ConsumerWidget {
             ),
             SizedBox(height: size.height * 0.015),
             Text(
-              'Chúng tôi là anh em wibu đụt cận trĩ spin hand ra ý tưởng app let him cook lỏ card này',
+              'Let him cook',
               style: TextStyle(
                 color: bodyColor,
                 fontSize: bodyFontSize,

@@ -64,11 +64,13 @@ class MissingInfoDialog extends StatelessWidget {
 
             // Tiêu đề
             Text(
-              'Đăng cái con cặc', // giữ nguyên text cũ
+              'Ối, bạn điền thiếu thông tin rồi', // giữ nguyên text cũ
               style: TextStyle(
                 fontSize: 22.sp,
                 fontWeight: FontWeight.bold,
                 color: primaryTextColor,
+                // THÊM: Xóa gạch chân
+                decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
             ),
@@ -77,11 +79,12 @@ class MissingInfoDialog extends StatelessWidget {
 
             // Nội dung lỗi – đẹp, dễ đọc
             Text(
-              'Nhập đủ thông tin vào đi thằng l',
+              'Nhập đủ thông tin mới có thể đăng công thức nhé!',
               style: TextStyle(
                 fontSize: 16.sp,
                 color: secondaryTextColor,
                 height: 1.5,
+                decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
             ),
@@ -108,6 +111,7 @@ class MissingInfoDialog extends StatelessWidget {
                       fontSize: 16.sp,
                       color: primaryTextColor,
                       fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.none,
                     ),
                   ),
                 ],
@@ -116,7 +120,7 @@ class MissingInfoDialog extends StatelessWidget {
 
             SizedBox(height: 36.h),
 
-            // Nút Đóng – bo tròn, đỏ cam, nổi bật
+            // Nút Đóng
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -131,11 +135,12 @@ class MissingInfoDialog extends StatelessWidget {
                   shadowColor: buttonColor.withOpacity(0.4),
                 ),
                 child: Text(
-                  'OK! bố mày biết rồi',
+                  'Quat lại chỉnh sửa',
                   style: TextStyle(
                     fontSize: 17.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ),

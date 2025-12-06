@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fontend/screens/Setting/settings/widgets/reset_pass/password_reset_screen.dart';
 import '../../../../theme/app_localizations.dart';
 import '../../../../theme/language_provider.dart';
 
+// Màu vàng chủ đạo theo yêu cầu
+const Color kPrimaryYellow = Color(0xFFFFB901);
 
 class LanguageBottomSheet extends ConsumerWidget {
   const LanguageBottomSheet({super.key});
@@ -16,72 +17,70 @@ class LanguageBottomSheet extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    // Màu nền bottom sheet
+    final backgroundColor = isDark ? const Color(0xFF1A1A1A) : Colors.white;
+    // Màu thanh kéo (drag handle)
+    final dragHandleColor = isDark ? Colors.grey[700] : Colors.grey[300];
+
     return Container(
-      width: 402.w,
-      height: 360.h,
+      width: double.infinity,
+      // Loại bỏ chiều cao cố định để nội dung tự co giãn
       decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30.r),
           topRight: Radius.circular(30.r),
         ),
-        border: Border.all(color: isDark ? Colors.white24 : Colors.black.withOpacity(0.3), width: 1),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.5) : const Color(0x3F000000),
-            blurRadius: 4,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
-      child: Stack(
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Quan trọng: Chiều cao tối thiểu
         children: [
-          // Thanh kéo
-          Positioned(
-            top: 10.h,
-            left: 140.w,
-            child: Container(
-              width: 122.w,
-              height: 2.h,
-              color: isDark ? Colors.white54 : Colors.black.withOpacity(0.5),
+          SizedBox(height: 12.h),
+
+          // Thanh kéo (Drag Handle) - Căn giữa tự động thay vì Positioned
+          Container(
+            width: 50.w,
+            height: 5.h,
+            decoration: BoxDecoration(
+              color: dragHandleColor,
+              borderRadius: BorderRadius.circular(10.r),
             ),
           ),
+
+          SizedBox(height: 20.h),
 
           // Tiêu đề
-          Positioned(
-            top: 35.h,
-            left: 26.w,
-            child: SizedBox(
-              width: 349.w,
-              child: Text(
-                l10n.translate('language'),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w600,
-                  height: 1.36,
-                  color: theme.textTheme.titleLarge?.color,
-                ),
-              ),
+          Text(
+            l10n.translate('language'),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
+              color: theme.textTheme.titleLarge?.color,
             ),
           ),
 
-          // Gạch ngang dưới tiêu đề
-          Positioned(
-            top: 84.h,
-            left: 0,
-            child: Container(
-              width: 402.w,
-              height: 1.h,
-              color: isDark ? Colors.white24 : Colors.black.withOpacity(0.15),
-            ),
+          SizedBox(height: 15.h),
+
+          // Đường kẻ mờ
+          Divider(
+            height: 1,
+            color: isDark ? Colors.white12 : Colors.black12,
+            thickness: 1,
           ),
+
+          SizedBox(height: 20.h),
 
           // Danh sách ngôn ngữ
-          Positioned(
-            top: 100.h,
-            left: 0,
-            right: 0,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               children: [
                 _buildLanguageOption(
@@ -91,6 +90,7 @@ class LanguageBottomSheet extends ConsumerWidget {
                   subtitle: 'Vietnamese',
                   value: 'vi',
                 ),
+                SizedBox(height: 12.h),
                 _buildLanguageOption(
                   context: context,
                   ref: ref,
@@ -101,6 +101,9 @@ class LanguageBottomSheet extends ConsumerWidget {
               ],
             ),
           ),
+
+          // Khoảng cách an toàn phía dưới (cho các dòng máy tai thỏ/dynamic island)
+          SizedBox(height: 30.h + MediaQuery.of(context).padding.bottom),
         ],
       ),
     );
@@ -115,36 +118,103 @@ class LanguageBottomSheet extends ConsumerWidget {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final selected = ref.read(languageProvider) == value;
 
-    return ListTile(
+    // Dùng watch để UI cập nhật trạng thái ngay lập tức
+    final currentLang = ref.watch(languageProvider);
+    final isSelected = currentLang == value;
+
+    // Màu sắc logic
+    final baseBorderColor = isDark ? Colors.grey[800]! : Colors.grey[200]!;
+    final baseBgColor = isDark ? Colors.grey[900]! : Colors.grey[50]!;
+
+    // Khi được chọn: Viền vàng, nền vàng nhạt (opacity thấp)
+    final borderColor = isSelected ? kPrimaryYellow : baseBorderColor;
+    final bgColor = isSelected
+        ? kPrimaryYellow.withOpacity(isDark ? 0.15 : 0.08)
+        : baseBgColor;
+
+    return GestureDetector(
       onTap: () {
+        // Logic giữ nguyên
         ref.read(languageProvider.notifier).set(value);
         Navigator.pop(context);
       },
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18.sp,
-          fontWeight: FontWeight.w600,
-          color: theme.textTheme.bodyLarge?.color,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: borderColor,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Cờ hoặc Icon ngôn ngữ (Optional: có thể thêm hình cờ vào đây nếu muốn)
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected
+                          ? kPrimaryYellow
+                          : theme.textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Icon check vàng
+            if (isSelected)
+              Container(
+                padding: EdgeInsets.all(4.r),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: kPrimaryYellow,
+                ),
+                child: Icon(
+                  Icons.check,
+                  size: 16.sp,
+                  color: isDark ? Colors.black : Colors.white,
+                ),
+              )
+            else
+            // Placeholder để giữ layout không bị nhảy
+              Container(
+                width: 24.sp,
+                height: 24.sp,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
+                    width: 1.5,
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-          fontSize: 14.sp,
-          color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
-        ),
-      ),
-      trailing: selected
-          ? Icon(Icons.check, color: kPrimaryColor)
-          : SizedBox(width: 24.w),
     );
   }
 }
 
-// Hàm tiện ích để show bottom sheet
+// Hàm tiện ích g
 void showLanguageBottomSheet(BuildContext context, WidgetRef ref) {
   showModalBottomSheet(
     context: context,

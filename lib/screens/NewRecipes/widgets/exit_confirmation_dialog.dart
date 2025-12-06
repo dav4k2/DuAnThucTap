@@ -55,6 +55,7 @@ class ExitConfirmationDialog extends ConsumerWidget {
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
                 color: textColor,
+                decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
             ),
@@ -65,8 +66,10 @@ class ExitConfirmationDialog extends ConsumerWidget {
                 fontSize: 15.5.sp,
                 color: secondaryTextColor,
                 height: 1.5,
+                decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
+
             ),
             SizedBox(height: 32.h),
             Row(

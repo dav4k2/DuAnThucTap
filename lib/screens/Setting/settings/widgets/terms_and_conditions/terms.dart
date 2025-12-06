@@ -62,7 +62,7 @@ class TermsPage extends ConsumerWidget {
             ),
             SizedBox(height: size.height * 0.015),
             Text(
-              'APP NÀY DO CODER LỎ NHẤT CÁI VIỆT NAM LÀM RA, NÊN MỌI NGƯỜI SỬ DỤNG ỨNG DỤNG NÀY PHẢI CHỊU TRÁCH NHIỆM VỀ MỌI HÀNH ĐỘNG CỦA MÌNH KHI SỬ DỤNG ỨNG DỤNG. CODER LỎ KHÔNG CHỊU BẤT CỨ TRÁCH NHIỆM NÀO VỀ MỌI THIỆT HẠI PHÁT SINH TỪ VIỆC SỬ DỤNG ỨNG DỤNG NÀY.',
+              'Let him cook',
               style: TextStyle(
                 color: bodyColor,
                 fontSize: bodyFontSize,
