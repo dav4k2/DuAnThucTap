@@ -19,6 +19,7 @@ class UserRead(UserBase):
     """
     id: int
     is_active: bool
+    is_profile_completed: bool = False
 
     class Config:
         from_attributes = True # Pydantic v2 (orm_mode ở v1)

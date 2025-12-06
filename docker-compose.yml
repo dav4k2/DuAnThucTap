@@ -28,7 +28,7 @@ services:
       POSTGRES_PASSWORD: 181004
       POSTGRES_DB: cooking_db
     ports:
-      - "5432:5432" # (Tùy chọn) Mở port 5432 để debug DB từ máy thật
+      - "5433:5432"
 
 volumes:
   postgres_data: # Khai báo volume
