@@ -1,10 +1,7 @@
-// lib/features/add_recipe/logic/add_recipe_provider.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../AI/logic/draft_provider.dart';
-import '../../AI/logic/draft_recipe.dart';
+import '../../Crete_recipe/logic/draft_provider.dart';
+import '../../Crete_recipe/logic/draft_recipe.dart';
 import '../widgets/exit_confirmation_dialog.dart';
 import '../widgets/missing_info_dialog.dart';
 
@@ -92,7 +89,12 @@ class AddRecipeState {
 }
 
 class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
-  final Ref ref; // ← cần có ref để gọi provider khác
+  final Ref ref;
+
+  // --- DEFINITIONS CHO DROPDOWN (Để validate dữ liệu từ AI) ---
+  static const List<String> validServings = ['1 người', '2 người', '3-4 người', '5-6 người', '7+ người'];
+  static const List<String> validTime = ['Dưới 15 phút', '15-30 phút', '30-60 phút', 'Trên 1 tiếng'];
+  static const List<String> validDifficulty = ['Dễ', 'Trung bình', 'Khó'];
 
   AddRecipeNotifier(this.ref)
       : super(AddRecipeState(
@@ -103,6 +105,50 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     ingredientErrors: [],
     stepErrors: [],
   ));
+
+  // ==================== [NEW] HÀM NHẬN DATA TỪ AI ====================
+  // Gọi hàm này từ màn hình Chat khi người dùng bấm "Nấu ngay"
+  void fillDataFromAI({
+    required String title,
+    required String description,
+    required String servings,
+    required String cookingTime,
+    required String difficulty,
+    required List<String> ingredients,
+    required List<String> steps,
+  }) {
+    // 1. Kiểm tra xem các giá trị Dropdown AI đưa về có khớp với danh sách trong App không
+    // Nếu không khớp thì để null để người dùng tự chọn lại, tránh lỗi crash UI
+    final safeServings = validServings.contains(servings) ? servings : null;
+    final safeCookingTime = validTime.contains(cookingTime) ? cookingTime : null;
+    final safeDifficulty = validDifficulty.contains(difficulty) ? difficulty : null;
+
+    // 2. Tạo các list hỗ trợ có độ dài tương ứng
+    final newStepImages = List<String?>.filled(steps.length, null);
+    final newIngredientErrors = List<String?>.filled(ingredients.length, null);
+    final newStepErrors = List<String?>.filled(steps.length, null);
+
+    // 3. Cập nhật State
+    state = state.copyWith(
+      title: title,
+      description: description,
+      servings: safeServings,
+      cookingTime: safeCookingTime,
+      difficulty: safeDifficulty,
+      ingredients: ingredients,
+      steps: steps,
+      // Cập nhật các list phụ trợ
+      stepImages: newStepImages,
+      ingredientErrors: newIngredientErrors,
+      stepErrors: newStepErrors,
+      // Xoá các lỗi cũ (nếu có)
+      nameError: null,
+      descriptionError: null,
+      servingsError: null,
+      cookingTimeError: null,
+      difficultyError: null,
+    );
+  }
 
   // ==================== HÀM BACK ====================
   Future<void> handleBackPressed(BuildContext context) async {
@@ -120,15 +166,9 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
   }
 
   // ==================== XOÁ NHÁP & RESET FORM ====================
-// ==================== XOÁ NHÁP & RESET FORM ====================
   Future<void> clearDraftAndReset() async {
-    // Nếu đã lưu draft trước đó (dùng title làm key)
     final draftKey = state.title.isEmpty ? 'Công thức chưa đặt tên' : state.title;
-
-    // Xoá draft qua provider, truyền key (String)
     await ref.read(recipeDraftProvider.notifier).deleteDraft(draftKey);
-
-    // Reset form
     state = AddRecipeState(
       servings: null,
       cookingTime: null,
@@ -138,9 +178,6 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       stepErrors: [],
     );
   }
-
-
-
 
   // ==================== LƯU NHÁP ====================
   Future<void> saveAsDraft(BuildContext context) async {
@@ -156,7 +193,6 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       steps: state.steps.where((e) => e.trim().isNotEmpty).toList(),
     );
 
-    // Lưu nháp vào provider nháp
     await ref.read(recipeDraftProvider.notifier).saveDraft(draft);
 
     if (context.mounted) {
@@ -182,7 +218,6 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       difficulty: draft.difficulty,
       ingredients: draft.ingredients,
       steps: draft.steps,
-      // reset lỗi
       nameError: null,
       descriptionError: null,
       servingsError: null,
@@ -270,21 +305,19 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     state = state.copyWith(stepImages: newImages);
   }
 
-
   // ==================== VALIDATE & SUBMIT ====================
   Future<bool> validateAndSubmit(BuildContext context) async {
     final errors = <String>[];
     final ingredientErrors = <String?>[];
     final stepErrors = <String?>[];
 
+    // Reset lỗi
     state = state.copyWith(
       nameError: null,
       descriptionError: null,
       servingsError: null,
       cookingTimeError: null,
       difficultyError: null,
-      ingredientErrors: List.filled(state.ingredients.length, null),
-      stepErrors: List.filled(state.steps.length, null),
     );
 
     if (state.title.trim().isEmpty) {

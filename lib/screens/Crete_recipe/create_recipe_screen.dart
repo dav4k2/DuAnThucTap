@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fontend/screens/AI/widgets/draft_recipe_item.dart';
-import 'package:fontend/screens/AI/widgets/responsive_button_card.dart';
+import 'package:fontend/screens/Crete_recipe/widgets/draft_recipe_item.dart';
+import 'package:fontend/screens/Crete_recipe/widgets/responsive_button_card.dart';
 import '../../../../theme/theme_provider.dart';
+import '../AI/chat_screen.dart';
 import '../Guide/data/ai_guide_data.dart';
 import '../Guide/data/manual_guide_data.dart';
 import '../Guide/model/guide_model.dart';
@@ -121,7 +122,7 @@ class CreateRecipeScreen extends ConsumerWidget {
                     child: ResponsiveButtonCard(
                       title: 'Tạo với AI',
                       subtitle: 'Gợi ý thông minh',
-                      onTap: () => _navigateToScreen(context, const AddRecipeScreen()),
+                      onTap: () => _navigateToScreen(context, const ChatScreen()),
                       titleColorLight: const Color(0xFF78350F),
                       subtitleColorLight: const Color(0xFF92400E),
                       backgroundColorLight: const Color(0xFFFEF3C7),
@@ -213,3 +214,4 @@ class _CardWithHelp extends StatelessWidget {
     );
   }
 }
+

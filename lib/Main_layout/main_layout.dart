@@ -1,7 +1,7 @@
 // lib/main_layout.dart
 import 'package:flutter/material.dart';
 import '../navbar/navbar_selector.dart';
-import '../screens/AI/create_recipe_screen.dart';
+import '../screens/Crete_recipe/create_recipe_screen.dart';
 import '../screens/Home_page/mainpage_guest/home_screen.dart';
 import '../screens/Searching/search/explore_screen.dart';
 import '../screens/Setting/settings/settings_screen.dart';
