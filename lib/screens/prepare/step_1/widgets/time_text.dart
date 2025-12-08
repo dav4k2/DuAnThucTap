@@ -10,22 +10,18 @@ class StepTimeText1 extends ConsumerWidget {
     // Lấy state từ provider
     final timerState = ref.watch(stepTimerProvider);
 
-    return Positioned(
-      top: 685 - 597,
-      left: 0,
-      right: 0,
-      child: Text(
-        timerState.formattedTime,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 48,
-          fontWeight: FontWeight.w700,
-          fontFamily: "SF Pro Rounded",
-          // Thêm màu đỏ khi sắp hết thời gian (dưới 1 phút)
-          color: timerState.timeLeftInSeconds <= 60
-              ? Colors.red
-              : Colors.black,
-        ),
+    // ❌ Đã xóa Positioned để layout tự động
+    return Text(
+      timerState.formattedTime,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 64, // Tăng size lên một chút cho giống ảnh mẫu (số to)
+        fontWeight: FontWeight.w700,
+        fontFamily: "SF Pro Rounded",
+        // Logic màu sắc giữ nguyên
+        color: timerState.timeLeftInSeconds <= 60
+            ? Colors.red
+            : Colors.black,
       ),
     );
   }

@@ -34,64 +34,39 @@ class BottomSection extends ConsumerWidget {
             ),
             const SizedBox(height: 50),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Nút Đã xong
-                GestureDetector(
-                  onTap: () {
-                    ref.read(prepareStateProvider.notifier).state = true;
-                  },
-                  child: Container(
-                    width: 229,
-                    height: 66,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF21DB53),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Đã xong",
-                        style: TextStyle(
-                          fontSize: 32,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+            // Nút "Đã xong" kiêm chuyển trang
+            GestureDetector(
+              onTap: () {
+                // 1. Cập nhật trạng thái
+                ref.read(prepareStateProvider.notifier).state = true;
+
+                // 2. Chuyển sang StepScreen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StepScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                width: 229,
+                height: 66,
+                decoration: BoxDecoration(
+                  color: Colors.black, // ⚫ Đã đổi thành màu đen
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Center(
+                  child: Text(
+                    "Đã xong",
+                    style: TextStyle(
+                      fontSize: 32,
+                      color: Colors.white, // Chữ trắng trên nền đen
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-
-                const SizedBox(width: 15),
-
-                // Nút chuyển trang (icon trắng không nền)
-                GestureDetector(
-                  onTap: () {
-                    // TODO: chuyển sang màn tiếp theo tại đây
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const StepScreen(),
-                        ),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.black,
-                    size: 40,
-                  ),
-                ),
-              ],
+              ),
             ),
-
-            if (done)
-              const Padding(
-                padding: EdgeInsets.only(top: 12),
-                child: Text(
-                  "✔ Hoàn thành!",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              )
           ],
         ),
       ),
