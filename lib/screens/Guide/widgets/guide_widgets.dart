@@ -1,26 +1,37 @@
-// lib/features/user_guide/widgets/guide_widgets.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:video_player/video_player.dart'; // Import thư viện video
+import 'package:video_player/video_player.dart';
 import '../model/guide_model.dart';
+import '../logic/guide_provider.dart';
 
 const Color kPrimaryYellow = Color(0xFFFFB901);
 
-// --- WIDGET 1: Hộp hiển thị Media (Đã nâng cấp Video) ---
-class GuideMediaBox extends StatelessWidget {
+// --- WIDGET 1: Hộp hiển thị Media ---
+class GuideMediaBox extends ConsumerWidget {
+  final int index;
   final String path;
   final MediaType type;
   final bool isDark;
 
   const GuideMediaBox({
     Key? key,
+    required this.index,
     required this.path,
     required this.type,
     required this.isDark,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Lấy index trang hiện tại
+    final currentIndex = ref.watch(guideProvider);
+
+    // Logic: Chỉ render VideoPlayer khi index trùng khớp
+    final bool isFocused = (index == currentIndex);
+
     return Container(
       height: 400.h,
       width: double.infinity,
@@ -33,79 +44,157 @@ class GuideMediaBox extends StatelessWidget {
         child: type == MediaType.image
             ? Image.asset(
           path,
-          fit: BoxFit.contain, // Đổi thành contain để thấy toàn bộ ảnh nếu ảnh dài
+          fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => Center(
-              child: Icon(Icons.image_not_supported, size: 40.sp, color: Colors.grey)),
+            child: Icon(Icons.image_not_supported, size: 40.sp, color: Colors.grey),
+          ),
         )
-            : _SimpleVideoPlayer(videoPath: path),
+            : (isFocused
+            ? _SingletonVideoPlayer(videoPath: path) // Dùng Widget Video mới
+            : _VideoPlaceholder(isDark: isDark)),
       ),
     );
   }
 }
 
-// --- WIDGET VIDEO RIÊNG (Mới thêm) ---
-class _SimpleVideoPlayer extends StatefulWidget {
-  final String videoPath;
-  const _SimpleVideoPlayer({required this.videoPath});
+// --- WIDGET VIDEO PLACEHOLDER ---
+class _VideoPlaceholder extends StatelessWidget {
+  final bool isDark;
+  const _VideoPlaceholder({required this.isDark});
 
   @override
-  State<_SimpleVideoPlayer> createState() => _SimpleVideoPlayerState();
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black12,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.movie_creation_outlined,
+                size: 50.sp, color: isDark ? Colors.white24 : Colors.black26),
+            SizedBox(height: 8.h),
+            Text("Đang chuẩn bị...",
+                style: TextStyle(
+                    fontSize: 12.sp, color: isDark ? Colors.white24 : Colors.black26))
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _SimpleVideoPlayerState extends State<_SimpleVideoPlayer> {
-  late VideoPlayerController _controller;
+// --- WIDGET VIDEO PLAYER ĐÃ TỐI ƯU (FIX LỖI BUFFER) ---
+class _SingletonVideoPlayer extends StatefulWidget {
+  final String videoPath;
+  const _SingletonVideoPlayer({required this.videoPath});
+
+  @override
+  State<_SingletonVideoPlayer> createState() => _SingletonVideoPlayerState();
+}
+
+class _SingletonVideoPlayerState extends State<_SingletonVideoPlayer> {
+  VideoPlayerController? _controller;
   bool _isInitialized = false;
+  // Dùng Timer để tạo độ trễ, tránh init liên tục khi lướt nhanh
+  Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    // Khởi tạo video từ assets
-    _controller = VideoPlayerController.asset(widget.videoPath)
-      ..initialize().then((_) {
-        // Load xong thì cập nhật UI và chạy luôn
+    // KHÔNG init ngay lập tức. Đợi 300ms để chắc chắn người dùng dừng lại ở trang này
+    // và để video ở trang cũ kịp giải phóng bộ nhớ.
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _initializeVideo();
+      }
+    });
+  }
+
+  Future<void> _initializeVideo() async {
+    // Tạo controller mới
+    final controller = VideoPlayerController.asset(
+      widget.videoPath,
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    );
+
+    try {
+      await controller.initialize();
+      await controller.setVolume(0.0); // Mặc định tắt tiếng cho User Guide
+      await controller.setLooping(true);
+
+      if (mounted) {
         setState(() {
+          _controller = controller;
           _isInitialized = true;
         });
-        _controller.setLooping(true); // Lặp lại liên tục
-        _controller.setVolume(0.0);   // Tắt tiếng mặc định (cho đỡ ồn)
-        _controller.play();           // Tự động chạy
-      });
+        await controller.play();
+      } else {
+        // Nếu widget bị unmount trong lúc đang init -> dispose ngay
+        await controller.dispose();
+      }
+    } catch (e) {
+      debugPrint("Lỗi khởi tạo video: $e");
+      // Nếu có lỗi, cố gắng dispose để không leak
+      try {
+        await controller.dispose();
+      } catch (_) {}
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose(); // Giải phóng bộ nhớ khi tắt dialog hoặc lướt qua
+    // 1. Hủy timer nếu widget bị tắt trước khi kịp load video (fix lỗi lướt nhanh)
+    _debounceTimer?.cancel();
+
+    // 2. Dispose controller hiện tại một cách an toàn
+    final oldController = _controller;
+    _controller = null; // Ngắt tham chiếu ngay lập tức
+    oldController?.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized) {
-      return const Center(child: CircularProgressIndicator(color: kPrimaryYellow));
+    // Trong lúc chờ debounce hoặc đang load, hiện loading
+    if (!_isInitialized || _controller == null) {
+      return const Center(
+          child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: kPrimaryYellow
+              )
+          )
+      );
     }
 
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Video
         AspectRatio(
-          aspectRatio: _controller.value.aspectRatio,
-          child: VideoPlayer(_controller),
+          aspectRatio: _controller!.value.aspectRatio,
+          child: VideoPlayer(_controller!),
         ),
-
-        // Nút Play/Pause ảo (chạm vào để dừng/chạy)
+        // Overlay nút Play/Pause
         Positioned.fill(
           child: GestureDetector(
             onTap: () {
-              setState(() {
-                _controller.value.isPlaying ? _controller.pause() : _controller.play();
-              });
+              if (_controller != null && _controller!.value.isInitialized) {
+                setState(() {
+                  _controller!.value.isPlaying
+                      ? _controller!.pause()
+                      : _controller!.play();
+                });
+              }
             },
             child: Container(
               color: Colors.transparent,
-              child: _controller.value.isPlaying
-                  ? null // Đang chạy thì không hiện icon
-                  : Icon(Icons.play_circle_fill, size: 50.sp, color: kPrimaryYellow.withOpacity(0.8)),
+              child: !_controller!.value.isPlaying
+                  ? Icon(Icons.play_circle_fill,
+                  size: 50.sp, color: kPrimaryYellow.withOpacity(0.8))
+                  : null,
             ),
           ),
         ),
@@ -114,7 +203,7 @@ class _SimpleVideoPlayerState extends State<_SimpleVideoPlayer> {
   }
 }
 
-// --- WIDGET 2: Dấu chấm chỉ trang (Indicator) - (Giữ nguyên) ---
+// --- GuidePageIndicator & GuideActionButton (Giữ nguyên) ---
 class GuidePageIndicator extends StatelessWidget {
   final int count;
   final int currentIndex;
@@ -130,7 +219,7 @@ class GuidePageIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Căn giữa cho đẹp
+      mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         count,
             (index) => AnimatedContainer(
@@ -150,7 +239,6 @@ class GuidePageIndicator extends StatelessWidget {
   }
 }
 
-// --- WIDGET 3: Nút Next/Start - (Giữ nguyên) ---
 class GuideActionButton extends StatelessWidget {
   final bool isLastPage;
   final VoidCallback onPressed;
@@ -184,9 +272,7 @@ class GuideActionButton extends StatelessWidget {
               fontSize: 16.sp,
             ),
           ),
-          if (!isLastPage) ...[
-            SizedBox(width: 8.w),
-          ]
+          if (!isLastPage) ...[SizedBox(width: 8.w)],
         ],
       ),
     );

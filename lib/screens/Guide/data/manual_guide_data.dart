@@ -1,47 +1,53 @@
 // lib/features/user_guide/data/manual_guide_data.dart
-import '../model/guide_model.dart'; // Import model của bạn
+import '../model/guide_model.dart';
 
 final List<GuideStep> manualGuideSteps = [
   GuideStep(
-    title: "Bước 1: Thông tin cơ bản",
-    content: "Bắt đầu bằng việc đặt tên cho món ăn, thêm ảnh bìa hấp dẫn, chọn thời gian nấu và số lượng khẩu phần.",
-    mediaPath: "assets/images/guide_manual_1.png", // Thay ảnh của bạn
-    mediaType: MediaType.image,
+    title: "Bước 1: Thêm ảnh",
+    content: "Thêm ảnh về món ăn của bạn bằng cách nhấn vào ô trống và chọn ảnh từ thư viện",
+    mediaPath: "video/add_picture.mp4",
+    mediaType: MediaType.video,
   ),
   GuideStep(
-    title: "Bước 2: Nguyên liệu chi tiết",
-    content: "Liệt kê đầy đủ các nguyên liệu. Đừng quên ghi rõ định lượng (gram, muỗng...) để người xem dễ làm theo.",
-    mediaPath: "assets/images/guide_manual_2.png",
-    mediaType: MediaType.image,
+    title: "Bước 2: Thêm video",
+    content: "Thêm video ngắn giới thiệu về món ăn của bạn",
+    mediaPath: "video/add_video.mp4",
+    mediaType: MediaType.video,
   ),
   GuideStep(
-    title: "Bước 3: Quy trình thực hiện",
-    content: "Thêm từng bước nấu ăn. Bạn có thể thêm ảnh minh họa cho từng bước nhỏ để công thức trực quan hơn.",
-    mediaPath: "assets/images/guide_manual_3.png",
-    mediaType: MediaType.image,
+    title: "Bước 3: Thêm tên và mô tả ",
+    content: "Thêm tên và mô tả về món ăn của bạn, mô tả chi tiết sẽ giúp mọi người hiểu thêm về món ăn của bạn",
+    mediaPath: "video/add_name.mp4",
+    mediaType: MediaType.video,
   ),
   GuideStep(
-    title: "Bước 3: Quy trình thực hiện",
-    content: "Thêm từng bước nấu ăn. Bạn có thể thêm ảnh minh họa cho từng bước nhỏ để công thức trực quan hơn.",
-    mediaPath: "assets/images/guide_manual_3.png",
-    mediaType: MediaType.image,
+    title: "Bước 4: Phân loại món ăn",
+    content: "Phân loại món ăn của bạn, việc phân loại chính xác sẽ giúp mọi người tìm kiếm công thức phù hợp với họ",
+    mediaPath: "video/filter.mp4",
+    mediaType: MediaType.video,
   ),
   GuideStep(
-    title: "Bước 3: Quy trình thực hiện",
-    content: "Thêm từng bước nấu ăn. Bạn có thể thêm ảnh minh họa cho từng bước nhỏ để công thức trực quan hơn.",
-    mediaPath: "assets/images/guide_manual_3.png",
-    mediaType: MediaType.image,
+    title: "Bước 5: Tehm nguyên liệu",
+    content: "Thêm những nguyên liệu cần chuẩn bị để làm món ăn của bạn",
+    mediaPath: "video/add_ingredient.mp4",
+    mediaType: MediaType.video,
   ),
   GuideStep(
-    title: "Bước 3: Quy trình thực hiện",
-    content: "Thêm từng bước nấu ăn. Bạn có thể thêm ảnh minh họa cho từng bước nhỏ để công thức trực quan hơn.",
-    mediaPath: "assets/images/guide_manual_3.png",
-    mediaType: MediaType.image,
+    title: "Bước 6: Thêm các bước nấu",
+    content: "Thêm từng bước nấu món ăn của bạn, tại mỗi bước bạn có thể chèn ảnh hoặc video hướng dẫn thực hiện",
+    mediaPath: "video/add_cooking_step.mp4",
+    mediaType: MediaType.video,
   ),
   GuideStep(
-    title: "Bước 3: Quy trình thực hiện",
-    content: "Thêm từng bước nấu ăn. Bạn có thể thêm ảnh minh họa cho từng bước nhỏ để công thức trực quan hơn.",
-    mediaPath: "assets/images/guide_manual_3.png",
-    mediaType: MediaType.image,
+    title: "Bước 7: Lưu bản nháp",
+    content: "Nếu bạn không thể hoàn thiện công thức nấu ngay lúc này, hãy lưu lại tiến trình và tiếp tục sau",
+    mediaPath: "video/add_draft.mp4",
+    mediaType: MediaType.video,
+  ),
+  GuideStep(
+    title: "Bước 8: Đăng công thức",
+    content: "Nếu bạn đã hoàn thiện công thức ấn nút đăng và chờ công thức được tải lên với mọi người nhé",
+    mediaPath: "video/done.mp4",
+    mediaType: MediaType.video,
   ),
 ];

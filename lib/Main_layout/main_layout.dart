@@ -23,7 +23,7 @@ class _MainLayoutState extends State<MainLayout> {
 
   final List<Widget> _pages = const [
     HomeScreen(),
-    PreparePage(),
+    ExploreScreen(),
     CreateRecipeScreen(),
     MyProfileScreen(),
     SettingsScreen(),

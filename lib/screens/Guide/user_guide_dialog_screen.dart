@@ -23,6 +23,11 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
   void initState() {
     super.initState();
     _pageController = PageController();
+
+    // Reset index về 0 khi mở dialog để đảm bảo đồng bộ
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(guideProvider.notifier).setIndex(0);
+    });
   }
 
   @override
@@ -43,9 +48,9 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
     }
   }
 
-  // Xử lý nút Back (MỚI)
+  // Xử lý nút Back
   void _handleBack() {
-    if (_pageController.page! > 0) {
+    if (_pageController.page != null && _pageController.page! > 0) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -58,17 +63,18 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final currentIndex = ref.watch(guideProvider);
+    // LƯU Ý QUAN TRỌNG: Không watch currentIndex ở đây nữa để tránh rebuild toàn bộ Dialog
+    // final currentIndex = ref.watch(guideProvider); -> Đã xóa dòng này
 
     final bgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textColor = isDark ? Colors.white : Colors.black87;
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.symmetric(horizontal: 16.w), // Giảm padding để dialog to hơn theo chiều ngang
+      insetPadding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Container(
         width: double.infinity,
-        height: 720.h, // --- TĂNG CHIỀU CAO DIALOG ---
+        height: 720.h,
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(24.r),
@@ -95,11 +101,13 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
             ),
 
             // --- Body: Slide nội dung ---
+            // PageView nằm ngoài Consumer của Footer nên nó KHÔNG bị rebuild khi lướt -> Fix lỗi buffer
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: widget.steps.length,
                 onPageChanged: (index) {
+                  // Chỉ update state, không gây rebuild widget cha vì ta đã bỏ ref.watch ở trên
                   ref.read(guideProvider.notifier).setIndex(index);
                 },
                 itemBuilder: (context, index) {
@@ -110,8 +118,8 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Widget Ảnh/Video
-                        // (Lưu ý: Bạn cần tăng height trong file guide_widgets.dart nữa nhé)
                         GuideMediaBox(
+                          index: index,
                           path: step.mediaPath,
                           type: step.mediaType,
                           isDark: isDark,
@@ -124,7 +132,7 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
                           step.title,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 24.sp, // Tăng font size
+                            fontSize: 24.sp,
                             fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
@@ -149,61 +157,68 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
               ),
             ),
 
-            // --- Footer: Back - Dots - Next (ĐÃ SỬA) ---
-            Padding(
-              // Giảm padding ngang từ 20.w xuống 16.w để có thêm không gian cho nút
-              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 32.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // 1. Nút Back (Bên trái)
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: currentIndex > 0
-                          ? FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: TextButton.icon(
-                          onPressed: _handleBack,
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                            foregroundColor: isDark ? Colors.white70 : Colors.grey[700],
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          icon: Icon(Icons.arrow_back_ios_rounded, size: 16.sp),
-                          label: Text("Trước", style: TextStyle(fontSize: 14.sp)),
-                        ),
-                      )
-                          : const SizedBox.shrink(),
-                    ),
-                  ),
+            // --- Footer: Back - Dots - Next ---
+            // Bọc riêng phần này trong Consumer để chỉ rebuild các nút bấm/dots
+            Consumer(
+              builder: (context, ref, child) {
+                // Chỉ watch ở phạm vi nhỏ này
+                final currentIndex = ref.watch(guideProvider);
 
-                  // 2. Dots (Ở giữa) - Không bọc Expanded để nó giữ kích thước thật
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: GuidePageIndicator(
-                      count: widget.steps.length,
-                      currentIndex: currentIndex,
-                      isDark: isDark,
-                    ),
-                  ),
-
-                  // 3. Nút Next (Bên phải)
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown, // QUAN TRỌNG: Tự co nhỏ nút Next nếu quá to
-                        child: GuideActionButton(
-                          isLastPage: currentIndex == widget.steps.length - 1,
-                          onPressed: () => _handleNext(currentIndex),
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 32.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // 1. Nút Back (Bên trái)
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: currentIndex > 0
+                              ? FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: TextButton.icon(
+                              onPressed: _handleBack,
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                foregroundColor: isDark ? Colors.white70 : Colors.grey[700],
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              icon: Icon(Icons.arrow_back_ios_rounded, size: 16.sp),
+                              label: Text("Trước", style: TextStyle(fontSize: 14.sp)),
+                            ),
+                          )
+                              : const SizedBox.shrink(),
                         ),
                       ),
-                    ),
+
+                      // 2. Dots (Ở giữa)
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: GuidePageIndicator(
+                          count: widget.steps.length,
+                          currentIndex: currentIndex,
+                          isDark: isDark,
+                        ),
+                      ),
+
+                      // 3. Nút Next (Bên phải)
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: GuideActionButton(
+                              isLastPage: currentIndex == widget.steps.length - 1,
+                              onPressed: () => _handleNext(currentIndex),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),

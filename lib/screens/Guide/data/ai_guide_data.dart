@@ -1,7 +1,7 @@
 import '../model/guide_model.dart';
 
 final List<GuideStep> aiGuideSteps = [
-  // Bước 1 dùng Ảnh
+
   GuideStep(
     title: "Bước 1: Nhập ý tưởng",
     content: "Nhập tên món ăn hoặc nguyên liệu...",
@@ -9,7 +9,6 @@ final List<GuideStep> aiGuideSteps = [
     mediaType: MediaType.image,
   ),
 
-  // Bước 2 dùng VIDEO
   GuideStep(
     title: "Bước 2: AI Sáng tạo",
     content: "Trợ lý AI sẽ tự động viết công thức...",
@@ -17,7 +16,7 @@ final List<GuideStep> aiGuideSteps = [
     mediaType: MediaType.video,
   ),
 
-  // Bước 3 dùng Ảnh
+
   GuideStep(
     title: "Bước 3: Tinh chỉnh",
     content: "Kiểm tra và sửa lại theo ý thích.",
