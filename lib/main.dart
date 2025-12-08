@@ -1,9 +1,11 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // <--- BỔ SUNG IMPORT NÀY
+
+// Import các màn hình của bạn
 import 'package:fontend/screens/Remove/enter_new_password/reset_password_screen.dart';
 import 'package:fontend/screens/Searching/search/explore_screen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/terms_and_conditions/terms.dart';
@@ -11,9 +13,6 @@ import 'package:fontend/screens/Signin/reset_pass_email/reset_password_screen.da
 import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_gate.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/sign_in_screen.dart';
 import 'package:fontend/screens/Start/welcome/welcome_screen.dart';
-import 'package:fontend/screens/Start/welcome/widgets/splash_page.dart';
-import 'package:fontend/screens/survey/survey_0.dart';
-import 'package:fontend/screens/survey/survey_flow_screen.dart';
 import 'package:fontend/theme/app_localizations.dart';
 import 'package:fontend/theme/language_provider.dart';
 import 'package:fontend/theme/theme_provider.dart';
@@ -21,7 +20,14 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 1. Khởi tạo Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // 2. Khởi tạo biến môi trường (Đọc file .env)
+  // Nếu chưa có file .env, app sẽ báo lỗi tại đây
+  await dotenv.load(fileName: ".env");
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -44,7 +50,7 @@ class MyApp extends ConsumerWidget {
           useInheritedMediaQuery: true,
           locale: Locale(lang),
           localizationsDelegates: const [
-            AppLocalizations.delegate, // PHẢI CÓ TRƯỚC
+            AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
@@ -61,9 +67,9 @@ class MyApp extends ConsumerWidget {
           ),
           darkTheme: ThemeData(
             brightness: Brightness.dark,
-            scaffoldBackgroundColor: const Color(0xFF121212), // NỀN TỐI
+            scaffoldBackgroundColor: const Color(0xFF121212),
             textTheme: const TextTheme(
-              bodyMedium: TextStyle(color: Colors.white, fontFamily: 'SF Pro'), // CHỮ TRẮNG
+              bodyMedium: TextStyle(color: Colors.white, fontFamily: 'SF Pro'),
             ),
             useMaterial3: true,
           ),
@@ -74,7 +80,7 @@ class MyApp extends ConsumerWidget {
               child: widget!,
             );
           },
-          home:  AuthGate(),
+          home: AuthGate(),
           routes: {
             '/welcome': (context) => const WelcomeScreen(),
             '/signin': (context) => const SignInScreen(),
@@ -88,41 +94,3 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-
-
-/*
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
-import 'package:fontend/screens/prepare/finish/finish_screen.dart';
-import 'package:fontend/screens/prepare/prepare_page/prepare_screen.dart';
-import 'package:fontend/screens/prepare/step_0/step_screen.dart';
-import 'package:fontend/screens/prepare/step_1/step_time_screen.dart';
-import 'package:fontend/screens/prepare/step_2/step_2_screen.dart';
-import 'package:fontend/screens/prepare/step_2_2/step_2_2_screem.dart';
-import 'package:fontend/screens/prepare/step_3/step3_screen.dart';
-import 'package:fontend/screens/prepare/step_3_3/step_3_3_screen.dart';
-import 'screens/notification/notification_screen.dart';
-
-void main() => runApp(const ProviderScope(child: MyApp()));
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dự Án Thực Tập',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFFFC221),
-          brightness: Brightness.light,
-        ),
-      ),
-      home: const PreparePage(),
-    );
-  }
-}
-*/

@@ -352,6 +352,13 @@
             </list>
           </value>
         </entry>
+        <entry key="flutter_dotenv">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_dotenv-6.0.0/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="flutter_lints">
           <value>
             <list>
@@ -1272,6 +1279,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_storage_platform_interface-5.2.15/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_storage_web-3.11.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_dotenv-6.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-5.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.33/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_riverpod-2.6.1/lib" />

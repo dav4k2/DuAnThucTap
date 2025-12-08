@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 // --- API KEY ---
-const _apiKey = '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';
+final _apiKey = dotenv.env['GROQ_API_KEY'] ?? '';
 
 // --- MODEL 1: TIN NHẮN ---
 class ChatMessage {
