@@ -11,8 +11,9 @@ class BottomSection extends ConsumerWidget {
     final done = ref.watch(prepareStateProvider);
 
     return Positioned(
-      top: 597,
+      bottom: 0, // Neo sát đáy (thay vì top cố định để tránh lỗi màn hình dài/ngắn)
       left: 0,
+      right: 0,
       child: Container(
         width: MediaQuery.of(context).size.width,
         height: 277,
@@ -21,8 +22,8 @@ class BottomSection extends ConsumerWidget {
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30),
             topRight: Radius.circular(30),
-            bottomLeft: Radius.circular(50),
-            bottomRight: Radius.circular(50),
+            bottomLeft: Radius.zero,  // ✅ Đã sửa: Vuông góc trái dưới
+            bottomRight: Radius.zero, // ✅ Đã sửa: Vuông góc phải dưới
           ),
         ),
         child: Column(
@@ -34,13 +35,10 @@ class BottomSection extends ConsumerWidget {
             ),
             const SizedBox(height: 50),
 
-            // Nút "Đã xong" kiêm chuyển trang
+            // Nút "Đã xong" màu đen
             GestureDetector(
               onTap: () {
-                // 1. Cập nhật trạng thái
                 ref.read(prepareStateProvider.notifier).state = true;
-
-                // 2. Chuyển sang StepScreen
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -52,7 +50,7 @@ class BottomSection extends ConsumerWidget {
                 width: 229,
                 height: 66,
                 decoration: BoxDecoration(
-                  color: Colors.black, // ⚫ Đã đổi thành màu đen
+                  color: Colors.black,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: const Center(
@@ -60,7 +58,7 @@ class BottomSection extends ConsumerWidget {
                     "Đã xong",
                     style: TextStyle(
                       fontSize: 32,
-                      color: Colors.white, // Chữ trắng trên nền đen
+                      color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

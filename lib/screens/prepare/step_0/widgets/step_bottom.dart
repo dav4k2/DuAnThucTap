@@ -24,7 +24,7 @@ class StepBottomCard extends StatelessWidget {
           color: Color(0xFFFDB803),
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(30),
-            bottom: Radius.circular(50),
+            bottom: Radius.zero, // ✅ Đã sửa: Vuông góc dưới
           ),
         ),
         child: Stack(
@@ -45,6 +45,7 @@ class StepBottomCard extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
             ),
+            // Vòng tròn đếm ngược (đã căn chỉnh ở file step_timer_circle.dart)
             StepTimerCircle(),
           ],
         ),

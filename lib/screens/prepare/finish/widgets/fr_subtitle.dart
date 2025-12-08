@@ -13,7 +13,7 @@ class FRSubtitle extends StatelessWidget {
         "Hãy chia sẻ thành quả của \nbạn với mọi người nhé",
         textAlign: TextAlign.center,
         style: const TextStyle(
-          fontSize: 30,
+          fontSize: 25,
           fontWeight: FontWeight.w600,
         ),
       ),

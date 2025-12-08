@@ -1,7 +1,6 @@
 // File: step_timer_circle.dart
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import '../../step_2_2/step_2_2_screem.dart';
 
 class StepTimerCircle2 extends StatefulWidget {
@@ -35,13 +34,6 @@ class _StepTimerCircleState extends State<StepTimerCircle2> {
     });
   }
 
-  void _resetTimer() {
-    setState(() {
-      _timeLeft = _totalTime;
-    });
-    _startTimer();
-  }
-
   @override
   void dispose() {
     _timer?.cancel();
@@ -51,33 +43,39 @@ class _StepTimerCircleState extends State<StepTimerCircle2> {
   @override
   Widget build(BuildContext context) {
     double progress = _timeLeft / _totalTime;
+    final width = MediaQuery.of(context).size.width;
 
     return Positioned(
       top: 120,
       left: 0,
-      right: 0,
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // 1. Vòng đếm thời gian
-            Stack(
+      width: width,
+      height: 160,
+      child: Stack(
+        // Căn giữa theo chiều dọc cho tất cả các con
+        alignment: Alignment.center,
+        children: [
+
+          // ==================================================
+          // 1. VÒNG TRÒN (Luôn ở chính giữa màn hình)
+          // ==================================================
+          SizedBox(
+            width: 140,
+            height: 140,
+            child: Stack(
               alignment: Alignment.center,
               children: [
-                // Vòng nền trắng mờ
+                // Vòng trắng nền
                 SizedBox(
                   width: 140,
                   height: 140,
                   child: CircularProgressIndicator(
                     value: 1.0,
                     strokeWidth: 14,
-                    backgroundColor: Colors.white.withOpacity(0.3),
+                    backgroundColor: Colors.white,
                     valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 ),
-
-                // Vòng xanh lá giảm dần theo thời gian
+                // Vòng đen tiến trình
                 SizedBox(
                   width: 140,
                   height: 140,
@@ -85,55 +83,54 @@ class _StepTimerCircleState extends State<StepTimerCircle2> {
                     value: progress,
                     strokeWidth: 14,
                     backgroundColor: Colors.transparent,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF22DB53)),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.black),
                   ),
                 ),
-
-                // Vòng vàng/cam bên trong
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFFFA500),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "$_timeLeft",
-                      style: const TextStyle(
-                        fontSize: 64,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black,
-                      ),
-                    ),
+                // Số giây
+                Text(
+                  "$_timeLeft",
+                  style: const TextStyle(
+                    fontSize: 64,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
                   ),
                 ),
               ],
             ),
+          ),
 
-            // 2. Khoảng cách giữa vòng tròn và nút
-            const SizedBox(width: 32),
+          // ==================================================
+          // 2. NÚT CHUYỂN TIẾP
+          // ==================================================
+          Positioned(
+            // 👇 CHỈNH SỐ NÀY ĐỂ THẲNG HÀNG VỚI CHỮ "THEO"
+            // Nếu nút đang lệch phải quá -> Tăng số này lên (ví dụ 50, 60)
+            // Nếu nút đang lệch trái quá -> Giảm số này xuống (ví dụ 30, 20)
+            right: 40,
 
-            // 3. Mũi tên ">" bên phải
-            GestureDetector(
+            child: GestureDetector(
               onTap: () {
                 _timer?.cancel();
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const StepTimerScreen2(),
+                    builder: (context) => const StepTimerScreen2(),
                   ),
                 );
               },
-              child: const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.black,
-                size: 40,
+              child: Container(
+                color: Colors.transparent, // Tăng diện tích bấm
+                padding: const EdgeInsets.all(10),
+                child: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.black,
+                  size: 40,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+
+        ],
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'time_text3.dart';
 import 'action_buttons3.dart';
-import 'divider3.dart';
+import 'divider3.dart'; // Giữ lại nếu cần, hoặc bỏ nếu action_buttons đã xử lý
 
 class StepBottomPanel3 extends StatelessWidget {
   final Size size;
@@ -25,29 +25,35 @@ class StepBottomPanel3 extends StatelessWidget {
             bottom: Radius.circular(50),
           ),
         ),
-        child: Stack(
+        // ✅ Dùng Column để layout không bị chồng chéo
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Tiêu đề "Sơ chế nguyên liệu"
-            const Positioned(
-              top: 30,
-              left: 97,
-              child: Text(
-                "Chế nước dùng",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "SF Pro Rounded",
-                ),
+            const SizedBox(height: 25), // Padding top
+
+            // 1. Tiêu đề
+            const Text(
+              "Sơ chế nguyên liệu",
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.w600,
+                fontFamily: "SF Pro Rounded",
               ),
             ),
 
-            // Thời gian - tự động lấy từ provider
+            // Spacer đẩy thời gian ra giữa
+            const Spacer(),
+
+            // 2. Thời gian (File time_text.dart đã sửa)
             const StepTimeText3(),
 
-            // Nút hành động - tự động kết nối với provider
+            // Spacer đẩy nút xuống dưới
+            const Spacer(),
+
+            // 3. Các nút bấm (File action_buttons.dart đã sửa)
             const StepActionButtons3(),
 
-            const StepDivider3(),
+            const SizedBox(height: 30), // Padding bottom
           ],
         ),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'time_text.dart';
 import 'action_buttons.dart';
-import 'divider.dart'; // Giữ lại nếu cần, hoặc bỏ nếu action_buttons đã xử lý
+import 'divider.dart';
 
 class StepBottomPanel1 extends StatelessWidget {
   final Size size;
@@ -22,14 +22,14 @@ class StepBottomPanel1 extends StatelessWidget {
           color: Color(0xFFFDB803),
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(30),
-            bottom: Radius.circular(50),
+            bottom: Radius.zero, // ✅ Đã sửa: Vuông góc dưới để không hở trắng
           ),
         ),
-        // ✅ Dùng Column để layout không bị chồng chéo
+        // Layout xếp dọc để Thời gian nằm giữa Text và Nút
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 25), // Padding top
+            const SizedBox(height: 25),
 
             // 1. Tiêu đề
             const Text(
@@ -41,19 +41,17 @@ class StepBottomPanel1 extends StatelessWidget {
               ),
             ),
 
-            // Spacer đẩy thời gian ra giữa
             const Spacer(),
 
-            // 2. Thời gian (File time_text.dart đã sửa)
+            // 2. Thời gian
             const StepTimeText1(),
 
-            // Spacer đẩy nút xuống dưới
             const Spacer(),
 
-            // 3. Các nút bấm (File action_buttons.dart đã sửa)
+            // 3. Các nút bấm
             const StepActionButtons1(),
 
-            const SizedBox(height: 30), // Padding bottom
+            const SizedBox(height: 30),
           ],
         ),
       ),
