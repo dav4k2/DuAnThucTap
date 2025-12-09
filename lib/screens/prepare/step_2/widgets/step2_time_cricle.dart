@@ -1,7 +1,7 @@
 // File: step_timer_circle.dart
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../step_2_2/step_2_2_screem.dart';
+import '../../step_2_2/step_2_2_screen.dart';
 
 class StepTimerCircle2 extends StatefulWidget {
   const StepTimerCircle2({super.key});
