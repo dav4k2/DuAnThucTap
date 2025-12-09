@@ -55,7 +55,7 @@ class ChatState {
   }) {
     return ChatState(
       history: history ?? this.history,
-      currentSessionId: currentSessionId, // Lưu ý: Nếu truyền null thì nó vẫn giữ cái cũ nếu không xử lý kỹ, ở đây ta gán trực tiếp
+      currentSessionId: currentSessionId,
       currentMessages: currentMessages ?? this.currentMessages,
     );
   }
@@ -66,7 +66,6 @@ class ChatNotifier extends StateNotifier<ChatState> {
 
   // === 1. TẠO CUỘC HỘI THOẠI MỚI ===
   void startNewChat() {
-    // Giữ nguyên history, xoá ID hiện tại, xoá tin nhắn hiện tại
     state = ChatState(
       history: state.history,
       currentSessionId: null,
@@ -88,47 +87,58 @@ class ChatNotifier extends StateNotifier<ChatState> {
   Future<void> sendMessage(String inputRaw) async {
     if (inputRaw.trim().isEmpty) return;
 
-    // A. Thêm tin nhắn User vào UI tạm thời
+    // A. Thêm tin nhắn User vào UI
     final userMsg = ChatMessage(text: inputRaw, isUser: true);
-    final loadingMsg = ChatMessage(text: '...', isUser: false, isLoading: true);
+    final loadingMsg = ChatMessage(text: 'Đang suy nghĩ công thức...', isUser: false, isLoading: true);
 
     List<ChatMessage> newMessages = [...state.currentMessages, userMsg, loadingMsg];
 
-    // B. Nếu chưa có Session ID (Chat mới) -> Tạo Session mới
+    // B. Quản lý Session
     String sessionId = state.currentSessionId ?? DateTime.now().millisecondsSinceEpoch.toString();
     String sessionTitle = state.currentSessionId == null ? inputRaw : (state.history.firstWhere((s) => s.id == sessionId).title);
 
-    // Cập nhật State tạm (để hiện loading)
     _updateState(sessionId, sessionTitle, newMessages);
 
-    // D. Gọi API
-    await _callGroq(sessionId, sessionTitle, inputRaw, isRefresh: false);
+    // C. Gọi API (Lần đầu -> excludeDishName = null)
+    await _callGroq(sessionId, sessionTitle, inputRaw, excludeDishName: null);
   }
 
-  // === 4. ĐỔI MÓN KHÁC ===
+  // === 4. ĐỔI MÓN KHÁC (LOGIC ĐÃ SỬA: LẤY MÓN CŨ ĐỂ NÉ) ===
   Future<void> requestAnotherRecipe() async {
-    final lastUserMsg = state.currentMessages.lastWhere((m) => m.isUser, orElse: () => ChatMessage(text: '', isUser: true));
-    final contextInput = lastUserMsg.text.isNotEmpty ? lastUserMsg.text : "món ăn bất kỳ";
+    // 1. Lấy input gốc của user (tin nhắn user gần nhất)
+    final lastUserMsg = state.currentMessages.lastWhere(
+            (m) => m.isUser,
+        orElse: () => ChatMessage(text: "Món ăn ngon", isUser: true)
+    );
+    final originalInput = lastUserMsg.text;
 
-    // Thêm tin nhắn vào UI
+    // 2. Lấy tên món vừa gợi ý (để bảo AI đừng lặp lại)
+    String? lastDishName;
+    try {
+      final lastBotMsg = state.currentMessages.lastWhere((m) => !m.isUser && m.recipeData != null);
+      lastDishName = lastBotMsg.recipeData?['title'];
+    } catch (e) {
+      lastDishName = null;
+    }
+
+    // 3. Update UI
     final userRequest = ChatMessage(text: "Tìm món khác giúp tôi...", isUser: true);
-    final loadingMsg = ChatMessage(text: '...', isUser: false, isLoading: true);
+    final loadingMsg = ChatMessage(text: 'Đang tìm món khác...', isUser: false, isLoading: true);
 
     List<ChatMessage> newMessages = [...state.currentMessages, userRequest, loadingMsg];
 
-    // Đảm bảo có session ID
     if (state.currentSessionId == null) return;
     String sessionId = state.currentSessionId!;
     String sessionTitle = state.history.firstWhere((s) => s.id == sessionId).title;
 
     _updateState(sessionId, sessionTitle, newMessages);
 
-    await _callGroq(sessionId, sessionTitle, contextInput, isRefresh: true);
+    // 4. Gọi API với tham số loại trừ
+    await _callGroq(sessionId, sessionTitle, originalInput, excludeDishName: lastDishName);
   }
 
   // === HELPER: CẬP NHẬT STATE VÀ HISTORY ===
   void _updateState(String sessionId, String title, List<ChatMessage> messages) {
-    // 1. Tìm xem session đã có trong history chưa
     final index = state.history.indexWhere((s) => s.id == sessionId);
     List<ChatSession> newHistory = [...state.history];
 
@@ -140,10 +150,8 @@ class ChatNotifier extends StateNotifier<ChatState> {
     );
 
     if (index == -1) {
-      // Chưa có -> Thêm mới vào đầu danh sách
       newHistory.insert(0, updatedSession);
     } else {
-      // Đã có -> Cập nhật nội dung và đưa lên đầu
       newHistory.removeAt(index);
       newHistory.insert(0, updatedSession);
     }
@@ -155,29 +163,43 @@ class ChatNotifier extends StateNotifier<ChatState> {
     );
   }
 
-  // === LOGIC GỌI GROQ API ===
-  Future<void> _callGroq(String sessionId, String sessionTitle, String userInput, {required bool isRefresh}) async {
+  // === LOGIC GỌI GROQ API (ĐÃ TỐI ƯU PROMPT) ===
+  Future<void> _callGroq(String sessionId, String sessionTitle, String userInput, {String? excludeDishName}) async {
     try {
       final url = Uri.parse('https://api.groq.com/openai/v1/chat/completions');
 
+      // --- PROMPT "SENIOR" ---
+      // Dùng kỹ thuật Chain-of-Thought (Chuỗi suy luận) để AI không bị ngu ngơ
       final systemPrompt = '''
-      Bạn là Chef AI, đầu bếp 5 sao.
-      Nhiệm vụ: Tạo công thức nấu ăn từ yêu cầu: "$userInput".
-      ${isRefresh ? 'Yêu cầu: Đưa ra món KHÁC hoàn toàn so với thông thường.' : ''}
+      Bạn là "Chef AI" - Đầu bếp 5 sao chuyên nghiệp, am hiểu ẩm thực Việt Nam.
       
-      QUY ĐỊNH:
-      1. Tên món: Tiếng Việt.
-      2. Mô tả: Dài 3-5 câu, hấp dẫn, tả kỹ hương vị.
-      
-      OUTPUT JSON (Không Markdown):
+      NHIỆM VỤ:
+      Phân tích input: "$userInput" và tạo ra 1 công thức nấu ăn JSON.
+
+      QUY TẮC SUY LUẬN (BẮT BUỘC):
+      1. NẾU input là TÊN MÓN (vd: "Phở bò"): Trả về công thức chuẩn của món đó.
+      2. NẾU input là NGUYÊN LIỆU (vd: "Trứng, Cà chua"): Gợi ý món ăn ngon nhất kết hợp được các nguyên liệu này.
+      3. NẾU input là GIA VỊ hoặc ĐỒ ĂN KÈM (vd: "Muối", "Nước mắm", "Cơm", "Chanh"): 
+         - TUYỆT ĐỐI KHÔNG làm món chính từ gia vị (Không làm "Muối chiên", "Chanh luộc").
+         - HÃY gợi ý món mặn chính sử dụng gia vị đó làm điểm nhấn (vd: Input "Muối" -> Output "Gà rang muối"; Input "Nước mắm" -> Output "Cánh gà chiên nước mắm").
+      4. KHỐI LƯỢNG: Phải thực tế (vd: Muối tính bằng thìa/gram nhỏ, Thịt tính bằng gram/kg).
+      ${excludeDishName != null ? '5. YÊU CẦU ĐẶC BIỆT: Người dùng KHÔNG thích món "$excludeDishName". Hãy gợi ý một món KHÁC HOÀN TOÀN (khác cách chế biến hoặc nguyên liệu chính).' : ''}
+
+      OUTPUT FORMAT (JSON ONLY - NO MARKDOWN):
       {
-        "title": "Tên món",
-        "description": "Mô tả...",
-        "servings": "Chọn 1: ['1 người', '2 người', '3-4 người', '5-6 người', '7+ người']",
-        "cookingTime": "Chọn 1: ['Dưới 15 phút', '15-30 phút', '30-60 phút', 'Trên 1 tiếng']",
-        "difficulty": "Chọn 1: ['Dễ', 'Trung bình', 'Khó']",
-        "ingredients": ["Nguyên liệu 1", "Nguyên liệu 2"],
-        "steps": ["Bước 1...", "Bước 2..."]
+        "title": "Tên món ăn (Tiếng Việt)",
+        "description": "Mô tả ngắn gọn hương vị và điểm đặc sắc (2-3 câu).",
+        "servings": "Số người ăn (vd: 2 người)",
+        "cookingTime": "Thời gian (vd: 30 phút)",
+        "difficulty": "Độ khó (Dễ/Trung bình/Khó)",
+        "ingredients": [
+          "Tên nguyên liệu 1 - Số lượng",
+          "Tên nguyên liệu 2 - Số lượng"
+        ],
+        "steps": [
+          "Bước 1: Sơ chế...",
+          "Bước 2: Chế biến..."
+        ]
       }
       ''';
 
@@ -191,9 +213,9 @@ class ChatNotifier extends StateNotifier<ChatState> {
           "model": "llama-3.3-70b-versatile",
           "messages": [
             {"role": "system", "content": systemPrompt},
-            {"role": "user", "content": "Nguyên liệu/Món: $userInput"},
+            {"role": "user", "content": "Gợi ý món từ: $userInput"}
           ],
-          "temperature": 0.8,
+          "temperature": 0.6, // Giảm temperature để AI bớt ảo, tập trung vào logic
           "response_format": {"type": "json_object"}
         }),
       );
@@ -201,29 +223,50 @@ class ChatNotifier extends StateNotifier<ChatState> {
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(utf8.decode(response.bodyBytes));
         final content = responseBody['choices'][0]['message']['content'];
-        final Map<String, dynamic> data = jsonDecode(content);
 
-        // Xoá loading, thêm kết quả
-        final currentMsgs = List<ChatMessage>.from(state.currentMessages)..removeLast();
-        final title = data['title'];
+        // Parse JSON an toàn
+        Map<String, dynamic> data;
+        try {
+          data = jsonDecode(content);
+        } catch (e) {
+          // Fallback nếu AI trả về lỗi format (hiếm khi xảy ra với JSON mode)
+          throw Exception("AI trả về dữ liệu không đúng định dạng.");
+        }
+
+        // Xoá loading message
+        final currentMsgs = List<ChatMessage>.from(state.currentMessages);
+        if (currentMsgs.isNotEmpty && currentMsgs.last.isLoading) {
+          currentMsgs.removeLast();
+        }
+
+        final title = data['title'] ?? 'Món ăn';
+
+        // Tạo câu dẫn dắt tự nhiên hơn
+        String botIntroText;
+        if (excludeDishName != null) {
+          botIntroText = "Nếu bạn không thích **$excludeDishName**, tôi nghĩ món **$title** này sẽ hợp ý bạn:";
+        } else {
+          botIntroText = "Với **$userInput**, Bếp trưởng đề xuất món **$title**:";
+        }
 
         currentMsgs.add(ChatMessage(
-          text: isRefresh
-              ? "Tôi tìm được món khác là **$title**. Bạn xem thử nhé:"
-              : "Với **$userInput**, tôi đề xuất món **$title** hấp dẫn này:",
+          text: botIntroText,
           isUser: false,
           recipeData: data,
         ));
 
-        // Cập nhật lại State và History
         _updateState(sessionId, sessionTitle, currentMsgs);
 
       } else {
         throw Exception('Lỗi API: ${response.statusCode}');
       }
     } catch (e) {
-      final currentMsgs = List<ChatMessage>.from(state.currentMessages)..removeLast();
-      currentMsgs.add(ChatMessage(text: "Lỗi: $e", isUser: false));
+      final currentMsgs = List<ChatMessage>.from(state.currentMessages);
+      // Xoá loading nếu có lỗi
+      if (currentMsgs.isNotEmpty && currentMsgs.last.isLoading) {
+        currentMsgs.removeLast();
+      }
+      currentMsgs.add(ChatMessage(text: "Xin lỗi, bếp đang gặp trục trặc ($e). Bạn thử lại nhé!", isUser: false));
       _updateState(sessionId, sessionTitle, currentMsgs);
     }
   }
