@@ -1,12 +1,13 @@
 // lib/screens/delete_account/widgets/consequence_section.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class ConsequenceSection extends StatelessWidget {
-  const ConsequenceSection({super.key});
+   ConsequenceSection({super.key});
 
-  final List<String> _consequences = const [
-    'Bạn sẽ không thể đăng nhập vào ứng dụng bằng tài khoản hiện tại',
-    'Mọi bài đăng của bạn hay những tương tác trên ứng dụng sẽ bị xóa',
+  final List<String> _consequences =  [
+    'Bạn sẽ không thể đăng nhập vào ứng dụng bằng tài khoản hiện tại'.tr(),
+    'Mọi bài đăng của bạn hay những tương tác trên ứng dụng sẽ bị xóa'.tr(),
   ];
 
   @override
@@ -14,8 +15,8 @@ class ConsequenceSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Sau khi bạn đồng ý xóa tài khoản:',
+         Text(
+          'Sau khi bạn đồng ý xóa tài khoản:'.tr(),
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, fontFamily: 'SF Pro'),
         ),
         const SizedBox(height: 20),

@@ -1,19 +1,16 @@
-// lib/widgets/language_bottom_sheet.dart
+// lib/screens/Setting/settings/widgets/language.dart
+import 'package:easy_localization/easy_localization.dart'; // <--- IMPORT QUAN TRỌNG
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../theme/app_localizations.dart';
-import '../../../../theme/language_provider.dart';
 
 // Màu vàng chủ đạo theo yêu cầu
 const Color kPrimaryYellow = Color(0xFFFFB901);
 
-class LanguageBottomSheet extends ConsumerWidget {
+class LanguageBottomSheet extends StatelessWidget {
   const LanguageBottomSheet({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -24,7 +21,6 @@ class LanguageBottomSheet extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
-      // Loại bỏ chiều cao cố định để nội dung tự co giãn
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.only(
@@ -40,11 +36,11 @@ class LanguageBottomSheet extends ConsumerWidget {
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // Quan trọng: Chiều cao tối thiểu
+        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: 12.h),
 
-          // Thanh kéo (Drag Handle) - Căn giữa tự động thay vì Positioned
+          // Thanh kéo
           Container(
             width: 50.w,
             height: 5.h,
@@ -56,9 +52,9 @@ class LanguageBottomSheet extends ConsumerWidget {
 
           SizedBox(height: 20.h),
 
-          // Tiêu đề
+          // Tiêu đề (Dùng .tr() để dịch)
           Text(
-            l10n.translate('language'),
+            'language'.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 20.sp,
@@ -85,7 +81,6 @@ class LanguageBottomSheet extends ConsumerWidget {
               children: [
                 _buildLanguageOption(
                   context: context,
-                  ref: ref,
                   title: 'Tiếng Việt',
                   subtitle: 'Vietnamese',
                   value: 'vi',
@@ -93,7 +88,6 @@ class LanguageBottomSheet extends ConsumerWidget {
                 SizedBox(height: 12.h),
                 _buildLanguageOption(
                   context: context,
-                  ref: ref,
                   title: 'English',
                   subtitle: 'English',
                   value: 'en',
@@ -102,7 +96,6 @@ class LanguageBottomSheet extends ConsumerWidget {
             ),
           ),
 
-          // Khoảng cách an toàn phía dưới (cho các dòng máy tai thỏ/dynamic island)
           SizedBox(height: 30.h + MediaQuery.of(context).padding.bottom),
         ],
       ),
@@ -111,7 +104,6 @@ class LanguageBottomSheet extends ConsumerWidget {
 
   Widget _buildLanguageOption({
     required BuildContext context,
-    required WidgetRef ref,
     required String title,
     required String subtitle,
     required String value,
@@ -119,25 +111,26 @@ class LanguageBottomSheet extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Dùng watch để UI cập nhật trạng thái ngay lập tức
-    final currentLang = ref.watch(languageProvider);
-    final isSelected = currentLang == value;
+    // LOGIC MỚI: Lấy ngôn ngữ hiện tại từ EasyLocalization
+    final currentLangCode = context.locale.languageCode;
+    final isSelected = currentLangCode == value;
 
     // Màu sắc logic
     final baseBorderColor = isDark ? Colors.grey[800]! : Colors.grey[200]!;
     final baseBgColor = isDark ? Colors.grey[900]! : Colors.grey[50]!;
 
-    // Khi được chọn: Viền vàng, nền vàng nhạt (opacity thấp)
     final borderColor = isSelected ? kPrimaryYellow : baseBorderColor;
     final bgColor = isSelected
         ? kPrimaryYellow.withOpacity(isDark ? 0.15 : 0.08)
         : baseBgColor;
 
     return GestureDetector(
-      onTap: () {
-        // Logic giữ nguyên
-        ref.read(languageProvider.notifier).set(value);
-        Navigator.pop(context);
+      onTap: () async {
+        // LOGIC MỚI: Đặt ngôn ngữ và đóng popup
+        await context.setLocale(Locale(value));
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -152,8 +145,6 @@ class LanguageBottomSheet extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            // Cờ hoặc Icon ngôn ngữ (Optional: có thể thêm hình cờ vào đây nếu muốn)
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,11 +171,10 @@ class LanguageBottomSheet extends ConsumerWidget {
               ),
             ),
 
-            // Icon check vàng
             if (isSelected)
               Container(
                 padding: EdgeInsets.all(4.r),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: kPrimaryYellow,
                 ),
@@ -195,7 +185,6 @@ class LanguageBottomSheet extends ConsumerWidget {
                 ),
               )
             else
-            // Placeholder để giữ layout không bị nhảy
               Container(
                 width: 24.sp,
                 height: 24.sp,
@@ -212,14 +201,4 @@ class LanguageBottomSheet extends ConsumerWidget {
       ),
     );
   }
-}
-
-// Hàm tiện ích g
-void showLanguageBottomSheet(BuildContext context, WidgetRef ref) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => const LanguageBottomSheet(),
-  );
 }

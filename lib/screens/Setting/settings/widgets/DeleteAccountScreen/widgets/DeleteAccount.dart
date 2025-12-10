@@ -1,4 +1,5 @@
 // lib/screens/delete_account/widgets/delete_account_bottom_sheet.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class DeleteAccountBottomSheet extends StatelessWidget {
@@ -65,7 +66,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             left: 16,
             right: 16,
             child: Text(
-              'Bạn có chắc muốn xóa tài khoản?',
+              'Bạn có chắc muốn xóa tài khoản?'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: titleColor,
@@ -91,7 +92,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             left: 40,
             right: 40,
             child: Text(
-              'Chúng tôi rất buồn khi thấy bạn rời đi :’(',
+              'Chúng tôi rất buồn khi thấy bạn rời đi :’('.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: subtitleColor,
@@ -147,8 +148,8 @@ class DeleteAccountBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50),
                 ),
                 alignment: Alignment.center,
-                child: const Text(
-                  'Xóa tài khoản',
+                child:  Text(
+                  'Xóa tài khoản'.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,

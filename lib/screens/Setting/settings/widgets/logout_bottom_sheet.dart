@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -59,7 +60,7 @@ class LogoutBottomSheett extends StatelessWidget {
             child: SizedBox(
               width: 349.w,
               child: Text(
-                'Bạn có muốn đăng xuất?',
+                'Bạn có muốn đăng xuất?'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: titleColor,
@@ -90,7 +91,7 @@ class LogoutBottomSheett extends StatelessWidget {
             child: SizedBox(
               width: 292.w,
               child: Text(
-                'Hẹn gặp lại bạn sớm nhé!',
+                'Hẹn gặp lại bạn sớm nhé!'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: subtitleColor,
@@ -118,7 +119,7 @@ class LogoutBottomSheett extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'Hủy',
+                  'Hủy'.tr(),
                   style: TextStyle(
                     color: cancelTextColor,
                     fontSize: 22.sp,
@@ -149,7 +150,7 @@ class LogoutBottomSheett extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'Đăng xuất',
+                  'Đăng xuất'.tr(),
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 22.sp,

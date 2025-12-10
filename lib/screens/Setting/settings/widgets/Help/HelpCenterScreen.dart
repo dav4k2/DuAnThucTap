@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fontend/screens/Setting/settings/widgets/Help/widgets/contact_tab.dart';
 import 'package:fontend/screens/Setting/settings/widgets/Help/widgets/faq_tab.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../settings_screen.dart';
 
@@ -93,7 +94,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       title: Text(
-        'Trung tâm trợ giúp',
+        'help_center'.tr(),
         style: TextStyle(color: textColor, fontSize: 24, fontWeight: FontWeight.w700),
       ),
       centerTitle: true,
@@ -123,7 +124,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
         child: TextField(
           style: TextStyle(color: hintColor),
           decoration: InputDecoration(
-            hintText: 'Tìm kiếm',
+            hintText: 'Tìm kiếm'.tr(),
             hintStyle: TextStyle(color: hintColor, fontSize: 15, fontWeight: FontWeight.w500),
             prefixIcon: Icon(Icons.search, color: iconColor),
             border: InputBorder.none,
@@ -144,9 +145,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
         indicatorColor: kPrimaryYellow,
         indicatorWeight: 4,
         dividerColor: Colors.transparent,
-        tabs: const [
+        tabs:  [
           Tab(child: Text('FAQ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.10))),
-          Tab(child: Text('Liên hệ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.10))),
+          Tab(child: Text('contact'.tr(), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.10))),
         ],
       ),
     );

@@ -1,5 +1,4 @@
 // lib/screens/create_recipe_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,8 +13,6 @@ import '../Guide/model/guide_model.dart';
 import '../Guide/user_guide_dialog_screen.dart';
 import '../NewRecipes/add_recipe_screen.dart';
 import 'logic/draft_provider.dart';
-
-
 
 class CreateRecipeScreen extends ConsumerWidget {
   const CreateRecipeScreen({super.key});
@@ -41,49 +38,64 @@ class CreateRecipeScreen extends ConsumerWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDarkMode
           ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
-          : SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark),
+          : SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark),
       child: Scaffold(
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: MediaQuery.of(context).padding.top + 21.h),
 
-            // ... (Giữ nguyên phần Header Text của bạn) ...
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.w),
               child: Text(
                 'Thêm công thức mớiii',
                 style: TextStyle(
-                  color: textColor, fontSize: 24.sp, fontFamily: 'SF Pro', fontWeight: FontWeight.w500, height: 0.92,
+                  color: textColor,
+                  fontSize: 24.sp,
+                  fontFamily: 'SF Pro',
+                  fontWeight: FontWeight.w500,
+                  height: 0.92,
                 ),
               ),
             ),
+
             SizedBox(height: 42.h),
+
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.w),
               child: Text.rich(
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Khám phá sự sáng tạo trong \n',
-                      style: TextStyle(color: textColor, fontSize: 28.sp, fontStyle: FontStyle.italic, fontWeight: FontWeight.w700),
-                    ),
-                    TextSpan(
-                      text: 'căn bếp của bạn',
-                      style: TextStyle(color: textColor, fontSize: 28.sp, fontStyle: FontStyle.italic, fontWeight: FontWeight.w700),
+                      text: 'Khám phá sự sáng tạo trong căn bếp của bạn',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
+
             SizedBox(height: 10.h),
+
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.w),
               child: SizedBox(
                 width: 356.w,
                 child: Text(
                   'Đóng góp công thức nấu ăn của bạn vào cộng đồng Cookhub...',
-                  style: TextStyle(color: subTextColor, fontSize: 15.sp, fontFamily: 'SF Pro', fontWeight: FontWeight.w500, height: 1.47),
+                  style: TextStyle(
+                    color: subTextColor,
+                    fontSize: 15.sp,
+                    fontFamily: 'SF Pro',
+                    fontWeight: FontWeight.w500,
+                    height: 1.47,
+                  ),
                 ),
               ),
             ),
@@ -96,7 +108,6 @@ class CreateRecipeScreen extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-
                   // 1. Nút Tự Tạo -> Truyền manualGuideSteps
                   _CardWithHelp(
                     onHelpTap: () => _showGuide(context, manualGuideSteps),
@@ -138,14 +149,19 @@ class CreateRecipeScreen extends ConsumerWidget {
 
             SizedBox(height: 30.h),
 
-
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.w),
               child: Text(
                 'Bản nháp gần đây',
-                style: TextStyle(color: textColor, fontSize: 18.sp, fontStyle: FontStyle.italic, fontFamily: 'Inter', fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 18.sp,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
+
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.w),
@@ -153,21 +169,25 @@ class CreateRecipeScreen extends ConsumerWidget {
                   builder: (context, ref, child) {
                     final drafts = ref.watch(recipeDraftProvider);
                     if (drafts.isEmpty) {
-                      return Center(child: Text('Chưa có bản nháp nào', style: TextStyle(fontSize: 16.sp, color: Colors.grey[600])));
+                      return Center(
+                          child: Text('Chưa có bản nháp nào',
+                              style: TextStyle(fontSize: 16.sp, color: Colors.grey[600])));
                     }
                     return ListView.builder(
-                      padding: EdgeInsets.zero,
+                      padding: EdgeInsets.only(bottom: 110.h),
                       itemCount: drafts.length,
                       itemBuilder: (context, index) => DraftRecipeItem(draft: drafts[index]),
                     );
+
                   },
                 ),
               ),
             ),
-            SizedBox(height: 110.h),
           ],
         ),
+
       ),
+
     );
   }
 }
@@ -197,14 +217,16 @@ class _CardWithHelp extends StatelessWidget {
                 padding: EdgeInsets.all(4.w),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.6), // Tăng độ đậm nền một chút
+                  color: Colors.white.withOpacity(0.6),
                   border: Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))], // Thêm bóng nhẹ cho nút ?
+                  boxShadow: [
+                    BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+                  ],
                 ),
                 child: Icon(
                   Icons.help_outline_rounded,
                   size: 20.sp,
-                  color: const Color(0xFFFE724C), // Màu cam đỏ chủ đạo
+                  color: const Color(0xFFFE724C),
                 ),
               ),
             ),
@@ -214,4 +236,3 @@ class _CardWithHelp extends StatelessWidget {
     );
   }
 }
-

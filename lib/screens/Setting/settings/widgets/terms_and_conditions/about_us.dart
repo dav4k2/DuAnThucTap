@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../theme/theme_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 
 class AboutUs extends ConsumerWidget {
@@ -31,7 +33,7 @@ class AboutUs extends ConsumerWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Giới Thiệu',
+          'Introduce'.tr(),
           style: TextStyle(
             color: titleColor,
             fontSize: titleFontSize,
@@ -51,7 +53,7 @@ class AboutUs extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Về chúng tôi',
+              'about_us'.tr(),
               style: TextStyle(
                 color: subtitleColor,
                 fontSize: subtitleFontSize,
@@ -61,7 +63,7 @@ class AboutUs extends ConsumerWidget {
             ),
             SizedBox(height: size.height * 0.015),
             Text(
-              'Let him cook',
+              'about_detail'.tr(),
               style: TextStyle(
                 color: bodyColor,
                 fontSize: bodyFontSize,

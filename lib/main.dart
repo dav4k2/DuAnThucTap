@@ -1,9 +1,9 @@
+import 'package:easy_localization/easy_localization.dart'; // <--- IMPORT MỚI
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // <--- BỔ SUNG IMPORT NÀY
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // Import các màn hình của bạn
 import 'package:fontend/screens/Remove/enter_new_password/reset_password_screen.dart';
@@ -13,22 +13,29 @@ import 'package:fontend/screens/Signin/reset_pass_email/reset_password_screen.da
 import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_gate.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/sign_in_screen.dart';
 import 'package:fontend/screens/Start/welcome/welcome_screen.dart';
-import 'package:fontend/theme/app_localizations.dart';
-import 'package:fontend/theme/language_provider.dart';
 import 'package:fontend/theme/theme_provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized(); // <--- KHỞI TẠO NGÔN NGỮ
 
   // 1. Khởi tạo Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 2. Khởi tạo biến môi trường (Đọc file .env)
-  // Nếu chưa có file .env, app sẽ báo lỗi tại đây
+  // 2. Khởi tạo biến môi trường
   await dotenv.load(fileName: ".env");
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    // BỌC APP TRONG EASY LOCALIZATION
+    EasyLocalization(
+      supportedLocales: const [Locale('vi'), Locale('en')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('vi'),
+      startLocale: const Locale('vi'),
+      child: const ProviderScope(child: MyApp()),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {
@@ -37,7 +44,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeProvider);
-    final lang = ref.watch(languageProvider);
+    // Không cần watch languageProvider nữa, EasyLocalization tự lo
 
     return ScreenUtilInit(
       designSize: const Size(402, 874),
@@ -48,14 +55,13 @@ class MyApp extends ConsumerWidget {
           title: 'My Flutter App',
           debugShowCheckedModeBanner: false,
           useInheritedMediaQuery: true,
-          locale: Locale(lang),
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('vi'), Locale('en')],
+
+          // --- CẤU HÌNH NGÔN NGỮ TỰ ĐỘNG ---
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
+          // ---------------------------------
+
           themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
           theme: ThemeData(
             brightness: Brightness.light,
@@ -94,37 +100,3 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-
-
-/*
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
-import 'package:fontend/screens/prepare/finish/finish_screen.dart';
-import 'package:fontend/screens/prepare/prepare_page/prepare_screen.dart';
-import 'package:fontend/screens/prepare/step_0/step_screen.dart';
-import 'package:fontend/screens/prepare/step_1/step_time_screen.dart';
-import 'screens/notification/notification_screen.dart';
-
-void main() => runApp(const ProviderScope(child: MyApp()));
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dự Án Thực Tập',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFFFC221),
-          brightness: Brightness.light,
-        ),
-      ),
-      home: const PreparePage(),
-    );
-  }
-}
-*/

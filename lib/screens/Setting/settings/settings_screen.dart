@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,8 +11,6 @@ import 'package:fontend/screens/Setting/settings/widgets/logout_bottom_sheet.dar
 import 'package:fontend/screens/Setting/settings/widgets/reset_pass/password_reset_screen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/setting_item.dart';
 import 'package:fontend/screens/Setting/settings/widgets/title_header.dart';
-import '../../../theme/app_localizations.dart';
-import '../../../theme/language_provider.dart';
 import '../../../theme/theme_provider.dart';
 import '../../Signin/sign_in&sign_up/auth/auth_gate.dart';
 import '../../Signin/sign_in&sign_up/auth/auth_provider.dart';
@@ -27,22 +26,10 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeProvider);
-    final lang = ref.watch(languageProvider);
+    // Không cần watch languageProvider nữa
 
-    // 1. Lấy Localization & Theme an toàn
-    final l10n = AppLocalizations.of(context);
     final themeData = Theme.of(context);
-
-    // 2. Null check màu chữ
     final textColor = themeData.textTheme.bodyMedium?.color ?? (isDark ? Colors.white : Colors.black87);
-
-    // 3. Loading nếu chưa load xong ngôn ngữ
-    if (l10n == null) {
-      return Scaffold(
-        backgroundColor: themeData.scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator(color: Color(0xFFFFB901))),
-      );
-    }
 
     return Scaffold(
       body: SafeArea(
@@ -73,13 +60,13 @@ class SettingsScreen extends ConsumerWidget {
                       [
                         SettingItem(
                           iconPath: 'image/setting_noti.png',
-                          title: l10n.translate('notifications'),
+                          title: 'notifications'.tr(), // <--- DÙNG .tr()
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationSettingsScreen())),
                         ),
                         _buildDivider(context),
                         SettingItem(
                           iconPath: 'image/setting_lang.png',
-                          title: l10n.translate('language'),
+                          title: 'language'.tr(), // <--- DÙNG .tr()
                           onTap: () {
                             showModalBottomSheet(
                               context: context,
@@ -89,12 +76,12 @@ class SettingsScreen extends ConsumerWidget {
                             );
                           },
                           trailing: Text(
-                            (lang ?? 'vi').toUpperCase(),
+                            context.locale.languageCode.toUpperCase(), // <--- LẤY MÃ NGÔN NGỮ ('VI' hoặc 'EN')
                             style: TextStyle(fontSize: 14.sp, color: textColor.withOpacity(0.6), fontWeight: FontWeight.w600),
                           ),
                         ),
                         _buildDivider(context),
-                        _buildDarkModeItem(context, isDark, l10n, ref),
+                        _buildDarkModeItem(context, isDark, ref),
                       ],
                     ),
 
@@ -106,19 +93,19 @@ class SettingsScreen extends ConsumerWidget {
                       [
                         SettingItem(
                           iconPath: 'image/setting_term.png',
-                          title: l10n.translate('terms'),
+                          title: 'terms'.tr(),
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => TermsPage())),
                         ),
                         _buildDivider(context),
                         SettingItem(
                           iconPath: 'image/setting_in4.png',
-                          title: l10n.translate('about'),
+                          title: 'about'.tr(),
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AboutUs())),
                         ),
                         _buildDivider(context),
                         SettingItem(
                           iconPath: 'image/setting_help.png',
-                          title: l10n.translate('help'),
+                          title: 'help'.tr(),
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpCenterScreen())),
                         ),
                       ],
@@ -132,13 +119,13 @@ class SettingsScreen extends ConsumerWidget {
                       [
                         SettingItem(
                           iconPath: 'image/setting_pass.png',
-                          title: l10n.translate('password'),
+                          title: 'password'.tr(),
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PasswordResetScreen())),
                         ),
                         _buildDivider(context),
                         SettingItem(
                           iconPath: 'image/setting_delete.png',
-                          title: l10n.translate('delete_account'),
+                          title: 'delete_account'.tr(),
                           showArrow: true,
                           customArrow: Icons.delete_forever_rounded,
                           forceIconColor: const Color(0xFFEB3D32),
@@ -148,7 +135,7 @@ class SettingsScreen extends ConsumerWidget {
                         _buildDivider(context),
                         SettingItem(
                           iconPath: 'image/setting_logout.png',
-                          title: l10n.translate('logout'),
+                          title: 'logout'.tr(),
                           showArrow: true,
                           customArrow: Icons.exit_to_app_rounded,
                           forceIconColor: const Color(0xFFFE724C),
@@ -207,10 +194,10 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDarkModeItem(BuildContext context, bool isDark, AppLocalizations l10n, WidgetRef ref) {
+  Widget _buildDarkModeItem(BuildContext context, bool isDark, WidgetRef ref) {
     return SettingItem(
       iconPath: 'image/setting_darkmode.png',
-      title: l10n.translate('dark_mode'),
+      title: 'dark_mode'.tr(), // <--- DÙNG .tr()
       showArrow: false,
       onTap: () => ref.read(themeProvider.notifier).toggle(),
       trailing: GestureDetector(

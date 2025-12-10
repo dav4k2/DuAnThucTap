@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../theme/theme_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 
 class TermsPage extends ConsumerWidget {
@@ -32,7 +33,7 @@ class TermsPage extends ConsumerWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Điều khoản & dịch vụ',
+          'Terms & Services'.tr(),
           style: TextStyle(
             color: titleColor,
             fontSize: titleFontSize,
@@ -52,7 +53,7 @@ class TermsPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Điều khoản',
+              'Terms'.tr(),
               style: TextStyle(
                 color: subtitleColor,
                 fontSize: subtitleFontSize,
@@ -62,7 +63,7 @@ class TermsPage extends ConsumerWidget {
             ),
             SizedBox(height: size.height * 0.015),
             Text(
-              'Let him cook',
+              'term_detail'.tr(),
               style: TextStyle(
                 color: bodyColor,
                 fontSize: bodyFontSize,
