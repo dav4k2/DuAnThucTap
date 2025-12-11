@@ -8,7 +8,7 @@ from app.database import get_db
 from app.core import security
 from app.core.settings import settings
 
-router = APIRouter()
+router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=schemas.UserRead)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
