@@ -1,4 +1,5 @@
 // lib/tabs/contact_tab.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -45,7 +46,7 @@ class ContactTab extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7',
+            'Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7'.tr(),
             style: TextStyle(fontSize: 15, color: titleColor, height: 1.4),
             textAlign: TextAlign.center,
           ),

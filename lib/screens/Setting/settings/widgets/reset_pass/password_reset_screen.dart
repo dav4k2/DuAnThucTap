@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../Remove/enter_verification_code/widgets/error_message.dart';
@@ -59,11 +60,11 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
     });
 
     final error = next.errorMessage!;
-    if (error.contains('không khớp') || error.contains('không trùng')) {
+    if (error.contains('không khớp'.tr()) || error.contains('không trùng'.tr())) {
       _confirmPassError = error;
-    } else if (error.contains('hiện tại') || error.contains('sai') || error.contains('không chính xác')) {
+    } else if (error.contains('hiện tại'.tr()) || error.contains('sai'.tr()) || error.contains('không chính xác'.tr())) {
       _currentPassError = error;
-    } else if (error.contains('ít nhất') || error.contains('ký tự')) {
+    } else if (error.contains('ít nhất'.tr()) || error.contains('ký tự')) {
       _newPassError = error;
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,10 +83,10 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
 
     ref.listen<PasswordResetState>(passwordResetProvider, (previous, next) {
       if (next.errorMessage != null && next.errorMessage!.isNotEmpty) {
-        if (next.errorMessage!.contains('thành công')) {
+        if (next.errorMessage!.contains('thành công'.tr())) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đổi mật khẩu thành công!'),
+             SnackBar(
+              content: Text('Đổi mật khẩu thành công!'.tr()),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 2),
             ),
@@ -107,7 +108,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Cài đặt mật khẩu',
+          'Cài đặt mật khẩu'.tr(),
           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
@@ -117,11 +118,11 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            _buildLabel('Mật khẩu hiện tại', theme),
+             SizedBox(height: 20),
+            _buildLabel('Mật khẩu hiện tại'.tr(), theme),
             _buildPasswordField(
               controller: _currentPassController,
-              hintText: 'Nhập mật khẩu hiện tại',
+              hintText: 'Nhập mật khẩu hiện tại'.tr(),
               isVisible: _isCurrentPasswordVisible,
               toggleVisibility: () => setState(() => _isCurrentPasswordVisible = !_isCurrentPasswordVisible),
               theme: theme,
@@ -137,7 +138,7 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
               child: TextButton(
                 onPressed: () {},
                 child: Text(
-                  'Quên mật khẩu ?',
+                  'Quên mật khẩu ?'.tr(),
                   style: TextStyle(
                     color: kPrimaryColor,
                     fontSize: 20,
@@ -149,10 +150,10 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
             ),
             const SizedBox(height: 20),
 
-            _buildLabel('Mật khẩu mới', theme),
+            _buildLabel('Mật khẩu mới'.tr(), theme),
             _buildPasswordField(
               controller: _newPassController,
-              hintText: 'Nhập mật khẩu mới (tối thiểu 6 ký tự)',
+              hintText: 'Nhập mật khẩu mới (tối thiểu 6 ký tự)'.tr(),
               isVisible: _isNewPasswordVisible,
               toggleVisibility: () => setState(() => _isNewPasswordVisible = !_isNewPasswordVisible),
               theme: theme,
@@ -165,10 +166,10 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
 
             const SizedBox(height: 24),
 
-            _buildLabel('Nhập lại mật khẩu', theme),
+            _buildLabel('Nhập lại mật khẩu'.tr(), theme),
             _buildPasswordField(
               controller: _confirmPassController,
-              hintText: 'Nhập lại mật khẩu mới',
+              hintText: 'Nhập lại mật khẩu mới'.tr(),
               isVisible: _isConfirmPasswordVisible,
               toggleVisibility: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
               theme: theme,
@@ -197,8 +198,8 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                   height: 30,
                   child: CircularProgressIndicator(color: Colors.black, strokeWidth: 3),
                 )
-                    : const Text(
-                  'CẬP NHẬT',
+                    :  Text(
+                  'CẬP NHẬT'.tr(),
                   style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w800),
                 ),
               ),

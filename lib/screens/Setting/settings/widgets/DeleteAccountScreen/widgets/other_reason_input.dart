@@ -1,4 +1,5 @@
 // lib/screens/delete_account/widgets/other_reason_input.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class OtherReasonInput extends StatelessWidget {
@@ -40,7 +41,7 @@ class OtherReasonInput extends StatelessWidget {
             style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87),
             decoration: InputDecoration(
               hintText:
-              'Nếu có thể hãy chia sẻ lý do với chúng tôi (tối đa 200 ký tự)',
+              'Nếu có thể hãy chia sẻ lý do với chúng tôi (tối đa 200 ký tự)'.tr(),
               hintStyle: TextStyle(color: hintColor, fontSize: 14),
               border: InputBorder.none,
               counterText: '',

@@ -1,5 +1,6 @@
 // lib/screens/delete_account/widgets/delete_account_button.dart
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'DeleteAccount.dart';
 
@@ -47,8 +48,8 @@ class DeleteAccountButton extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
             elevation: 4,
           ),
-          child: const Text(
-            'Xóa tài khoản',
+          child:  Text(
+            'Xóa tài khoản'.tr(),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,

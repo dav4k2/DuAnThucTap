@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart'; // <--- 1. IMPORT
 import 'package:flutter/material.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
@@ -17,10 +18,10 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   void _handleToggle(String notificationName, bool newValue, Function(bool) setter) {
     if (isPaused && newValue) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Vui lòng tắt chế độ Tạm dừng để bật thông báo"),
+        SnackBar(
+          content: Text("turn_off_pause_warning".tr()), // <--- 2. DỊCH CẢNH BÁO
           backgroundColor: Colors.redAccent,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -32,6 +33,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Logic giữ nguyên
     final effectivePost = isPaused ? false : postAndComment;
     final effectiveSleep = isPaused ? false : sleepMode;
     final effectiveFollow = isPaused ? false : followNotifications;
@@ -44,20 +46,20 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Cài đặt thông báo',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+        title: Text(
+          'notifications_title'.tr(), // <--- 3. DỊCH TIÊU ĐỀ
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 28, top: 10),
+          Padding(
+            padding: const EdgeInsets.only(left: 28, top: 10),
             child: Text(
-              'Thông báo đẩy',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              'push_header'.tr(), // <--- 4. DỊCH HEADER
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
           ),
           const SizedBox(height: 20),
@@ -67,32 +69,34 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               children: [
                 _buildMasterSwitch(),
                 const SizedBox(height: 32),
+
+                // --- CÁC MỤC BÊN DƯỚI ĐÃ ĐƯỢC DỊCH ---
                 _buildSwitchRow(
-                  title: 'Chế độ ngủ',
+                  title: 'sleep_mode_toggle'.tr(),
                   value: effectiveSleep,
                   actualValue: sleepMode,
-                  onChanged: (v) => _handleToggle('Chế độ ngủ', v, (val) => sleepMode = val),
+                  onChanged: (v) => _handleToggle('sleep_mode_toggle', v, (val) => sleepMode = val),
                 ),
                 const SizedBox(height: 28),
                 _buildSwitchRow(
-                  title: 'Bài viết và bình luận',
+                  title: 'posts_comments'.tr(),
                   value: effectivePost,
                   actualValue: postAndComment,
-                  onChanged: (v) => _handleToggle('Bài viết và bình luận', v, (val) => postAndComment = val),
+                  onChanged: (v) => _handleToggle('posts_comments', v, (val) => postAndComment = val),
                 ),
                 const SizedBox(height: 28),
                 _buildSwitchRow(
-                  title: 'Theo dõi và người theo dõi',
+                  title: 'follow_notif'.tr(),
                   value: effectiveFollow,
                   actualValue: followNotifications,
-                  onChanged: (v) => _handleToggle('Theo dõi và người theo dõi', v, (val) => followNotifications = val),
+                  onChanged: (v) => _handleToggle('follow_notif', v, (val) => followNotifications = val),
                 ),
                 const SizedBox(height: 28),
                 _buildSwitchRow(
-                  title: 'Thông báo qua email',
+                  title: 'email_notif'.tr(),
                   value: effectiveEmail,
                   actualValue: emailNotifications,
-                  onChanged: (v) => _handleToggle('Thông báo qua email', v, (val) => emailNotifications = val),
+                  onChanged: (v) => _handleToggle('email_notif', v, (val) => emailNotifications = val),
                 ),
               ],
             ),
@@ -108,9 +112,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Tạm dừng tất cả',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          Text(
+            'pause_all'.tr(), // <--- 5. DỊCH NÚT TẠM DỪNG
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           ),
           GestureDetector(
             onTap: () => setState(() => isPaused = !isPaused),
@@ -161,14 +165,16 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        // Không set màu → để theme tự động dark/light
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+          // Expanded giúp text không bị tràn nếu ngôn ngữ dịch quá dài
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+            ),
           ),
           Switch(
             value: value,

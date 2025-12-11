@@ -1,4 +1,5 @@
 // lib/screens/delete_account/delete_account_screen.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fontend/screens/Setting/settings/widgets/DeleteAccountScreen/widgets/account_deleted_success_screen.dart';
@@ -58,7 +59,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Xóa tài khoản',
+          'Xóa tài khoản'.tr(),
           style: TextStyle(
             color: textColor,
             fontSize: 20,
@@ -90,7 +91,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               ),
 
               const SizedBox(height: 32),
-              const ConsequenceSection(),
+               ConsequenceSection(),
               const SizedBox(height: 48),
 
               DeleteAccountButton(
@@ -116,14 +117,4 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     );
   }
 
-  String _getReasonText(int index) {
-    const reasons = [
-      'Không còn mục đích sử dụng',
-      'Tôi không biết dùng ứng dụng này',
-      'Quá nhiều thông báo',
-      'Vấn đề bảo mật',
-      'Lý do khác',
-    ];
-    return reasons[index];
-  }
 }

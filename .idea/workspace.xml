@@ -4,6 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <component name="ChangeListManager">
 <<<<<<< Updated upstream
     <list default="true" id="76453bad-4f73-4297-b52a-45dd6650a8b6" name="Changes" comment="">
@@ -30,6 +31,10 @@
 =======
     <list default="true" id="0ccd08f2-7919-48f2-a6e2-c733d795c52d" name="Changes" comment="" />
 >>>>>>> Stashed changes
+=======
+  <component name="ChangeListManager">
+    <list default="true" id="50e244b8-4d32-422d-91d9-2c3605dc4afd" name="Changes" comment="" />
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,6 +43,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   <component name="FileEditorManager">
     <leaf>
@@ -88,6 +94,8 @@
     </panes>
   </component>
 =======
+=======
+>>>>>>> Stashed changes
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -104,9 +112,16 @@
   }
 }]]></component>
   <component name="ProjectColorInfo"><![CDATA[{
+<<<<<<< Updated upstream
   "associatedIndex": 1
 }]]></component>
   <component name="ProjectId" id="34efuprKb1BF78O2MZeN3euHGi8" />
+>>>>>>> Stashed changes
+=======
+  "customColor": "",
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="36gjt3zGUC1ze2Xcbuvb5HAEr6v" />
 >>>>>>> Stashed changes
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -115,9 +130,14 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "Flutter.main.dart.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+=======
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+>>>>>>> Stashed changes
 =======
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -128,6 +148,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     "git-widget-placeholder": "frontend",
     "io.flutter.reload.alreadyRun": "true",
@@ -155,12 +176,15 @@
     </layout>
   </component>
 =======
+=======
+>>>>>>> Stashed changes
     "git-widget-placeholder": "master",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+<<<<<<< Updated upstream
       <changelist id="0ccd08f2-7919-48f2-a6e2-c733d795c52d" name="Changes" comment="" />
       <created>1761579183806</created>
       <option name="number" value="Default" />
@@ -171,5 +195,15 @@
   </component>
 >>>>>>> Stashed changes
 =======
+>>>>>>> Stashed changes
+=======
+      <changelist id="50e244b8-4d32-422d-91d9-2c3605dc4afd" name="Changes" comment="" />
+      <created>1765435320784</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1765435320784</updated>
+    </task>
+    <servers />
+  </component>
 >>>>>>> Stashed changes
 </project>

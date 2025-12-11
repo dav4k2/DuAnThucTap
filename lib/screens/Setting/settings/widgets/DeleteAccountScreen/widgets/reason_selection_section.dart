@@ -1,22 +1,23 @@
 // lib/screens/delete_account/widgets/reason_selection_section.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class ReasonSelectionSection extends StatelessWidget {
   final int? selectedReason;
   final ValueChanged<int?> onReasonChanged;
 
-  const ReasonSelectionSection({
+   ReasonSelectionSection({
     super.key,
     required this.selectedReason,
     required this.onReasonChanged,
   });
 
-  final List<String> _reasons = const [
-    'Không còn mục đích sử dụng',
-    'Tôi không biết dùng ứng dụng này',
-    'Quá nhiều thông báo',
-    'Vấn đề bảo mật',
-    'Lý do khác',
+  final List<String> _reasons =  [
+    'Không còn mục đích sử dụng'.tr(),
+    'Tôi không biết dùng ứng dụng này'.tr(),
+    'Quá nhiều thông báo'.tr(),
+    'Vấn đề bảo mật'.tr(),
+    'Lý do khác'.tr(),
   ];
 
   @override
@@ -24,8 +25,8 @@ class ReasonSelectionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Cho chúng tôi biết lý do bạn rời đi:',
+         Text(
+          'Cho chúng tôi biết lý do bạn rời đi:'.tr(),
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, fontFamily: 'SF Pro'),
         ),
         const SizedBox(height: 20),

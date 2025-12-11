@@ -10,7 +10,7 @@ class TitleSection extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Text(
-      'Thêm công thức mới',
+      'Anh dộ mixi',
       style: TextStyle(
         fontFamily: 'SF Pro',
         fontSize: 24.sp,
