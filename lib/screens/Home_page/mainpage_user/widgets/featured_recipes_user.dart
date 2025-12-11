@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class FeaturedRecipes extends StatelessWidget {
@@ -38,14 +39,14 @@ class FeaturedRecipes extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Công thức nổi bật',
+                'Công thức nổi bật'.tr(),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: theme.colorScheme.onBackground,
                 ),
               ),
               Text(
-                'Xem thêm',
+                'Xem thêm'.tr(),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.hintColor,
                 ),

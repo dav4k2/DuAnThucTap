@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class RatingSection extends StatelessWidget {
@@ -16,9 +17,9 @@ class RatingSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                "Đánh giá",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                "Đánh giá".tr(),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
 
@@ -43,9 +44,9 @@ class RatingSection extends StatelessWidget {
 
               const SizedBox(height: 4),
 
-              const Text(
-                "(25 đánh giá)",
-                style: TextStyle(color: Colors.grey, fontSize: 14),
+              Text(
+                "(25 đánh giá)".tr(),
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
               ),
             ],
           ),

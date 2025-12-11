@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class DescriptionSection extends StatelessWidget {
@@ -13,15 +14,15 @@ class DescriptionSection extends StatelessWidget {
           children: [
             TextSpan(
               text:
-              "Phở là một món ăn truyền thống của Việt Nam, được xem là một trong những món ăn...",
+              "Phở là một món ăn truyền thống của Việt Nam, được xem là một trong những món ăn...".tr(),
               style: TextStyle(
                   color: Colors.black.withOpacity(0.6),
                   fontSize: 14,
                   height: 1.6),
             ),
-            const TextSpan(
-              text: " Xem thêm",
-              style: TextStyle(
+            TextSpan(
+              text: " Xem thêm".tr(),
+              style: const TextStyle(
                   color: Colors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.bold),

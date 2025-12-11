@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class HomeHeader extends StatelessWidget {
@@ -12,7 +13,7 @@ class HomeHeader extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1, vertical: 16),
       child: Text(
-        'Bạn muốn nấu gì nào?',
+        'Bạn muốn nấu gì nào?'.tr(),
         style: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.bold,

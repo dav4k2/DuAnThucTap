@@ -1,4 +1,5 @@
 import 'dart:ui'; // ✅ QUAN TRỌNG: Import để làm mờ
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class HeaderSection extends StatefulWidget {
@@ -73,7 +74,7 @@ class _HeaderSectionState extends State<HeaderSection> {
                       onTap: () => setState(() => isFavorite = !isFavorite),
                     ),
                     const SizedBox(width: 12),
-                    _editButton(onTap: () => print("Chỉnh sửa")),
+                    _editButton(onTap: () => print("Chỉnh sửa".tr())),
                     const SizedBox(width: 12),
                     _iconButton(
                       icon: Icons.menu_rounded,
@@ -114,14 +115,14 @@ class _HeaderSectionState extends State<HeaderSection> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _menuItem("Thêm vào bộ sưu tập", onTap: () {}),
+                      _menuItem("Thêm vào bộ sưu tập".tr(), onTap: () {}),
                       const Divider(height: 1),
-                      _menuItem("Chia sẻ", onTap: () {}),
+                      _menuItem("Chia sẻ".tr(), onTap: () {}),
                       const Divider(height: 1),
-                      _menuItem("Xem thống kê", onTap: () {}),
+                      _menuItem("Xem thống kê".tr(), onTap: () {}),
                       const Divider(height: 1),
                       // 👇 Gọi hàm xóa ở đây
-                      _menuItem("Xóa món này", color: Colors.red, onTap: _showDeleteDialog),
+                      _menuItem("Xóa món này".tr(), color: Colors.red, onTap: _showDeleteDialog),
                     ],
                   ),
                 ),
@@ -147,20 +148,20 @@ class _HeaderSectionState extends State<HeaderSection> {
           filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4), // Chỉnh độ mờ tại đây
           child: AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Text("Xóa công thức này?", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            content: const Text("Hành động này không thể hoàn tác", textAlign: TextAlign.center, style: TextStyle(color: Colors.black54)),
+            title: Text("Xóa công thức này?".tr(), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            content: Text("Hành động này không thể hoàn tác".tr(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.black54)),
             actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text("Hủy", style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text("Hủy".tr(), style: const TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  print("Đã xóa!"); // Logic xóa thực tế
+                  print("Đã xóa!".tr()); // Logic xóa thực tế
                 },
-                child: const Text("Xóa", style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text("Xóa".tr(), style: const TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -176,7 +177,7 @@ class _HeaderSectionState extends State<HeaderSection> {
         height: 46, padding: const EdgeInsets.symmetric(horizontal: 16),
         alignment: Alignment.center,
         decoration: BoxDecoration(color: const Color(0xFFFFC107), borderRadius: BorderRadius.circular(12)),
-        child: const Text("Chỉnh sửa", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+        child: Text("Chỉnh sửa".tr(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
       ),
     );
   }
@@ -200,7 +201,7 @@ class _HeaderSectionState extends State<HeaderSection> {
   Widget _menuItem(String text, {Color? color, required VoidCallback onTap}) {
     return InkWell(
       onTap: () {
-        if (text != "Xóa món này") setState(() => showMenu = false); // Nếu không phải nút xóa thì tự tắt menu
+        if (text != "Xóa món này".tr()) setState(() => showMenu = false); // Nếu không phải nút xóa thì tự tắt menu
         onTap();
       },
       child: Padding(

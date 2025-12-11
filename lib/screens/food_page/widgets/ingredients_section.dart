@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class IngredientsSection extends StatelessWidget {
@@ -18,10 +19,10 @@ class IngredientsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text("Nguyên liệu:",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text("Nguyên liệu:".tr(),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 8),
         ...ingredients.map((item) => Padding(

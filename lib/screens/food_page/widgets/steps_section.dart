@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
@@ -39,11 +40,11 @@ class StepsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            "Cách làm :",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            "Cách làm :".tr(),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 20),
@@ -67,9 +68,9 @@ class StepsSection extends StatelessWidget {
                 color: const Color(0xFFFFD54F),
                 borderRadius: BorderRadius.circular(32),
               ),
-              child: const Text(
-                "Thực hiện món ăn",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+              child: Text(
+                "Thực hiện món ăn".tr(),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
           ),

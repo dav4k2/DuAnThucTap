@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class CommentsSection extends StatelessWidget {
@@ -10,11 +11,11 @@ class CommentsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ====== Tiêu đề ======
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            "Bình luận 4",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            "Bình luận 4".tr(),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),
 
@@ -23,7 +24,7 @@ class CommentsSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            "Xem tất cả bình luận",
+            "Xem tất cả bình luận".tr(),
             style: TextStyle(
               fontSize: 14,
               color: Colors.black54,
@@ -33,25 +34,25 @@ class CommentsSection extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        const CommentItem(
+        CommentItem(
           name: "Jducky",
-          text: "Rất ngon và dễ làm",
+          text: "Rất ngon và dễ làm".tr(),
           avatar: "image/Ảnh1.png",
         ),
 
         const SizedBox(height: 20),
 
-        const CommentItem(
+        CommentItem(
           name: "Sơn Tùng - MVP",
-          text: "Hơn 10 năm rồi... mà món này vẫn rất ngon!",
+          text: "Hơn 10 năm rồi... mà món này vẫn rất ngon!".tr(),
           avatar: "image/Ảnh2.png",
         ),
 
         const SizedBox(height: 20),
 
-        const CommentItem(
+        CommentItem(
           name: "J99",
-          text: "Làm hơi khác trong tui nhưng rất ngon nhaa <3",
+          text: "Làm hơi khác trong tui nhưng rất ngon nhaa <3".tr(),
           avatar: "image/Ảnh3.png",
         ),
 
@@ -257,7 +258,7 @@ class _CommentItemState extends State<CommentItem>
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          "Trả lời",
+                          "Trả lời".tr(),
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.black.withOpacity(0.7),
@@ -279,7 +280,7 @@ class _CommentItemState extends State<CommentItem>
               padding: const EdgeInsets.only(left: 50),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: "Nhập phản hồi...",
+                  hintText: "Nhập phản hồi...".tr(),
                   contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class RecipeInfoSection extends StatelessWidget {
@@ -37,16 +38,16 @@ class RecipeInfoSection extends StatelessWidget {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(
+                    children: [
+                      const Icon(
                         Icons.star,
                         color: Colors.white,
                         size: 14,
                       ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
-                        "Công thức nổi bật",
-                        style: TextStyle(
+                        "Công thức nổi bật".tr(),
+                        style: const TextStyle(
                           color: Colors.black87,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -56,11 +57,11 @@ class RecipeInfoSection extends StatelessWidget {
                   ),
                 ),
                 // Tên món ở giữa
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "PHỞ TÁI",
+                    "PHỞ TÁI".tr(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                       fontFamily: "SF Pro Rounded",
@@ -96,10 +97,10 @@ class RecipeInfoSection extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             // Text 6 nguyên liệu ở giữa
-            const Text(
-              "6 nguyên liệu",
+            Text(
+              "6 nguyên liệu".tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
               ),
@@ -111,7 +112,7 @@ class RecipeInfoSection extends StatelessWidget {
               children: [
                 _InfoItem(
                   icon: Icons.access_time,
-                  label: "60 phút",
+                  label: "60 phút".tr(),
                   color: const Color(0xFF00D242),
                 ),
                 _InfoItem(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class HomeHeader extends StatelessWidget {
@@ -27,7 +28,7 @@ class HomeHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Chào buổi sáng, Kong Fuong!',
+                  'Chào buổi sáng, Kong Fuong!'.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -36,7 +37,7 @@ class HomeHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Nay bạn muốn nấu gì',
+                  'Nay bạn muốn nấu gì'.tr(),
                   style: TextStyle(
                     fontSize: 14,
                     color: textColor.withOpacity(0.7),

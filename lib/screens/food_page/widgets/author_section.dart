@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class AuthorSection extends StatelessWidget {
@@ -33,8 +34,8 @@ class AuthorSection extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   "Golden Ramday",
                   style: TextStyle(
                     fontSize: 18,
@@ -42,16 +43,16 @@ class AuthorSection extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
-                  "Thành viên",
-                  style: TextStyle(
+                  "Thành viên".tr(),
+                  style: const TextStyle(
                     fontSize: 13,
                     color: Colors.grey,
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
+                const SizedBox(height: 4),
+                const Text(
                   "Đã đăng vào 3 tháng 8, 2025",
                   style: TextStyle(
                     fontSize: 12,
@@ -70,17 +71,17 @@ class AuthorSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
             child: Row(
-              children: const [
+              children: [
                 Text(
-                  "Đã theo dõi",
-                  style: TextStyle(
+                  "Đã theo dõi".tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,            // chữ to hơn
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(width: 8),
-                Icon(
+                const SizedBox(width: 8),
+                const Icon(
                   Icons.person_add_alt_1,
                   color: Colors.white,
                   size: 18,                  // icon to hơn
