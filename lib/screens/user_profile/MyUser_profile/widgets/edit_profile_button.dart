@@ -6,7 +6,8 @@ import '../../../../theme/theme_provider.dart';
 import '../../Edit_user/edit_profile_screen.dart';
 
 class EditProfileButton extends ConsumerWidget {
-  const EditProfileButton({super.key});
+  final VoidCallback? onTap;
+  const EditProfileButton({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,13 +23,7 @@ class EditProfileButton extends ConsumerWidget {
       left: 62.w,
       top: 437.h,
       child: GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const EditProfileScreen(),
-            ),
-          );
-        },
+        onTap: onTap,
         child: Container(
           width: 277.w,
           height: 39.h,

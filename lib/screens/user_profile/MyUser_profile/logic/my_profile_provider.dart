@@ -50,6 +50,10 @@ class MyChef {
   final String id;
   final String name;
   final String title;
+  // THÊM 2 TRƯỜNG NÀY
+  final String? country;
+  final String? cookingTitle;
+
   final int recipes;
   final String followers;
   final int following;
@@ -58,13 +62,15 @@ class MyChef {
   final String? bio;
   final String? email;
   final String? joinedDate;
-  final String avatarUrl;      // giờ có thể là path file hoặc asset
-  final String headerImage;    // giờ có thể là path file hoặc asset
+  final String avatarUrl;
+  final String headerImage;
 
   MyChef({
     required this.id,
     required this.name,
     required this.title,
+    this.country,        // Thêm vào constructor
+    this.cookingTitle,   // Thêm vào constructor
     required this.recipes,
     required this.followers,
     required this.following,
@@ -113,16 +119,16 @@ final myChefProvider = Provider<MyChef>((ref) {
     id: "my_chef_id",
     name: survey.displayName?.trim().isNotEmpty == true ? survey.displayName! : "Kong Fuong",
     title: survey.cookingTitle ?? "Đầu bếp đam mê",
-    bio: survey.bio?.trim().isNotEmpty == true
-        ? survey.bio
-        : "Một đầu bếp xuất thân từ đường phố, không trải qua đào tạo bài bản, chỉ có niềm tin vào câu nói “Ai cũng có thể nấu” của Auguste Gusteau...",
-    email: "kongfuongchef@gmail.com",
-    joinedDate: "10/09/2024",
 
-    // ẢNH ĐÃ ĐƯỢC ĐỒNG BỘ HOÀN TOÀN TỪ SURVEY
+    // ÁNH XẠ DỮ LIỆU TỪ SURVEY HOẶC DATABASE
+    country: survey.country ?? "Việt Nam",
+    cookingTitle: survey.cookingTitle ?? "Đầu bếp tại gia",
+
+    bio: survey.bio?.trim().isNotEmpty == true ? survey.bio : "Mô tả mặc định...",
+    email: survey.email ?? "chua_cap_nhat@gmail.com",
+    joinedDate: "10/09/2024",
     avatarUrl: survey.avatarFile?.path ?? "image/avatar.png",
     headerImage: survey.coverFile?.path ?? "image/profile_bg.png",
-
     recipes: allRecipes.length,
     followers: "45.6k",
     following: 15,

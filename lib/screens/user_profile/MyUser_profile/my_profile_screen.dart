@@ -18,6 +18,8 @@ import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_stats_sec
 
 import '../../../Service/user_model.dart';
 import '../../../Service/user_service.dart';
+import '../../survey/logic/survey_provider.dart';
+import '../Edit_user/edit_profile_screen.dart';
 import 'logic/my_profile_provider.dart';
 
 
@@ -35,6 +37,8 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
   late final ScrollController _recipeScrollController = ScrollController();
 
   double _titleOpacity = 0.0;
+  // Biến lưu data user
+  Future<UserModel?>? _userFuture;
 
   void _updateTitleOpacity() {
     const double headerHeight = 550.0;
@@ -61,14 +65,44 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
     }
   }
 
-  // Biến lưu data user
-  Future<UserModel?>? _userFuture;
-
   @override
   void initState() {
     super.initState();
     // Gọi API khi vào trang
     _userFuture = UserService().getUserProfile();
+  }
+
+  Future<void> _refreshData() async {
+    // 1. Gọi API lấy thông tin User mới nhất
+    final user = await UserService().getUserProfile();
+
+    if (user != null && mounted) {
+      setState(() {
+        // Cập nhật lại Future để UI Header vẽ lại (nếu cần)
+        _userFuture = Future.value(user);
+      });
+
+      // 2. QUAN TRỌNG: Đồng bộ Email và các thông tin khác vào Provider
+      // Điều này giúp Tab Tiểu Sử (MyBioTab) hiển thị đúng email
+      ref.read(surveyProvider.notifier).updateUserData(
+        displayName: user.displayName,
+        bio: user.bio,
+        cookingTitle: user.cookingLevel,
+        country: user.country,
+        email: user.email, // <--- Đẩy email từ API vào Provider
+      );
+
+      // 3. Làm mới Provider
+      ref.invalidate(myChefProvider);
+    }
+  }
+
+  void _navigateToEditProfile() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+    );
+    _refreshData();
   }
 
   @override
@@ -154,7 +188,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                           followers: chef.followers,
                           following: chef.following,
                         ),
-                        const EditProfileButton(),     // ← Nút chỉnh sửa
+                        EditProfileButton(onTap: _navigateToEditProfile),     // ← Nút chỉnh sửa
                         const MyProfileTabs(),
                       ],
                     ),
@@ -198,7 +232,9 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
 
                 // === TAB TIỂU SỬ ===
                 if (profileTab == ProfileTab.tieuSu)
-                  const KeepAliveWrapper(
+                  KeepAliveWrapper(
+                    // 3. QUAN TRỌNG: Xóa từ khóa 'const' ở đây
+                    // Để MyBioTab rebuild khi provider thay đổi
                     child: SliverToBoxAdapter(child: MyBioTab()),
                   ),
 

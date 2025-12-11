@@ -3,18 +3,12 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SurveyState {
-  // Bước 1
   final String? cookingTitle;
-
-  // Bước 2
   final List<String> favoriteCategories;
-
-  // Bước 3
   final String? displayName;
   final String? bio;
+  final String? email;
   final String? country;
-
-  // THÊM: ảnh người dùng chọn trong survey
   final File? avatarFile;
   final File? coverFile;
 
@@ -23,6 +17,7 @@ class SurveyState {
     this.favoriteCategories = const [],
     this.displayName,
     this.bio,
+    this.email,
     this.country,
     this.avatarFile,
     this.coverFile,
@@ -33,6 +28,7 @@ class SurveyState {
     List<String>? favoriteCategories,
     String? displayName,
     String? bio,
+    String? email,
     String? country,
     File? avatarFile,
     File? coverFile,
@@ -42,6 +38,7 @@ class SurveyState {
       favoriteCategories: favoriteCategories ?? this.favoriteCategories,
       displayName: displayName ?? this.displayName,
       bio: bio ?? this.bio,
+      email: email ?? this.email,
       country: country ?? this.country,
       avatarFile: avatarFile ?? this.avatarFile,
       coverFile: coverFile ?? this.coverFile,
@@ -91,6 +88,17 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
   void setCoverFile(File? file) => state = state.copyWith(coverFile: file);
 
   void clear() => state = const SurveyState();
+
+  // THÊM HÀM NÀY ĐỂ EDIT PROFILE GỌI
+  void updateUserData({String? displayName, String? bio, String? email, String? cookingTitle, String? country}) {
+    state = state.copyWith(
+      displayName: displayName ?? state.displayName,
+      bio: bio ?? state.bio,
+      email: email ?? state.email,
+      cookingTitle: cookingTitle ?? state.cookingTitle,
+      country: country ?? state.country,
+    );
+  }
 }
 
 final surveyProvider = StateNotifierProvider<SurveyNotifier, SurveyState>((ref) {
