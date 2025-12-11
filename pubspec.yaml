@@ -67,6 +67,7 @@ dependencies:
   google_generative_ai: ^0.4.0
   flutter_dotenv: ^6.0.0
   easy_localization: ^3.0.0
+  live_activities: ^2.4.0
 
 
 
