@@ -16,7 +16,6 @@ router = APIRouter(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 # --- DEPENDENCY: Lấy User hiện tại ---
-# (Khuyên dùng: Nên chuyển hàm này sang file app/dependencies.py để dùng chung cho cả router khác)
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -39,7 +38,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 # --- API ENDPOINTS ---
 
 @router.get("/", response_model=List[schemas.RecipeRead])
-def read_recipes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_recipes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
     Lấy danh sách công thức. 
     Kết quả sẽ bao gồm cả thông tin tác giả (author) nhờ vào schemas.RecipeRead.
@@ -53,6 +52,19 @@ def create_recipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db), c
     Tạo công thức mới. Yêu cầu đăng nhập.
     """
     return crud.create_recipe(db=db, recipe=recipe, user_id=current_user.id)
+
+@router.put("/{recipe_id}", response_model=schemas.RecipeRead)
+def update_recipe(recipe_id: int, recipe: schemas.RecipeUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """
+    Cập nhật công thức. Yêu cầu đăng nhập.
+    """
+    db_recipe = crud.get_recipe(db, recipe_id=recipe_id)
+    if db_recipe is None:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    if db_recipe.author_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this recipe")
+    
+    return crud.update_recipe(db=db, recipe_id=recipe_id, recipe=recipe)
 
 @router.get("/{recipe_id}", response_model=schemas.RecipeRead)
 def read_recipe(recipe_id: int, db: Session = Depends(get_db)):

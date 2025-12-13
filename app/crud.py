@@ -75,5 +75,18 @@ def create_recipe(db: Session, recipe: schemas.RecipeCreate, user_id: int) -> mo
     db.commit()
     db.refresh(db_recipe)
     return db_recipe
+
+def update_recipe(db: Session, recipe_id: int, recipe: schemas.RecipeUpdate) -> Optional[models.Recipe]:
+    """
+    Cập nhật công thức
+    """
+    db_recipe = db.query(models.Recipe).filter(models.Recipe.id == recipe_id).first()
+    if db_recipe:
+        for key, value in recipe.model_dump().items():
+            setattr(db_recipe, key, value)
+        
+        db.commit()
+        db.refresh(db_recipe)
+    return db_recipe
     
     

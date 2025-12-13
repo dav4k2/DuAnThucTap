@@ -69,6 +69,12 @@ class RecipeCreate(RecipeBase):
     """
     pass
 
+class RecipeUpdate(RecipeBase):
+    """
+    Schema dùng để cập nhật recipe
+    """
+    pass
+
 class RecipeRead(RecipeBase):
     """
     Schema dùng để đọc/trả về thông tin recipe

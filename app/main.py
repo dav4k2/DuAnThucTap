@@ -12,7 +12,3 @@ app = FastAPI()
 # Bao gồm router xác thực
 app.include_router(auth.router)
 app.include_router(user.router)
-
-@app.get("/")
-def read_root():
-    return {"message": "Chào mừng đến với Auth API!"}
