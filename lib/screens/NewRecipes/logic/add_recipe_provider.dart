@@ -328,8 +328,8 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       state = state.copyWith(descriptionError: 'Vui lòng nhập mô tả');
       errors.add('mô tả');
     }
-    if (state.images.isEmpty) errors.add('ảnh minh hoạ');
-    if (state.video == null || state.video!.isEmpty) errors.add('video minh hoạ');
+    //if (state.images.isEmpty) errors.add('ảnh minh hoạ');
+    //if (state.video == null || state.video!.isEmpty) errors.add('video minh hoạ');
 
     if (state.servings == null) {
       state = state.copyWith(servingsError: 'Vui lòng chọn khẩu phần');

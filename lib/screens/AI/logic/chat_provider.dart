@@ -189,8 +189,8 @@ class ChatNotifier extends StateNotifier<ChatState> {
       {
         "title": "Tên món ăn (Tiếng Việt)",
         "description": "Mô tả ngắn gọn hương vị và điểm đặc sắc (2-3 câu).",
-        "servings": "Số người ăn (vd: 2 người)",
-        "cookingTime": "Thời gian (vd: 30 phút)",
+        "servings": "Chọn 1: ['1 người', '2 người', '3-4 người', '5-6 người', '7+ người']",
+        "cookingTime": "Chọn 1: ['Dưới 15 phút', '15-30 phút', '30-60 phút', 'Trên 1 tiếng']",
         "difficulty": "Độ khó (Dễ/Trung bình/Khó)",
         "ingredients": [
           "Tên nguyên liệu 1 - Số lượng",
