@@ -1,24 +1,44 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:fontend/Service/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloudinary_public/cloudinary_public.dart'; // 1. Import thư viện mới
+import 'package:fontend/Service/user_model.dart';
 import '../Service/user_model.dart';
-import '../screens/Signin/sign_in&sign_up/auth/storage_service.dart';
 
 class UserService {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: ApiService.baseUrl, // THAY IP CỦA BẠN VÀO ĐÂY
-    connectTimeout: const Duration(seconds: 10),
-  ));
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Hàm lấy token từ bộ nhớ
-  Future<String?> _getToken() async {
-    // Thay vì dùng SharedPreferences, hãy dùng StorageService
-    return await StorageService.getToken();
+  // 2. Cấu hình Cloudinary
+  final cloudinary = CloudinaryPublic('dzysold5b', 'cookinghub_preset', cache: false);
+
+  // Lấy thông tin User (Giữ nguyên)
+  Future<UserModel?> getUserProfile() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        return UserModel.fromSnapshot(doc);
+      }
+    }
+    return null;
   }
 
-  Future<bool> updateProfile({
+  // --- HÀM MỚI: Upload lên Cloudinary ---
+  Future<String?> _uploadToCloudinary(File file) async {
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(file.path, resourceType: CloudinaryResourceType.Image),
+      );
+      return response.secureUrl;
+    } catch (e) {
+      print("Lỗi upload Cloudinary: $e");
+      return null;
+    }
+  }
+
+  // 3. Cập nhật Profile (Logic đã sửa để dùng hàm upload mới)
+  Future<bool> updateUserProfile({
     required String displayName,
     String? bio,
     String? country,
@@ -27,63 +47,44 @@ class UserService {
     File? avatarFile,
     File? coverFile,
   }) async {
-    try {
-      final token = await _getToken();
-      if (token == null) return false;
+    User? user = _auth.currentUser;
+    if (user == null) return false;
 
-      Map<String, dynamic> mapData = {
+    try {
+      String? avatarUrl;
+      String? coverUrl;
+
+      // a. Upload Avatar lên Cloudinary (nếu có)
+      if (avatarFile != null) {
+        avatarUrl = await _uploadToCloudinary(avatarFile);
+      }
+
+      // b. Upload Cover lên Cloudinary (nếu có)
+      if (coverFile != null) {
+        coverUrl = await _uploadToCloudinary(coverFile);
+      }
+
+      // c. Gom dữ liệu (Giữ nguyên logic cũ)
+      Map<String, dynamic> data = {
         'display_name': displayName,
-        'bio': bio ?? '',
-        'country': country ?? '',
-        'cooking_level': cookingLevel ?? '',
-        'interested_categories': jsonEncode(categories ?? []),
+        'bio': bio,
+        'country': country,
+        'cooking_level': cookingLevel,
+        'interested_categories': categories,
+        'is_profile_completed': true,
+        'updated_at': FieldValue.serverTimestamp(),
       };
 
-      if (avatarFile != null) {
-        mapData['avatar'] = await MultipartFile.fromFile(avatarFile.path);
-      }
-      if (coverFile != null) {
-        mapData['cover'] = await MultipartFile.fromFile(coverFile.path);
-      }
+      if (avatarUrl != null) data['avatar_url'] = avatarUrl;
+      if (coverUrl != null) data['cover_url'] = coverUrl;
 
-      FormData formData = FormData.fromMap(mapData);
+      // d. Update vào Firestore
+      await _firestore.collection('users').doc(user.uid).set(data, SetOptions(merge: true));
 
-      final response = await _dio.put(
-        '/users/me/profile/update',
-        data: formData,
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-          contentType: 'multipart/form-data',
-        ),
-      );
-
-      return response.statusCode == 200;
+      return true;
     } catch (e) {
-      print("Error update profile: $e");
+      print("Lỗi update profile: $e");
       return false;
-    }
-  }
-
-  // 2. Get User Profile
-  Future<UserModel?> getUserProfile() async {
-    try {
-      final token = await _getToken();
-      print("Token sent: $token"); // Log để kiểm tra
-
-      if (token == null) return null;
-
-      final response = await _dio.get(
-        '/users/me',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-      );
-
-      if (response.statusCode == 200) {
-        return UserModel.fromJson(response.data);
-      }
-      return null;
-    } catch (e) {
-      print("Error get profile: $e");
-      return null;
     }
   }
 }

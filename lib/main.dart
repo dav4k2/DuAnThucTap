@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:fontend/Main_layout/main_layout.dart';
 
 // Import các màn hình của bạn
 import 'package:fontend/screens/Remove/enter_new_password/reset_password_screen.dart';
@@ -13,6 +14,7 @@ import 'package:fontend/screens/Signin/reset_pass_email/reset_password_screen.da
 import 'package:fontend/screens/Signin/sign_in&sign_up/auth/auth_gate.dart';
 import 'package:fontend/screens/Signin/sign_in&sign_up/sign_in_screen.dart';
 import 'package:fontend/screens/Start/welcome/welcome_screen.dart';
+import 'package:fontend/screens/survey/survey_0.dart';
 import 'package:fontend/theme/theme_provider.dart';
 import 'firebase_options.dart';
 
@@ -94,6 +96,8 @@ class MyApp extends ConsumerWidget {
             '/reset': (context) => const ResetPasswordScreen(),
             '/enterpass': (context) => const EnterResetPasswordScreen(),
             '/terms': (context) => const TermsPage(),
+            '/mainlayout': (context) => const MainLayout(),
+            '/survey' : (context) => const SurveyStartScreen(),
           },
         );
       },

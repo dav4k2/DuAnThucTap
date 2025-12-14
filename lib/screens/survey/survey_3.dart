@@ -1,4 +1,4 @@
-// lib/screens/survey/survey_step3_screen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,7 +114,7 @@ class _SurveyStep3ScreenState extends ConsumerState<Survey3> {
             left: 24.w,
             child: SurveyInputField(
               label: "Tên người dùng",
-              placeholder: "Kong Fuong",
+              placeholder: "Tên người dùng",
               isRequired: true,
               onChanged: (v) => ref.read(surveyProvider.notifier).setDisplayName(v),
             ),

@@ -12,6 +12,7 @@ import '../Guide/data/manual_guide_data.dart';
 import '../Guide/model/guide_model.dart';
 import '../Guide/user_guide_dialog_screen.dart';
 import '../NewRecipes/add_recipe_screen.dart';
+import '../NewRecipes/logic/add_recipe_provider.dart';
 import 'logic/draft_provider.dart';
 
 class CreateRecipeScreen extends ConsumerWidget {
@@ -176,7 +177,22 @@ class CreateRecipeScreen extends ConsumerWidget {
                     return ListView.builder(
                       padding: EdgeInsets.only(bottom: 110.h),
                       itemCount: drafts.length,
-                      itemBuilder: (context, index) => DraftRecipeItem(draft: drafts[index]),
+                      itemBuilder: (context, index) {
+                        final draft = drafts[index];
+                        return GestureDetector(
+                          onTap: () {
+                            // 1. Load dữ liệu nháp vào Provider
+                            ref.read(addRecipeProvider.notifier).loadFromDraft(draft);
+
+                            // 2. Mở màn hình AddRecipeScreen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const AddRecipeScreen()),
+                            );
+                          },
+                          child: DraftRecipeItem(draft: draft),
+                        );
+                      },
                     );
 
                   },

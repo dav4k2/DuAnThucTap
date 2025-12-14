@@ -16,6 +16,8 @@ import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_review_fi
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_review_tab.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_stats_section.dart';
 
+import '../../../Service/recipe_model.dart';
+import '../../../Service/recipe_service.dart';
 import '../../../Service/user_model.dart';
 import '../../../Service/user_service.dart';
 import '../../survey/logic/survey_provider.dart';
@@ -68,28 +70,24 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
   @override
   void initState() {
     super.initState();
-    // Gọi API khi vào trang
     _userFuture = UserService().getUserProfile();
   }
 
   Future<void> _refreshData() async {
-    // 1. Gọi API lấy thông tin User mới nhất
     final user = await UserService().getUserProfile();
 
     if (user != null && mounted) {
       setState(() {
-        // Cập nhật lại Future để UI Header vẽ lại (nếu cần)
         _userFuture = Future.value(user);
       });
 
-      // 2. QUAN TRỌNG: Đồng bộ Email và các thông tin khác vào Provider
-      // Điều này giúp Tab Tiểu Sử (MyBioTab) hiển thị đúng email
+      // Đồng bộ Email và các thông tin khác vào Provider
       ref.read(surveyProvider.notifier).updateUserData(
         displayName: user.displayName,
         bio: user.bio,
         cookingTitle: user.cookingLevel,
         country: user.country,
-        email: user.email, // <--- Đẩy email từ API vào Provider
+        email: user.email,
       );
 
       // 3. Làm mới Provider
@@ -161,7 +159,6 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                     background: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        // Nền trắng bo góc trên khi scroll
                         Positioned(
                           top: 195.h,
                           left: 0,
@@ -206,16 +203,9 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
 
                 if (profileTab == ProfileTab.congThuc)
                   KeepAliveWrapper(
-                    child: PrimaryScrollController(
-                      controller: _recipeScrollController,
-                      child: MyRecipeList(
-                        key: ValueKey('$profileTab-$mealTab'),
-                        recipes: chef.allRecipes
-                            .where((r) =>
-                        mealTab == MealTab.tatCa || r.meal == mealTab)
-                            .toList(),
-                      ),
-                    ),
+                    // QUAN TRỌNG: Gọi Widget MyRecipeList đã tách file
+                    // Thay vì viết StreamBuilder trực tiếp ở đây
+                    child: MyRecipeList(userId: user.id),
                   ),
 
                 // === TAB ĐÁNH GIÁ ===
@@ -233,8 +223,6 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                 // === TAB TIỂU SỬ ===
                 if (profileTab == ProfileTab.tieuSu)
                   KeepAliveWrapper(
-                    // 3. QUAN TRỌNG: Xóa từ khóa 'const' ở đây
-                    // Để MyBioTab rebuild khi provider thay đổi
                     child: SliverToBoxAdapter(child: MyBioTab()),
                   ),
 

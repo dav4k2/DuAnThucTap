@@ -1,152 +1,119 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 
-const String _baseUrl = "http://10.0.2.2:8000/api/auth";
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-class AuthResponse {
-  final bool success;
-  final String? token;
-  final Map<String, dynamic>? userJson; // Hoặc User user;
-  final String? message;
-
-  AuthResponse({
-    this.success = false,
-    this.token,
-    this.userJson,
-    this.message,
-  });
-}
-
-class AuthServices {
-  final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
-
-  static Future<Map<String, dynamic>> signUp(
-      String email, String password, String username) async {
+  // 1. ĐĂNG KÝ (SIGN UP)
+  Future<String?> signUp({
+    required String email,
+    required String password,
+    required String fullName,
+  }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'username': username,
-          'password': password,
-        }),
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
 
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        // Đăng ký thành công
-        return data; // Trả về JSON user (ví dụ: {"id": 1, "email": ...})
-      } else {
-        // Đăng ký thất bại
-        return {'error': data['detail'] ?? 'Lỗi không xác định'};
+      User? user = result.user;
+      if (user != null) {
+        await _saveUserToFirestore(user, fullName);
+        return null; // Thành công
       }
+      return "Không tạo được user";
+    } on FirebaseAuthException catch (e) {
+      return _handleAuthError(e);
     } catch (e) {
-      return {'error': 'Không thể kết nối đến máy chủ: $e'};
+      return "Lỗi: $e";
     }
   }
 
-  static Future<AuthResponse> signIn(String email, String password) async {
+  // 2. ĐĂNG NHẬP (SIGN IN)
+  Future<String?> signIn({required String email, required String password}) async {
     try {
-      print("--- Đang gửi Login: $email ---"); // Log kiểm tra
-
-      final response = await http.post(
-        Uri.parse('$_baseUrl/token'),
-        // LƯU Ý: Không cần set header thủ công, để thư viện tự xử lý Form Data
-        body: {
-          'username': email, // FastAPI bắt buộc key là 'username' (dù giá trị là email)
-          'password': password,
-          'grant_type': 'password', // Thêm dòng này cho đúng chuẩn OAuth2 (đề phòng backend bắt buộc)
-        },
-      );
-
-      print("--- Status Code: ${response.statusCode} ---");
-
-      // Nếu API trả về lỗi 422, Backend sẽ gửi kèm lý do chi tiết trong body
-      if (response.statusCode == 422) {
-        print("🔴 LỖI FORMAT DỮ LIỆU (422): ${response.body}");
-        return AuthResponse(message: 'Lỗi định dạng dữ liệu gửi đi.');
-      }
-
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        return AuthResponse(
-          success: true,
-          token: data['access_token'],
-        );
-      } else {
-        // Xử lý trường hợp data['detail'] có thể là List (lỗi 422) hoặc String
-        final detail = data['detail'];
-        String message = detail is String ? detail : detail.toString();
-        return AuthResponse(message: message);
-      }
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return _handleAuthError(e);
     } catch (e) {
-      print("🔴 Lỗi kết nối: $e");
-      return AuthResponse(message: 'Không thể kết nối đến máy chủ: $e');
+      return "Lỗi: $e";
     }
   }
 
+  // 3. ĐĂNG NHẬP GOOGLE
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      // Trigger the authentication flow
-      final googleUser = await GoogleSignIn().signIn();
-      final ggAuth = await googleUser?.authentication;
-      if (googleUser == null) return null; // user cancelled
+      // Kích hoạt luồng chọn tài khoản Google
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null; // Người dùng hủy chọn
 
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: ggAuth?.accessToken,
-        idToken: ggAuth?.idToken,
+      // Lấy thông tin xác thực từ request
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Tạo credential mới
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
-      // Once signed in, return the UserCredential
-      return await _auth.signInWithCredential(credential);
+      // Đăng nhập vào Firebase
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+
+      // Nếu là user mới, lưu vào Firestore
+      if (userCredential.additionalUserInfo?.isNewUser == true && userCredential.user != null) {
+        await _saveUserToFirestore(userCredential.user!, googleUser.displayName ?? "No Name");
+      }
+
+      return userCredential;
     } catch (e) {
-      // xử lý lỗi ở đây (log hoặc rethrow)
-      rethrow;
+      print("Google Sign In Error: $e");
+      throw Exception("Đăng nhập Google thất bại");
     }
   }
 
-  Exception _handleFirebaseError(FirebaseAuthException e) {
-    debugPrint('Firebase error code: ${e.code}');
-    switch (e.code) {
-      case 'invalid-email':
-        return Exception('Địa chỉ email không hợp lệ.');
-      case 'user-disabled':
-        return Exception('This account has been disabled.');
-      case 'user-not-found':
-        return Exception('Không tìm thấy người dùng nào có email này.');
-      case 'wrong-password':
-      case 'invalid-credential':
-      case 'INVALID_LOGIN_CREDENTIALS':
-        return Exception('Mật khẩu hoặc email không đúng. Vui lòng thử lại.');
-      case 'too-many-requests':
-        return Exception('Quá nhiều yêu cầu. Vui lòng thử lại sau');
-      case 'user-token-expired':
-        return Exception('Phiên đã hết hạn. Vui lòng đăng nhập lại.');
-      case 'network-request-failed':
-        return Exception('Không có kết nối internet. Vui lòng kiểm tra mạng của bạn.');
-      case 'email-already-in-use':
-        return Exception('Email này đã được đăng ký. Hãy thử đăng nhập.');
-      case 'weak-password':
-        return Exception('Mật khẩu phải có ít nhất 6 ký tự.');
-      case 'operation-not-allowed':
-        return Exception('Email/password sign-in is not enabled.');
-      default:
-        return Exception('Có lỗi xảy ra. Vui lòng thử lại sau.');
+  // 4. RESET PASSWORD
+  Future<String?> resetPassword({required String email}) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return _handleAuthError(e);
     }
   }
 
+  // 5. ĐĂNG XUẤT
   Future<void> signOut() async {
-    // Đăng xuất khỏi Firebase
+    await _googleSignIn.signOut();
     await _auth.signOut();
+  }
+
+  // --- HÀM PHỤ: LƯU USER VÀO FIRESTORE ---
+  Future<void> _saveUserToFirestore(User user, String fullName) async {
+    await _firestore.collection('users').doc(user.uid).set({
+      'uid': user.uid,
+      'email': user.email,
+      'full_name': fullName,
+      'role': 'user',
+      'avatar_url': user.photoURL ?? '',
+      'created_at': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)); // merge: true để không ghi đè nếu đã có
+  }
+
+  // --- HÀM PHỤ: XỬ LÝ LỖI ---
+  String _handleAuthError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use': return 'Email này đã được đăng ký.';
+      case 'invalid-email': return 'Email không hợp lệ.';
+      case 'user-disabled': return 'Tài khoản bị vô hiệu hóa.';
+      case 'user-not-found': return 'Không tìm thấy tài khoản.';
+      case 'wrong-password': return 'Sai mật khẩu.';
+      case 'weak-password': return 'Mật khẩu quá yếu.';
+      case 'credential-already-in-use': return 'Email này đã liên kết với tài khoản khác.';
+      default: return 'Lỗi hệ thống: ${e.message}';
+    }
   }
 }

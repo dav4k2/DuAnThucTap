@@ -1,77 +1,117 @@
-// lib/widgets/my_recipe_list.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../logic/my_profile_provider.dart';        // dùng my_profile_provider
-import 'my_recipe_card.dart';                     // dùng MyRecipeCard
+import '../../../../Service/recipe_model.dart';
+import '../../../../Service/recipe_service.dart';
+import '../logic/my_profile_provider.dart';
+import 'my_recipe_card.dart';
 
-class MyRecipeList extends ConsumerWidget {
-  final List<Recipe> recipes;
-  final ScrollController? controller;
+class MyRecipeList extends ConsumerStatefulWidget {
+  final String userId;
 
   const MyRecipeList({
     super.key,
-    required this.recipes,
-    this.controller,
+    required this.userId,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (recipes.isEmpty) {
-      return const SliverToBoxAdapter(child: SizedBox.shrink());
-    }
+  ConsumerState<MyRecipeList> createState() => _MyRecipeListState();
+}
 
-    // Lấy tổng số công thức của chính mình
-    final totalRecipes = ref.read(myChefProvider).allRecipes.length;
+class _MyRecipeListState extends ConsumerState<MyRecipeList> {
+  // Giữ Stream để không bị load lại (xoay vòng tròn) khi chuyển Tab
+  late Stream<List<RecipeModel>> _recipeStream;
 
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-            (context, index) {
-          // Index 0 = Header
-          if (index == 0) {
-            return _buildHeader(totalRecipes);
-          }
+  @override
+  void initState() {
+    super.initState();
+    _recipeStream = RecipeService().getUserRecipes(widget.userId);
+  }
 
-          final recipe = recipes[index - 1];
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: MyRecipeCard(
-              recipe: recipe,
-              onTap: () {
-                // TODO: mở chi tiết công thức (giữ nguyên như cũ)
-              },
+  @override
+  Widget build(BuildContext context) {
+    // Lắng nghe Tab để lọc
+    final currentTab = ref.watch(myMealTabProvider);
+
+    return StreamBuilder<List<RecipeModel>>(
+      stream: _recipeStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(child: CircularProgressIndicator()),
             ),
           );
-        },
-        childCount: recipes.length + 1, // +1 vì có header
-      ),
+        }
+
+        if (snapshot.hasError) {
+          return SliverToBoxAdapter(child: Center(child: Text("Lỗi: ${snapshot.error}")));
+        }
+
+        final allRecipes = snapshot.data ?? [];
+
+        // --- LOGIC LỌC ---
+        final filteredRecipes = allRecipes.where((recipe) {
+          if (currentTab == MealTab.tatCa) return true;
+
+          final text = '${recipe.title} ${recipe.description}'.toLowerCase();
+
+          if (currentTab == MealTab.buaSang) {
+            return text.contains('sáng') || text.contains('bánh mì') || text.contains('phở') || text.contains('xôi') || text.contains('trứng');
+          }
+          if (currentTab == MealTab.buaTrua) {
+            return text.contains('trưa') || text.contains('cơm') || text.contains('bún') || text.contains('thịt');
+          }
+          if (currentTab == MealTab.anVat) {
+            return text.contains('ăn vặt') || text.contains('bánh') || text.contains('chè') || text.contains('trà');
+          }
+          return true;
+        }).toList();
+
+        // --- HIỂN THỊ ---
+        if (filteredRecipes.isEmpty) {
+          String msg = currentTab == MealTab.tatCa
+              ? "Chưa có công thức nào"
+              : "Không có món phù hợp";
+
+          return SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.only(top: 50.h),
+              child: Column(
+                children: [
+                  Icon(Icons.no_meals, size: 40.sp, color: Colors.grey[300]),
+                  SizedBox(height: 10.h),
+                  Text(msg, style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return SliverList(
+          delegate: SliverChildBuilderDelegate(
+                (context, index) {
+              if (index == 0) return _buildHeader(filteredRecipes.length);
+              final recipe = filteredRecipes[index - 1];
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: MyRecipeCard(recipe: recipe),
+              );
+            },
+            childCount: filteredRecipes.length + 1,
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader(int totalRecipes) {
+  Widget _buildHeader(int count) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Công thức',
-                  style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
-                ),
-                TextSpan(
-                  text: ' ($totalRecipes)',
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    color: Colors.black.withOpacity(0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 5.h),
+      child: Text(
+        'Danh sách ($count)',
+        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Colors.grey[700]),
       ),
     );
   }

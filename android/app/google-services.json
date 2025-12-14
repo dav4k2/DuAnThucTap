@@ -39,10 +39,10 @@
               "client_type": 3
             },
             {
-              "client_id": "682485604915-kfe7boptopjh426hfltgki5uvficcrgr.apps.googleusercontent.com",
+              "client_id": "682485604915-d49ikiglo1f67gr4bga6nvlvanpp57sm.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.datt.cooking"
+                "bundle_id": "com.example.fontend"
               }
             }
           ]

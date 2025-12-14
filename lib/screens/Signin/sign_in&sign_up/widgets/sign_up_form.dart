@@ -30,49 +30,46 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   }
 
   Future<void> _signUp() async {
-    final authNotifier = ref.read(authProvider.notifier);
+    final notifier = ref.read(authProvider.notifier);
+    final service = ref.read(authServiceProvider);
 
-    final error = authNotifier.signup(
+    // 1. Validate dữ liệu nhập
+    final validationError = notifier.validateSignup(
       _usernameController.text,
+      _emailController.text,
       _passwordController.text,
       _confirmController.text,
-      _emailController.text,
     );
 
-    if (error != null) {
-      authNotifier.setError(error);
+    if (validationError != null) {
+      notifier.setError(validationError);
       return;
     }
 
     setState(() => _isLoading = true);
+    notifier.setError(null);
 
-    try {
-      final result = await AuthServices.signUp(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
-        _usernameController.text.trim(),
-      );
+    // 2. Gọi Firebase Auth
+    final result = await service.signUp(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+      fullName: _usernameController.text.trim(),
+    );
 
-      if (result.containsKey('error')) {
-        throw Exception(result['error']);
-      }
+    setState(() => _isLoading = false);
 
+    if (result == null) {
+      // Thành công -> Chuyển sang màn hình Login (hoặc Home tùy bạn)
       if (mounted) {
-        authNotifier.setError(null);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Đăng ký thành công! Hãy đăng nhập.")));
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => const SignInScreen(initialTab: true),
-          ),
+          MaterialPageRoute(builder: (context) => const SignInScreen(initialTab: true)), // initialTab: true để mở tab Login
         );
       }
-    } on Exception catch (e) {
-      final errorMessage = e.toString().contains(':')
-          ? e.toString().split(': ').last
-          : 'Lỗi đăng ký. Vui lòng thử lại.';
-      authNotifier.setError(errorMessage);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+    } else {
+      // Thất bại
+      notifier.setError(result);
     }
   }
 
@@ -199,7 +196,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         /// Nút đăng ký
         Center(
           child: GestureDetector(
-            onTap: _signUp,
+            onTap: _isLoading ? null : _signUp,
             child: PrimaryButton(
               text: _isLoading ? "Đang xử lý..." : "Đăng ký",
               width: inputWidth,

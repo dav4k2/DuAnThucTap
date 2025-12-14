@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
-  final int id;
+  final String id; // Đổi từ int sang String
   final String email;
   final String? displayName;
   final String? bio;
@@ -23,20 +25,35 @@ class UserModel {
     required this.isProfileCompleted,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  // Chuyển từ Firestore Document -> Object Dart
+  factory UserModel.fromSnapshot(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return UserModel(
-      id: json['id'],
-      email: json['email'],
-      displayName: json['display_name'],
-      bio: json['bio'],
-      country: json['country'],
-      cookingLevel: json['cooking_level'],
-      avatarUrl: json['avatar_url'],
-      coverUrl: json['cover_url'],
-      interestedCategories: json['interested_categories'] != null
-          ? List<String>.from(json['interested_categories'])
-          : [],
-      isProfileCompleted: json['is_profile_completed'] ?? false,
+      id: doc.id,
+      email: data['email'] ?? '',
+      displayName: data['display_name'],
+      bio: data['bio'],
+      country: data['country'],
+      cookingLevel: data['cooking_level'],
+      avatarUrl: data['avatar_url'],
+      coverUrl: data['cover_url'],
+      interestedCategories: List<String>.from(data['interested_categories'] ?? []),
+      isProfileCompleted: data['is_profile_completed'] ?? false,
     );
+  }
+
+  // Chuyển từ Object Dart -> Map (để lưu lên Firestore)
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'display_name': displayName,
+      'bio': bio,
+      'country': country,
+      'cooking_level': cookingLevel,
+      'avatar_url': avatarUrl,
+      'cover_url': coverUrl,
+      'interested_categories': interestedCategories,
+      'is_profile_completed': isProfileCompleted,
+    };
   }
 }

@@ -13,28 +13,25 @@ class SignInSocialButtons extends ConsumerWidget {
 
     try {
       authNotifier.setError(null);
+      // Gọi hàm Google Sign In mới thêm
       final userCredential = await authService.signInWithGoogle();
 
       if (userCredential != null) {
-        Navigator.pushReplacementNamed(context, '/explore');
+        // Thành công -> Vào Explore hoặc Home
+        Navigator.pushNamedAndRemoveUntil(context, '/survey', (route) => false);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đăng nhập Google bị hủy hoặc thất bại')),
-        );
+        // Người dùng tắt popup Google
+        print("Đăng nhập Google bị hủy");
       }
-    } on Exception catch (e) {
-      final errorMessage = e.toString().contains(':')
-          ? e.toString().split(': ').last
-          : 'Đăng nhập Google không thành công.';
-      authNotifier.setError(errorMessage);
+    } catch (e) {
+      authNotifier.setError("Đăng nhập Google thất bại: $e");
     }
   }
 
   /// Xử lý login Apple
   Future<void> _handleAppleLogin(BuildContext context) async {
-    debugPrint('Apple login pressed');
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Đang xử lý đăng nhập iCloud...')),
+      const SnackBar(content: Text('Tính năng đang phát triển...')),
     );
   }
 

@@ -177,35 +177,32 @@ class SurveyFlowScreen extends ConsumerWidget {
                       builder: (c) => const Center(child: CircularProgressIndicator()),
                     );
 
-                    // 2. Lấy data từ Provider
-                    final survey = ref.read(surveyProvider);
-                    final userService = UserService();
+                    // 2. Lấy dữ liệu từ Provider
+                    final surveyData = ref.read(surveyProvider);
 
-                    // 3. Gọi API
-                    bool success = await userService.updateProfile(
-                      displayName: survey.displayName!,
-                      bio: survey.bio,
-                      country: survey.country,
-                      cookingLevel: survey.cookingTitle, // Từ Survey 1
-                      categories: survey.favoriteCategories, // Từ Survey 2
-                      avatarFile: survey.avatarFile, // Từ Survey 3
-                      coverFile: survey.coverFile,   // Từ Survey 3
+                    // 3. Gọi UserService để lưu lên Firebase
+                    final userService = UserService(); // Đảm bảo import UserService
+                    bool success = await userService.updateUserProfile(
+                      displayName: surveyData.displayName!,
+                      bio: surveyData.bio,
+                      country: surveyData.country,
+                      cookingLevel: surveyData.cookingTitle,
+                      categories: surveyData.favoriteCategories,
+                      avatarFile: surveyData.avatarFile,
+                      coverFile: surveyData.coverFile,
                     );
 
-                    // 4. Ẩn loading
+                    // 4. Tắt loading
                     Navigator.of(context).pop();
 
                     if (success) {
-                      // Chuyển sang AuthGate để nó tự điều hướng vào MainLayout
-                      // Hoặc chuyển thẳng vào MainLayout
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const MainLayout()),
-                            (route) => false,
-                      );
+                      // 5. Thành công -> Vào Home
+                      // Xóa hết các màn hình trước đó để không back lại được survey
+                      Navigator.of(context).pushNamedAndRemoveUntil('/mainlayout', (route) => false);
                     } else {
+                      // 6. Thất bại -> Báo lỗi
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Lỗi cập nhật hồ sơ. Vui lòng thử lại!")),
+                        const SnackBar(content: Text("Lỗi lưu thông tin. Vui lòng thử lại!")),
                       );
                     }
                   }

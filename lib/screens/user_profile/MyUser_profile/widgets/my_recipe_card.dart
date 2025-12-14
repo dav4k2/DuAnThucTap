@@ -1,19 +1,19 @@
-// lib/widgets/my_recipe_card.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../logic/my_profile_provider.dart';   // dùng model Recipe của my_profile
+import '../../../../Service/recipe_model.dart';
+
 
 class MyRecipeCard extends StatelessWidget {
-  final Recipe recipe;
-  final VoidCallback onTap;
+  final RecipeModel recipe; // Đổi kiểu dữ liệu ở đây
+  final VoidCallback? onTap;
 
   const MyRecipeCard({
     super.key,
     required this.recipe,
-    required this.onTap,
+    this.onTap,
   });
 
-  // Widget nền mờ (giữ nguyên logic dark mode)
+  // Widget nền mờ (Giữ nguyên logic giao diện đẹp của bạn)
   Widget _frostedContainer({
     required BuildContext context,
     required Widget child,
@@ -56,18 +56,31 @@ class MyRecipeCard extends StatelessWidget {
     final iconColor = textColor.withOpacity(0.85);
     final shadowColor = isDark ? Colors.black.withOpacity(0.6) : const Color(0x3F000000);
 
+    // Lấy ảnh đầu tiên, nếu không có thì dùng ảnh placeholder
+    final String imageUrl = recipe.images.isNotEmpty
+        ? recipe.images.first
+        : 'https://placehold.co/400x300?text=No+Image';
+
+    // Số lượt thích (Thay cho rating giả)
+    final String likesText = recipe.likesCount > 0
+        ? '${recipe.likesCount} Yêu thích'
+        : 'Mới đăng';
+
     return GestureDetector(
       onTap: onTap,
       child: Stack(
         children: [
-          // ẢNH MÓN ĂN
+          // 1. ẢNH MÓN ĂN (Sửa thành NetworkImage)
           Container(
             width: 360.w,
             height: 178.h,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: AssetImage(recipe.imageAsset),
+                image: NetworkImage(imageUrl), // <-- SỬA Ở ĐÂY
                 fit: BoxFit.cover,
+                onError: (exception, stackTrace) {
+                  // Xử lý khi lỗi ảnh (tránh crash app)
+                },
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.r),
@@ -82,7 +95,7 @@ class MyRecipeCard extends StatelessWidget {
             ),
           ),
 
-          // THANH DƯỚI – NỀN MỜ
+          // 2. THANH DƯỚI – NỀN MỜ
           Positioned(
             top: 135.h,
             left: 0.w,
@@ -98,7 +111,7 @@ class MyRecipeCard extends StatelessWidget {
             ),
           ),
 
-          // TIÊU ĐỀ
+          // 3. TIÊU ĐỀ
           Positioned(
             left: 20.w,
             top: 140.h,
@@ -116,7 +129,7 @@ class MyRecipeCard extends StatelessWidget {
             ),
           ),
 
-          // THÔNG TIN DƯỚI
+          // 4. THÔNG TIN DƯỚI (Thời gian, Độ khó, Tác giả)
           Positioned(
             left: 16.w,
             top: 158.h,
@@ -124,21 +137,24 @@ class MyRecipeCard extends StatelessWidget {
               children: [
                 Icon(Icons.access_time, size: 13.sp, color: iconColor),
                 SizedBox(width: 5.w),
-                Text(recipe.time, style: _info(textColor)),
+                Text(recipe.cookingTime, style: _info(textColor)), // Lấy từ Model
               ],
             ),
           ),
           Positioned(
-            left: 92.w,
+            left: 100.w,
             top: 158.h,
             child: Row(
               children: [
                 Icon(Icons.whatshot, size: 13.sp, color: Colors.red.withOpacity(0.9)),
                 SizedBox(width: 5.w),
-                Text(recipe.difficulty, style: _info(textColor)),
+                Text(recipe.difficulty, style: _info(textColor)), // Lấy từ Model
               ],
             ),
           ),
+          // Nếu bạn muốn hiện tên tác giả, cần lấy từ User data,
+          // nhưng ở màn hình "Của tôi" thì không cần thiết lắm nên mình ẩn tạm hoặc để text cố định
+          /*
           Positioned(
             right: 16.w,
             top: 158.h,
@@ -146,28 +162,29 @@ class MyRecipeCard extends StatelessWidget {
               children: [
                 Icon(Icons.person_outline, size: 13.sp, color: iconColor),
                 SizedBox(width: 5.w),
-                Text('Đăng bởi ${recipe.author}', style: _info(textColor)),
+                Text('Đăng bởi TÔI', style: _info(textColor)),
               ],
             ),
           ),
+          */
 
-          // RATING – NỀN MỜ
+          // 5. RATING / LIKE – NỀN MỜ (Góc trên trái)
           Positioned(
             left: 12.w,
             top: 12.h,
             child: _frostedContainer(
               context: context,
-              width: 162.w,
+              width: 140.w,
               height: 26.h,
               borderRadius: BorderRadius.circular(20.r),
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.star, color: Colors.amber, size: 15.sp),
+                  Icon(Icons.favorite, color: Colors.redAccent, size: 15.sp),
                   SizedBox(width: 5.w),
                   Text(
-                    '${recipe.rating} (1k+ Đánh giá)',
+                    likesText,
                     style: TextStyle(
                       fontSize: 12.5.sp,
                       fontWeight: FontWeight.w600,
@@ -179,7 +196,7 @@ class MyRecipeCard extends StatelessWidget {
             ),
           ),
 
-          // TRÁI TIM – NỀN MỜ
+          // 6. NÚT TIM (Góc trên phải) - Chỉ để trang trí hoặc chờ tính năng Edit
           Positioned(
             right: 22.w,
             top: 12.h,
@@ -190,8 +207,8 @@ class MyRecipeCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(14.r),
               child: Center(
                 child: Icon(
-                  Icons.favorite,
-                  color: const Color(0xFFFF6B9D),
+                  Icons.more_horiz, // Đổi thành nút option để sau này làm Edit/Delete
+                  color: textColor,
                   size: 17.sp,
                 ),
               ),

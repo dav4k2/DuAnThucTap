@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../Service/recipe_model.dart';
+import '../../../Service/recipe_service.dart';
 import '../../Crete_recipe/logic/draft_provider.dart';
 import '../../Crete_recipe/logic/draft_recipe.dart';
 import '../widgets/exit_confirmation_dialog.dart';
@@ -374,19 +377,66 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       state = state.copyWith(stepErrors: stepErrors);
     }
 
-    if (errors.isNotEmpty) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => MissingInfoDialog(missingFields: errors.toSet()),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw Exception("Chưa đăng nhập");
+
+      final recipeService = RecipeService();
+
+      // 2. Upload Ảnh lên Cloud
+      final imageUrls = await recipeService.uploadImages(state.images);
+
+      // 3. Tạo Model
+      final newRecipe = RecipeModel(
+        id: '', // Firestore sẽ tự sinh ID
+        authorId: user.uid,
+        title: state.title,
+        description: state.description,
+        images: imageUrls,
+        video: state.video, // Nếu có xử lý video thì upload tương tự ảnh
+        servings: state.servings!,
+        cookingTime: state.cookingTime!,
+        difficulty: state.difficulty!,
+        ingredients: state.ingredients.where((e) => e.trim().isNotEmpty).toList(),
+        steps: state.steps.where((e) => e.trim().isNotEmpty).toList(),
+        createdAt: DateTime.now(),
       );
+
+      // 4. Gửi lên Firestore
+      final success = await recipeService.publishRecipe(newRecipe);
+
+      // Tắt Loading
+      if (context.mounted) Navigator.pop(context);
+
+      if (success) {
+        // 5. Xóa bản nháp tương ứng (nếu có) để tránh trùng lặp
+        await clearDraftAndReset();
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đăng bài thành công!'), backgroundColor: Colors.green),
+          );
+          Navigator.of(context).pop(); // Thoát màn hình thêm công thức
+        }
+        return true;
+      } else {
+        throw Exception("Lỗi khi lưu vào Firestore");
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context); // Tắt loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+        );
+      }
       return false;
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Đăng bài thành công!'), backgroundColor: Colors.green),
-    );
-    return true;
   }
 }
 

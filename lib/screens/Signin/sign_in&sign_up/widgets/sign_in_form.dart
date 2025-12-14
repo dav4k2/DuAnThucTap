@@ -34,59 +34,27 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   }
 
   Future<void> _signIn() async {
-    final authNotifier = ref.read(authProvider.notifier);
-    authNotifier.setError(null);
+    // 1. Reset lỗi cũ
+    ref.read(authProvider.notifier).setError(null);
     setState(() => _isLoading = true);
 
-    try {
-      // 1. Gọi API Login lấy Token
-      final AuthResponse response = await AuthServices.signIn(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
-      );
+    // 2. Gọi AuthService
+    final authService = ref.read(authServiceProvider);
+    String? error = await authService.signIn(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
 
+    setState(() => _isLoading = false);
+
+    if (error == null) {
+      // 3. Thành công -> Vào trang Home
       if (mounted) {
-        if (response.success) {
-          authNotifier.setError(null);
-          // 2. Lưu Token
-          await StorageService.saveToken(response.token!);
-
-          // 3. --- LOGIC MỚI: KIỂM TRA PROFILE ---
-          // Gọi API lấy thông tin user ngay lập tức
-          final user = await UserService().getUserProfile();
-
-          if (user != null) {
-            if (user.isProfileCompleted) {
-              // Nếu đã xong survey -> Vào AuthGate (hoặc MainLayout)
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const AuthGate()),
-                    (route) => false,
-              );
-            } else {
-              // Nếu CHƯA xong survey -> Chuyển hướng sang trang Survey
-              // Reset provider survey nếu cần thiết
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => SurveyStartScreen()),
-                    (route) => false,
-              );
-            }
-          } else {
-            authNotifier.setError("Lỗi lấy thông tin người dùng.");
-          }
-        } else {
-          authNotifier.setError(response.message);
-        }
+        Navigator.of(context).pushNamedAndRemoveUntil('/survey', (route) => false);
       }
-    } on Exception catch (e) {
-      // ... xử lý lỗi cũ
-      final errorMessage = e.toString().contains(':')
-          ? e.toString().split(': ').last
-          : 'Đăng nhập không thành công.';
-      authNotifier.setError(errorMessage);
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+    } else {
+      // 4. Thất bại -> Hiện lỗi qua Riverpod để UI cập nhật
+      ref.read(authProvider.notifier).setError(error);
     }
   }
 
@@ -158,7 +126,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
         /// Đăng nhập
         GestureDetector(
-          onTap: _signIn,
+          onTap: _isLoading ? null : _signIn,
           child: PrimaryButton(
             text: _isLoading ? 'Đang xử lý...' : 'Đăng nhập',
             width: inputWidth,

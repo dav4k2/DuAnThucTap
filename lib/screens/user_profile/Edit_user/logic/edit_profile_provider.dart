@@ -68,7 +68,7 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
     final userService = UserService();
 
     // Gọi API updateProfile
-    final success = await userService.updateProfile(
+    final success = await userService.updateUserProfile(
       displayName: state.name,
       bio: state.bio,
       country: state.country,
