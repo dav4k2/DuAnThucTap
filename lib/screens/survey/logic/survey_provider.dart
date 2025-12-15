@@ -11,6 +11,7 @@ class SurveyState {
   final String? country;
   final File? avatarFile;
   final File? coverFile;
+  final String? joinedDate;
 
   const SurveyState({
     this.cookingTitle,
@@ -21,6 +22,7 @@ class SurveyState {
     this.country,
     this.avatarFile,
     this.coverFile,
+    this.joinedDate
   });
 
   SurveyState copyWith({
@@ -32,6 +34,7 @@ class SurveyState {
     String? country,
     File? avatarFile,
     File? coverFile,
+    String? joinedDate,
   }) {
     return SurveyState(
       cookingTitle: cookingTitle ?? this.cookingTitle,
@@ -42,6 +45,7 @@ class SurveyState {
       country: country ?? this.country,
       avatarFile: avatarFile ?? this.avatarFile,
       coverFile: coverFile ?? this.coverFile,
+      joinedDate: joinedDate ?? this.joinedDate,
     );
   }
 }
@@ -90,13 +94,21 @@ class SurveyNotifier extends StateNotifier<SurveyState> {
   void clear() => state = const SurveyState();
 
   // THÊM HÀM NÀY ĐỂ EDIT PROFILE GỌI
-  void updateUserData({String? displayName, String? bio, String? email, String? cookingTitle, String? country}) {
+  void updateUserData({
+    String? displayName,
+    String? bio,
+    String? email,
+    String? cookingTitle,
+    String? country,
+    String? joinedDated,
+  }) {
     state = state.copyWith(
       displayName: displayName ?? state.displayName,
       bio: bio ?? state.bio,
       email: email ?? state.email,
       cookingTitle: cookingTitle ?? state.cookingTitle,
       country: country ?? state.country,
+      joinedDate: joinedDated ?? state.joinedDate,
     );
   }
 }

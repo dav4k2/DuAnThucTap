@@ -34,11 +34,9 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   }
 
   Future<void> _signIn() async {
-    // 1. Reset lỗi cũ
     ref.read(authProvider.notifier).setError(null);
     setState(() => _isLoading = true);
 
-    // 2. Gọi AuthService
     final authService = ref.read(authServiceProvider);
     String? error = await authService.signIn(
       email: _emailController.text.trim(),
@@ -48,12 +46,10 @@ class _SignInFormState extends ConsumerState<SignInForm> {
     setState(() => _isLoading = false);
 
     if (error == null) {
-      // 3. Thành công -> Vào trang Home
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/survey', (route) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil('/authgate', (route) => false);
       }
     } else {
-      // 4. Thất bại -> Hiện lỗi qua Riverpod để UI cập nhật
       ref.read(authProvider.notifier).setError(error);
     }
   }

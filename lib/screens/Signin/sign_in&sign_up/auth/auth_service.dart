@@ -7,7 +7,6 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // 1. ĐĂNG KÝ (SIGN UP)
   Future<String?> signUp({
     required String email,
     required String password,
@@ -32,7 +31,6 @@ class AuthService {
     }
   }
 
-  // 2. ĐĂNG NHẬP (SIGN IN)
   Future<String?> signIn({required String email, required String password}) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -44,34 +42,52 @@ class AuthService {
     }
   }
 
-  // 3. ĐĂNG NHẬP GOOGLE
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      // Kích hoạt luồng chọn tài khoản Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null; // Người dùng hủy chọn
 
-      // Lấy thông tin xác thực từ request
+      if (googleUser == null) return null;
+
+      String googleName = googleUser.displayName ?? googleUser.email.split('@')[0];
+      String googlePhoto = googleUser.photoUrl ?? "";
+
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      // Tạo credential mới
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Đăng nhập vào Firebase
       UserCredential userCredential = await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
 
-      // Nếu là user mới, lưu vào Firestore
-      if (userCredential.additionalUserInfo?.isNewUser == true && userCredential.user != null) {
-        await _saveUserToFirestore(userCredential.user!, googleUser.displayName ?? "No Name");
+      if (user != null) {
+        final userDoc = await _firestore.collection('users').doc(user.uid).get();
+
+        if (!userDoc.exists) {
+          await _firestore.collection('users').doc(user.uid).set({
+            'id': user.uid,
+            'email': user.email,
+            'display_name': googleName,
+            'avatar_url': googlePhoto,
+            'role': 'user',
+            'created_at': FieldValue.serverTimestamp(),
+            'is_profile_completed': false,
+          });
+        } else {
+          Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>;
+          if (data['display_name'] == null || data['display_name'] == "") {
+            await _firestore.collection('users').doc(user.uid).update({
+              'display_name': googleName
+            });
+          }
+        }
       }
 
       return userCredential;
     } catch (e) {
-      print("Google Sign In Error: $e");
-      throw Exception("Đăng nhập Google thất bại");
+      print("Lỗi Google Sign In: $e");
+      throw Exception("Đăng nhập Google thất bại: $e");
     }
   }
 

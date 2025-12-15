@@ -1,6 +1,7 @@
 // lib/screens/my_profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/edit_profile_button.dart';
@@ -81,6 +82,11 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
         _userFuture = Future.value(user);
       });
 
+      String joinedStr = "Vừa tham gia";
+      if (user.createdAt != null) {
+        joinedStr = DateFormat('dd/MM/yyyy').format(user.createdAt!);
+      }
+
       // Đồng bộ Email và các thông tin khác vào Provider
       ref.read(surveyProvider.notifier).updateUserData(
         displayName: user.displayName,
@@ -88,6 +94,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
         cookingTitle: user.cookingLevel,
         country: user.country,
         email: user.email,
+        joinedDated: joinedStr,
       );
 
       // 3. Làm mới Provider

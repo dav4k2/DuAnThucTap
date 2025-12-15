@@ -15,6 +15,8 @@ import '../../../theme/theme_provider.dart';
 import '../../Signin/sign_in&sign_up/auth/auth_gate.dart';
 import '../../Signin/sign_in&sign_up/auth/auth_provider.dart';
 import '../../Signin/sign_in&sign_up/auth/storage_service.dart';
+import '../../survey/logic/survey_provider.dart';
+import '../../user_profile/MyUser_profile/logic/my_profile_provider.dart';
 import '../notification_setting/NotificationSettingsScreen.dart';
 import 'widgets/terms_and_conditions/about_us.dart';
 import 'widgets/terms_and_conditions/terms.dart';
@@ -235,13 +237,27 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Future<void> logOut(BuildContext context, WidgetRef ref) async {
-    await StorageService.deleteToken();
-    ref.invalidate(authProvider);
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const AuthGate()),
-            (route) => false,
-      );
+    try {
+      final authService = ref.read(authServiceProvider);
+      await authService.signOut();
+
+      ref.invalidate(myChefProvider);
+      ref.invalidate(surveyProvider);
+      ref.invalidate(authProvider);
+
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const AuthGate()),
+              (route) => false,
+        );
+      }
+    } catch (e) {
+      debugPrint("Lỗi khi đăng xuất: $e");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Lỗi đăng xuất: $e")),
+        );
+      }
     }
   }
 

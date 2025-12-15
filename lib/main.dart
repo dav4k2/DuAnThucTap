@@ -98,6 +98,7 @@ class MyApp extends ConsumerWidget {
             '/terms': (context) => const TermsPage(),
             '/mainlayout': (context) => const MainLayout(),
             '/survey' : (context) => const SurveyStartScreen(),
+            '/authgate' : (context) => const AuthGate(),
           },
         );
       },

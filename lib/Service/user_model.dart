@@ -11,6 +11,7 @@ class UserModel {
   final String? coverUrl;
   final List<String> interestedCategories;
   final bool isProfileCompleted;
+  final DateTime? createdAt;
 
   UserModel({
     required this.id,
@@ -23,6 +24,7 @@ class UserModel {
     this.coverUrl,
     this.interestedCategories = const [],
     required this.isProfileCompleted,
+    this.createdAt,
   });
 
   // Chuyển từ Firestore Document -> Object Dart
@@ -39,6 +41,7 @@ class UserModel {
       coverUrl: data['cover_url'],
       interestedCategories: List<String>.from(data['interested_categories'] ?? []),
       isProfileCompleted: data['is_profile_completed'] ?? false,
+      createdAt: (data['created_at'] as Timestamp?)?.toDate(),
     );
   }
 

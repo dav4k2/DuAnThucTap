@@ -13,6 +13,7 @@ class EditProfileState {
   final String? avatarUrl;
   final File? avatarFile;
   final File? headerFile;
+  final String? coverUrl;
 
   EditProfileState({
     required this.name,
@@ -22,6 +23,7 @@ class EditProfileState {
     this.avatarUrl,
     this.avatarFile,
     this.headerFile,
+    this.coverUrl,
   });
 
   EditProfileState copyWith({
@@ -32,6 +34,7 @@ class EditProfileState {
     String? avatarUrl,
     File? avatarFile,
     File? headerFile,
+    String? coverUrl,
   }) {
     return EditProfileState(
       name: name ?? this.name,
@@ -41,6 +44,7 @@ class EditProfileState {
       avatarUrl: avatarUrl ?? this.avatarUrl,
       avatarFile: avatarFile ?? this.avatarFile,
       headerFile: headerFile ?? this.headerFile,
+      coverUrl: coverUrl ?? this.coverUrl,
     );
   }
 }

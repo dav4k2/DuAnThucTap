@@ -120,13 +120,12 @@ final myChefProvider = Provider<MyChef>((ref) {
     name: survey.displayName?.trim().isNotEmpty == true ? survey.displayName! : "Kong Fuong",
     title: survey.cookingTitle ?? "Đầu bếp đam mê",
 
-    // ÁNH XẠ DỮ LIỆU TỪ SURVEY HOẶC DATABASE
     country: survey.country ?? "Việt Nam",
     cookingTitle: survey.cookingTitle ?? "Đầu bếp tại gia",
 
     bio: survey.bio?.trim().isNotEmpty == true ? survey.bio : "Mô tả mặc định...",
     email: survey.email ?? "chua_cap_nhat@gmail.com",
-    joinedDate: "10/09/2024",
+    joinedDate: survey.joinedDate ?? "Đang cập nhật",
     avatarUrl: survey.avatarFile?.path ?? "image/avatar.png",
     headerImage: survey.coverFile?.path ?? "image/profile_bg.png",
     recipes: allRecipes.length,
