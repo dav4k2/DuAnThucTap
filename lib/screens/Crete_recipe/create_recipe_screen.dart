@@ -13,7 +13,7 @@ import '../Guide/model/guide_model.dart';
 import '../Guide/user_guide_dialog_screen.dart';
 import '../NewRecipes/add_recipe_screen.dart';
 import '../NewRecipes/logic/add_recipe_provider.dart';
-import 'logic/draft_provider.dart';
+import 'logic/draft_service.dart';
 
 class CreateRecipeScreen extends ConsumerWidget {
   const CreateRecipeScreen({super.key});
@@ -168,33 +168,49 @@ class CreateRecipeScreen extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: 25.w),
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final drafts = ref.watch(recipeDraftProvider);
-                    if (drafts.isEmpty) {
-                      return Center(
-                          child: Text('Chưa có bản nháp nào',
-                              style: TextStyle(fontSize: 16.sp, color: Colors.grey[600])));
-                    }
-                    return ListView.builder(
-                      padding: EdgeInsets.only(bottom: 110.h),
-                      itemCount: drafts.length,
-                      itemBuilder: (context, index) {
-                        final draft = drafts[index];
-                        return GestureDetector(
-                          onTap: () {
-                            // 1. Load dữ liệu nháp vào Provider
-                            ref.read(addRecipeProvider.notifier).loadFromDraft(draft);
+                    // 1. Lấy AsyncValue từ Provider (không phải List trực tiếp)
+                    final draftsAsync = ref.watch(recipeDraftProvider);
 
-                            // 2. Mở màn hình AddRecipeScreen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const AddRecipeScreen()),
+                    // 2. Sử dụng .when để xử lý các trạng thái
+                    return draftsAsync.when(
+                      // --- TRẠNG THÁI ĐANG TẢI ---
+                      loading: () => const Center(child: CircularProgressIndicator()),
+
+                      // --- TRẠNG THÁI CÓ LỖI ---
+                      error: (err, stack) => Center(child: Text('Lỗi: $err')),
+
+                      // --- TRẠNG THÁI CÓ DỮ LIỆU ---
+                      data: (drafts) {
+                        if (drafts.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'Chưa có bản nháp nào',
+                              style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: EdgeInsets.only(bottom: 110.h),
+                          itemCount: drafts.length,
+                          itemBuilder: (context, index) {
+                            final draft = drafts[index];
+                            return GestureDetector(
+                              onTap: () {
+                                // Load dữ liệu vào AddRecipeProvider để sửa tiếp
+                                ref.read(addRecipeProvider.notifier).loadFromDraft(draft);
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const AddRecipeScreen()),
+                                );
+                              },
+                              child: DraftRecipeItem(draft: draft),
                             );
                           },
-                          child: DraftRecipeItem(draft: draft),
                         );
                       },
                     );
-
                   },
                 ),
               ),

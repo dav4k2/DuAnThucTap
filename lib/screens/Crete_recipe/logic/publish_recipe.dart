@@ -1,7 +1,7 @@
 import 'package:uuid/uuid.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // <--- 1. BẮT BUỘC THÊM DÒNG NÀY
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DraftRecipe {
+class PublishRecipe{
   final String id;
   final String title;
   final String description;
@@ -14,7 +14,7 @@ class DraftRecipe {
   final List<String> steps;
   final DateTime savedAt;
 
-  DraftRecipe({
+  PublishRecipe({
     String? id,
     required this.title,
     this.description = '',
@@ -39,7 +39,7 @@ class DraftRecipe {
     return '${savedAt.day}/${savedAt.month}';
   }
 
-  DraftRecipe copyWith({
+  PublishRecipe copyWith({
     String? title,
     String? description,
     List<String>? images,
@@ -50,7 +50,7 @@ class DraftRecipe {
     List<String>? ingredients,
     List<String>? steps,
   }) {
-    return DraftRecipe(
+    return PublishRecipe(
       id: id,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -76,16 +76,12 @@ class DraftRecipe {
     'difficulty': difficulty,
     'ingredients': ingredients,
     'steps': steps,
-    // Khi gửi lên server, Firestore sẽ tự convert DateTime thành Timestamp nếu dùng FieldValue,
-    // hoặc giữ nguyên String tùy cách bạn lưu. Ở đây cứ giữ toIso8601String để an toàn nếu lưu dạng Map thường.
     'savedAt': savedAt.toIso8601String(),
   };
 
-  // --- 2. SỬA LẠI HÀM NÀY ĐỂ FIX LỖI ---
-  factory DraftRecipe.fromJson(Map<String, dynamic> json) {
+  factory PublishRecipe.fromJson(Map<String, dynamic> json) {
     DateTime date;
 
-    // Kiểm tra dữ liệu trả về là Timestamp (của Firebase) hay String
     if (json['savedAt'] is Timestamp) {
       date = (json['savedAt'] as Timestamp).toDate();
     } else if (json['savedAt'] is String) {
@@ -94,7 +90,7 @@ class DraftRecipe {
       date = DateTime.now();
     }
 
-    return DraftRecipe(
+    return PublishRecipe(
       id: json['id'],
       title: json['title'] ?? 'Công thức không tên',
       description: json['description'] ?? '',

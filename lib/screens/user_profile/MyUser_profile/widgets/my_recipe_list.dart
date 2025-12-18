@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/Crete_recipe/logic/publish_recipe.dart';
 import '../../../../Service/recipe_model.dart';
 import '../../../../Service/recipe_service.dart';
+import '../../../Crete_recipe/logic/publish_service.dart';
 import '../logic/my_profile_provider.dart';
 import 'my_recipe_card.dart';
 
@@ -20,12 +22,12 @@ class MyRecipeList extends ConsumerStatefulWidget {
 
 class _MyRecipeListState extends ConsumerState<MyRecipeList> {
   // Giữ Stream để không bị load lại (xoay vòng tròn) khi chuyển Tab
-  late Stream<List<RecipeModel>> _recipeStream;
+  late Stream<List<PublishRecipe>> _recipeStream;
 
   @override
   void initState() {
     super.initState();
-    _recipeStream = RecipeService().getUserRecipes(widget.userId);
+    _recipeStream = PublishService().getRecipesByUser(widget.userId);
   }
 
   @override
@@ -33,7 +35,7 @@ class _MyRecipeListState extends ConsumerState<MyRecipeList> {
     // Lắng nghe Tab để lọc
     final currentTab = ref.watch(myMealTabProvider);
 
-    return StreamBuilder<List<RecipeModel>>(
+    return StreamBuilder<List<PublishRecipe>>(
       stream: _recipeStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

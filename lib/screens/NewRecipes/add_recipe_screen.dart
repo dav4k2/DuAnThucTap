@@ -257,7 +257,7 @@ class AddRecipeScreen extends ConsumerWidget {
                             SizedBox(width: 12.w),
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => notifier.validateAndSubmit(context),
+                                onTap: () => notifier.validateAndPublish(context),
                                 child: Container(
                                   height: 66.h,
                                   decoration: BoxDecoration(

@@ -199,7 +199,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                   ),
                 ),
 
-                // === TAB CÔNG THỨC ===
+
                 if (profileTab == ProfileTab.congThuc)
                   const KeepAliveWrapper(
                     child: SliverPersistentHeader(
@@ -208,6 +208,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                     ),
                   ),
 
+                // === TAB CÔNG THỨC ===
                 if (profileTab == ProfileTab.congThuc)
                   KeepAliveWrapper(
                     // QUAN TRỌNG: Gọi Widget MyRecipeList đã tách file

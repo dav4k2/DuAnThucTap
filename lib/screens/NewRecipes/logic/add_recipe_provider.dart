@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../Service/recipe_model.dart';
 import '../../../Service/recipe_service.dart';
-import '../../Crete_recipe/logic/draft_provider.dart';
+import '../../Crete_recipe/logic/draft_service.dart';
 import '../../Crete_recipe/logic/draft_recipe.dart';
+import '../../Crete_recipe/logic/publish_recipe.dart';
+import '../../Crete_recipe/logic/publish_service.dart';
 import '../widgets/exit_confirmation_dialog.dart';
 import '../widgets/missing_info_dialog.dart';
 
 class AddRecipeState {
+  final String? id;
   final List<String> images;
   final String? video;
   final String title;
@@ -29,6 +32,7 @@ class AddRecipeState {
   final List<String?> stepErrors;
 
   AddRecipeState({
+    this.id,
     this.images = const [],
     this.video,
     this.title = '',
@@ -51,6 +55,7 @@ class AddRecipeState {
         stepErrors = stepErrors ?? [];
 
   AddRecipeState copyWith({
+    String? id,
     List<String>? images,
     String? video,
     String? title,
@@ -70,6 +75,7 @@ class AddRecipeState {
     List<String?>? stepErrors,
   }) {
     return AddRecipeState(
+      id: id ?? this.id,
       images: images ?? this.images,
       video: video ?? this.video,
       title: title ?? this.title,
@@ -93,10 +99,21 @@ class AddRecipeState {
 
 class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
   final Ref ref;
+  final _publishService = PublishService();
 
-  // --- DEFINITIONS CHO DROPDOWN (Để validate dữ liệu từ AI) ---
-  static const List<String> validServings = ['1 người', '2 người', '3-4 người', '5-6 người', '7+ người'];
-  static const List<String> validTime = ['Dưới 15 phút', '15-30 phút', '30-60 phút', 'Trên 1 tiếng'];
+  static const List<String> validServings = [
+    '1 người',
+    '2 người',
+    '3-4 người',
+    '5-6 người',
+    '7+ người'
+  ];
+  static const List<String> validTime = [
+    'Dưới 15 phút',
+    '15-30 phút',
+    '30-60 phút',
+    'Trên 1 tiếng'
+  ];
   static const List<String> validDifficulty = ['Dễ', 'Trung bình', 'Khó'];
 
   AddRecipeNotifier(this.ref)
@@ -123,8 +140,12 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     // 1. Kiểm tra xem các giá trị Dropdown AI đưa về có khớp với danh sách trong App không
     // Nếu không khớp thì để null để người dùng tự chọn lại, tránh lỗi crash UI
     final safeServings = validServings.contains(servings) ? servings : null;
-    final safeCookingTime = validTime.contains(cookingTime) ? cookingTime : null;
-    final safeDifficulty = validDifficulty.contains(difficulty) ? difficulty : null;
+    final safeCookingTime = validTime.contains(cookingTime)
+        ? cookingTime
+        : null;
+    final safeDifficulty = validDifficulty.contains(difficulty)
+        ? difficulty
+        : null;
 
     // 2. Tạo các list hỗ trợ có độ dài tương ứng
     final newStepImages = List<String?>.filled(steps.length, null);
@@ -170,9 +191,32 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
 
   // ==================== XOÁ NHÁP & RESET FORM ====================
   Future<void> clearDraftAndReset() async {
-    final draftKey = state.title.isEmpty ? 'Công thức chưa đặt tên' : state.title;
-    await ref.read(recipeDraftProvider.notifier).deleteDraft(draftKey);
+    // [MỚI] 1. Nếu form hiện tại đang có ảnh dạng URL (đã upload), cần xóa đi
+    // để tránh rác trên Cloudinary khi người dùng hủy tạo bài
+    if (state.images.isNotEmpty) {
+      final recipeService = RecipeService();
+      // Lọc ra các ảnh là URL (ảnh đã lên mây)
+      final onlineImages = state.images
+          .where((img) => img.startsWith('http'))
+          .toList();
+      if (onlineImages.isNotEmpty) {
+        await recipeService.deleteImages(onlineImages);
+      }
+    }
+
+    // 2. Kiểm tra xem có đang sửa bản nháp nào không (có ID không?)
+    if (state.id != null) {
+      try {
+        // Gọi service xóa draft trong database local/sqlite (nếu bạn dùng)
+        await ref.read(draftServiceProvider).deleteDraft(state.id!);
+      } catch (e) {
+        print("Lỗi xóa nháp: $e");
+      }
+    }
+
+    // 3. Reset state về ban đầu
     state = AddRecipeState(
+      id: null,
       servings: null,
       cookingTime: null,
       difficulty: null,
@@ -185,18 +229,26 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
   // ==================== LƯU NHÁP ====================
   Future<void> saveAsDraft(BuildContext context) async {
     final draft = DraftRecipe(
-      title: state.title.trim().isEmpty ? 'Công thức chưa đặt tên' : state.title,
+      title: state.title
+          .trim()
+          .isEmpty ? 'Công thức chưa đặt tên' : state.title,
       description: state.description,
       images: state.images,
       video: state.video,
       servings: state.servings,
       cookingTime: state.cookingTime,
       difficulty: state.difficulty,
-      ingredients: state.ingredients.where((e) => e.trim().isNotEmpty).toList(),
-      steps: state.steps.where((e) => e.trim().isNotEmpty).toList(),
+      ingredients: state.ingredients.where((e) =>
+      e
+          .trim()
+          .isNotEmpty).toList(),
+      steps: state.steps.where((e) =>
+      e
+          .trim()
+          .isNotEmpty).toList(),
     );
 
-    await ref.read(recipeDraftProvider.notifier).saveDraft(draft);
+    await ref.read(draftServiceProvider).saveDraft(draft);
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -205,6 +257,16 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
           backgroundColor: Colors.green,
         ),
       );
+
+      state = AddRecipeState(
+        servings: null,
+        cookingTime: null,
+        difficulty: null,
+        stepImages: [],
+        ingredientErrors: [],
+        stepErrors: [],
+      );
+
       Navigator.of(context).pop();
     }
   }
@@ -212,6 +274,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
   // ==================== LOAD TỪ NHÁP ====================
   void loadFromDraft(DraftRecipe draft) {
     state = state.copyWith(
+      id: draft.id,
       title: draft.title == 'Công thức chưa đặt tên' ? '' : draft.title,
       description: draft.description,
       images: draft.images,
@@ -232,12 +295,14 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
   }
 
   // ==================== CẬP NHẬT DỮ LIỆU ====================
-  void updateTitle(String title) => state = state.copyWith(title: title, nameError: null);
+  void updateTitle(String title) =>
+      state = state.copyWith(title: title, nameError: null);
 
   void updateDescription(String description) =>
       state = state.copyWith(description: description, descriptionError: null);
 
-  void updateServings(String? value) => state = state.copyWith(servings: value, servingsError: null);
+  void updateServings(String? value) =>
+      state = state.copyWith(servings: value, servingsError: null);
 
   void updateCookingTime(String? value) =>
       state = state.copyWith(cookingTime: value, cookingTimeError: null);
@@ -246,7 +311,8 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       state = state.copyWith(difficulty: value, difficultyError: null);
 
   void addImage(String path) {
-    if (state.images.length < 6) state = state.copyWith(images: [...state.images, path]);
+    if (state.images.length < 6)
+      state = state.copyWith(images: [...state.images, path]);
   }
 
   void removeImage(int index) {
@@ -290,10 +356,14 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
   }
 
   void removeStep(int index) {
-    final newSteps = List<String>.from(state.steps)..removeAt(index);
-    final newImages = List<String?>.from(state.stepImages)..removeAt(index);
-    final newErrors = List<String?>.from(state.stepErrors)..removeAt(index);
-    state = state.copyWith(steps: newSteps, stepImages: newImages, stepErrors: newErrors);
+    final newSteps = List<String>.from(state.steps)
+      ..removeAt(index);
+    final newImages = List<String?>.from(state.stepImages)
+      ..removeAt(index);
+    final newErrors = List<String?>.from(state.stepErrors)
+      ..removeAt(index);
+    state = state.copyWith(
+        steps: newSteps, stepImages: newImages, stepErrors: newErrors);
   }
 
   void updateStepImage(int index, String path) {
@@ -308,134 +378,106 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     state = state.copyWith(stepImages: newImages);
   }
 
-  // ==================== VALIDATE & SUBMIT ====================
-  Future<bool> validateAndSubmit(BuildContext context) async {
-    final errors = <String>[];
-    final ingredientErrors = <String?>[];
-    final stepErrors = <String?>[];
+  // ==================== VALIDATE & PUBLISH ====================
+  Future<bool> validateAndPublish(BuildContext context) async {
+    final Set<String> missingFields = {};
 
-    // Reset lỗi
-    state = state.copyWith(
-      nameError: null,
-      descriptionError: null,
-      servingsError: null,
-      cookingTimeError: null,
-      difficultyError: null,
-    );
+    String? nErr, dErr, sErr, cErr, diffErr;
 
-    if (state.title.trim().isEmpty) {
-      state = state.copyWith(nameError: 'Vui lòng nhập tên công thức');
-      errors.add('tên công thức');
+    if (state.title
+        .trim()
+        .isEmpty) {
+      nErr = 'Vui lòng nhập tên món ăn';
+      missingFields.add('Tên công thức');
     }
-    if (state.description.trim().isEmpty) {
-      state = state.copyWith(descriptionError: 'Vui lòng nhập mô tả');
-      errors.add('mô tả');
+    if (state.description
+        .trim()
+        .isEmpty) {
+      dErr = 'Vui lòng nhập mô tả';
+      missingFields.add('Mô tả');
     }
-    //if (state.images.isEmpty) errors.add('ảnh minh hoạ');
-    //if (state.video == null || state.video!.isEmpty) errors.add('video minh hoạ');
-
     if (state.servings == null) {
-      state = state.copyWith(servingsError: 'Vui lòng chọn khẩu phần');
-      errors.add('khẩu phần');
+      sErr = 'Chọn khẩu phần';
+      missingFields.add('Khẩu phần');
     }
     if (state.cookingTime == null) {
-      state = state.copyWith(cookingTimeError: 'Vui lòng chọn thời gian nấu');
-      errors.add('thời gian nấu');
+      cErr = 'Chọn thời gian';
+      missingFields.add('Thời gian nấu');
     }
     if (state.difficulty == null) {
-      state = state.copyWith(difficultyError: 'Vui lòng chọn độ khó');
-      errors.add('độ khó');
+      diffErr = 'Chọn độ khó';
+      missingFields.add('Độ khó');
     }
 
-    // Nguyên liệu
-    if (state.ingredients.isEmpty) {
-      errors.add('nguyên liệu');
-    } else {
-      for (int i = 0; i < state.ingredients.length; i++) {
-        if (state.ingredients[i].trim().isEmpty) {
-          ingredientErrors.add('Vui lòng nhập nguyên liệu');
-          errors.add('nguyên liệu');
-        } else {
-          ingredientErrors.add(null);
-        }
-      }
-      state = state.copyWith(ingredientErrors: ingredientErrors);
-    }
+    // Nếu có lỗi, cập nhật state và hiển thị Dialog
+    if (missingFields.isNotEmpty) {
+      state = state.copyWith(
+        nameError: nErr,
+        descriptionError: dErr,
+        servingsError: sErr,
+        cookingTimeError: cErr,
+        difficultyError: diffErr,
+      );
 
-    // Bước làm
-    if (state.steps.isEmpty) {
-      errors.add('bước làm');
-    } else {
-      for (int i = 0; i < state.steps.length; i++) {
-        if (state.steps[i].trim().isEmpty) {
-          stepErrors.add('Vui lòng nhập mô tả bước này');
-          errors.add('bước làm');
-        } else {
-          stepErrors.add(null);
-        }
-      }
-      state = state.copyWith(stepErrors: stepErrors);
+      showDialog(
+        context: context,
+        builder: (_) => MissingInfoDialog(missingFields: missingFields),
+      );
+      return false;
     }
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
+      builder: (_) =>
+      const Center(child: CircularProgressIndicator(color: Color(0xFFFFB901))),
     );
 
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception("Chưa đăng nhập");
-
-      final recipeService = RecipeService();
-
-      // 2. Upload Ảnh lên Cloud
-      final imageUrls = await recipeService.uploadImages(state.images);
-
-      // 3. Tạo Model
-      final newRecipe = RecipeModel(
-        id: '', // Firestore sẽ tự sinh ID
-        authorId: user.uid,
+      final publishData = PublishRecipe(
         title: state.title,
         description: state.description,
-        images: imageUrls,
-        video: state.video, // Nếu có xử lý video thì upload tương tự ảnh
-        servings: state.servings!,
-        cookingTime: state.cookingTime!,
-        difficulty: state.difficulty!,
-        ingredients: state.ingredients.where((e) => e.trim().isNotEmpty).toList(),
-        steps: state.steps.where((e) => e.trim().isNotEmpty).toList(),
-        createdAt: DateTime.now(),
+        images: state.images,
+        servings: state.servings,
+        cookingTime: state.cookingTime,
+        difficulty: state.difficulty,
+        ingredients: state.ingredients,
+        steps: state.steps,
       );
 
-      // 4. Gửi lên Firestore
-      final success = await recipeService.publishRecipe(newRecipe);
+      final publishService = PublishService();
+      final success = await publishService.publishToUserCollection(publishData);
 
-      // Tắt Loading
-      if (context.mounted) Navigator.pop(context);
-
-      if (success) {
-        // 5. Xóa bản nháp tương ứng (nếu có) để tránh trùng lặp
-        await clearDraftAndReset();
-
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đăng bài thành công!'), backgroundColor: Colors.green),
-          );
-          Navigator.of(context).pop(); // Thoát màn hình thêm công thức
-        }
-        return true;
-      } else {
-        throw Exception("Lỗi khi lưu vào Firestore");
-      }
-    } catch (e) {
       if (context.mounted) {
-        Navigator.pop(context); // Tắt loading
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
-        );
+        Navigator.pop(context); // Tắt Loading
+
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đăng bài thành công!'),
+                backgroundColor: Colors.green),
+          );
+          if (state.id != null) await ref
+              .read(draftServiceProvider)
+              .deleteDraft(state.id!);
+
+          state = AddRecipeState(
+            servings: null,
+            cookingTime: null,
+            difficulty: null,
+            stepImages: [],
+            ingredientErrors: [],
+            stepErrors: [],
+          );
+
+          Navigator.pop(context);
+          return true;
+        }
       }
       return false;
+    } catch (e) {
+      if (context.mounted) Navigator.pop(context);
+      print("Lỗi khi publish: $e");
+      return false; // SỬA LỖI 2: Đảm bảo luôn return bool ngay cả khi có lỗi
     }
   }
 }

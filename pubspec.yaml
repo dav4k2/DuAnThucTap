@@ -69,6 +69,7 @@ dependencies:
   easy_localization: ^3.0.0
   live_activities: ^2.4.0
   cloudinary_public: ^0.23.1
+  crypto: ^3.0.7
 
 
 
