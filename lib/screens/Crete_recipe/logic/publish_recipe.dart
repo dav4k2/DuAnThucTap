@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PublishRecipe{
   final String id;
+  final String? authorId;
   final String title;
   final String description;
   final List<String> images;
@@ -12,10 +13,11 @@ class PublishRecipe{
   final String? difficulty;
   final List<String> ingredients;
   final List<String> steps;
-  final DateTime savedAt;
+  final DateTime createdAt;
 
   PublishRecipe({
     String? id,
+    this.authorId,
     required this.title,
     this.description = '',
     this.images = const [],
@@ -25,21 +27,22 @@ class PublishRecipe{
     this.difficulty,
     this.ingredients = const [],
     this.steps = const [],
-    DateTime? savedAt,
+    DateTime? createdAt,
   })  : id = id ?? const Uuid().v4(),
-        savedAt = savedAt ?? DateTime.now();
+        createdAt = createdAt ?? DateTime.now();
 
   String get thumbnail => images.isNotEmpty ? images.first : 'assets/images/placeholder_recipe.jpg';
 
   String get timeAgo {
-    final diff = DateTime.now().difference(savedAt);
+    final diff = DateTime.now().difference(createdAt);
     if (diff.inMinutes < 60) return 'Vừa xong';
     if (diff.inHours < 24) return '${diff.inHours} giờ trước';
     if (diff.inDays < 7) return '${diff.inDays} ngày trước';
-    return '${savedAt.day}/${savedAt.month}';
+    return '${createdAt.day}/${createdAt.month}';
   }
 
   PublishRecipe copyWith({
+    String? authorId,
     String? title,
     String? description,
     List<String>? images,
@@ -52,6 +55,7 @@ class PublishRecipe{
   }) {
     return PublishRecipe(
       id: id,
+      authorId: authorId ?? this.authorId,
       title: title ?? this.title,
       description: description ?? this.description,
       images: images ?? this.images,
@@ -61,12 +65,13 @@ class PublishRecipe{
       difficulty: difficulty ?? this.difficulty,
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
-      savedAt: DateTime.now(),
+      createdAt: DateTime.now(),
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toFirestore() => {
     'id': id,
+    'authorId': authorId,
     'title': title,
     'description': description,
     'images': images,
@@ -76,32 +81,28 @@ class PublishRecipe{
     'difficulty': difficulty,
     'ingredients': ingredients,
     'steps': steps,
-    'savedAt': savedAt.toIso8601String(),
+    'createdAt': FieldValue.serverTimestamp(),
   };
 
-  factory PublishRecipe.fromJson(Map<String, dynamic> json) {
-    DateTime date;
-
-    if (json['savedAt'] is Timestamp) {
-      date = (json['savedAt'] as Timestamp).toDate();
-    } else if (json['savedAt'] is String) {
-      date = DateTime.parse(json['savedAt']);
-    } else {
-      date = DateTime.now();
-    }
+  factory PublishRecipe.fromFirestore(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc,
+      ) {
+    final data = doc.data();
 
     return PublishRecipe(
-      id: json['id'],
-      title: json['title'] ?? 'Công thức không tên',
-      description: json['description'] ?? '',
-      images: List<String>.from(json['images'] ?? []),
-      video: json['video'],
-      servings: json['servings'],
-      cookingTime: json['cookingTime'],
-      difficulty: json['difficulty'],
-      ingredients: List<String>.from(json['ingredients'] ?? []),
-      steps: List<String>.from(json['steps'] ?? []),
-      savedAt: date, // Gán giá trị date đã xử lý ở trên
+      id: doc.id,
+      authorId: data['authorId'],
+      title: data['title'] ?? 'Công thức không tên',
+      description: data['description'] ?? '',
+      images: List<String>.from(data['images'] ?? []),
+      video: data['video'],
+      servings: data['servings'],
+      cookingTime: data['cookingTime'],
+      difficulty: data['difficulty'],
+      ingredients: List<String>.from(data['ingredients'] ?? []),
+      steps: List<String>.from(data['steps'] ?? []),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ??
+          DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 }

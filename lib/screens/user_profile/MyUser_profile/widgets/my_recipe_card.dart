@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-// 1. Thay đổi import sang model mới
 import '../../../Crete_recipe/logic/publish_recipe.dart';
+import '../../../Crete_recipe/logic/publish_service.dart';
 
 class MyRecipeCard extends StatelessWidget {
-  // 2. Cập nhật kiểu dữ liệu thành PublishRecipe
   final PublishRecipe recipe;
   final VoidCallback? onTap;
 
@@ -64,6 +63,40 @@ class MyRecipeCard extends StatelessWidget {
 
     // 4. Thời gian đăng (Sử dụng getter timeAgo từ model PublishRecipe)
     final String timePublished = recipe.timeAgo;
+
+    void _showDeleteDialog(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Xác nhận xóa'),
+          content: const Text('Bạn có chắc chắn muốn xóa bài đăng này vĩnh viễn không?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Hủy'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(dialogContext); // Đóng dialog
+
+                // Thực hiện xóa thông qua PublishService
+                final success = await PublishService().deletePublishedRecipe(
+                  recipe.authorId ?? '',
+                  recipe,
+                );
+
+                if (success && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Đã xóa bài đăng thành công')),
+                  );
+                }
+              },
+              child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+    }
 
     return GestureDetector(
       onTap: onTap,
@@ -157,25 +190,29 @@ class MyRecipeCard extends StatelessWidget {
             top: 12.h,
             child: _frostedContainer(
               context: context,
-              width: 100.w,
+              width: 104.w,
               height: 26.h,
               borderRadius: BorderRadius.circular(20.r),
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.calendar_today, color: Colors.orange, size: 12.sp),
+                  Icon(Icons.calendar_today, color: Colors.orange, size: 10.sp),
                   SizedBox(width: 5.w),
-                  Text(
-                    timePublished,
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w600,
-                      color: textColor,
+                  Expanded(
+                    child: Text(
+                      timePublished,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
                     ),
                   ),
                 ],
-              ),
+              )
             ),
           ),
 
@@ -188,12 +225,26 @@ class MyRecipeCard extends StatelessWidget {
               width: 28.w,
               height: 28.w,
               borderRadius: BorderRadius.circular(14.r),
-              child: Center(
-                child: Icon(
-                  Icons.more_horiz,
-                  color: textColor,
-                  size: 17.sp,
-                ),
+              child: PopupMenuButton<String>(
+                padding: EdgeInsets.zero,
+                icon: Icon(Icons.more_horiz, color: textColor, size: 17.sp),
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    _showDeleteDialog(context);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                        SizedBox(width: 8),
+                        Text('Xóa bài đăng', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

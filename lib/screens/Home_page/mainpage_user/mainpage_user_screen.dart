@@ -6,14 +6,14 @@ import 'widgets/featured_recipes_user.dart';
 import 'widgets/recommend_list_user.dart';
 import 'package:fontend/navbar/smart_navbar.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeUserScreen extends StatefulWidget {
+  const HomeUserScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeUserScreen> createState() => _HomeUserScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeUserScreenState extends State<HomeUserScreen> {
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
 

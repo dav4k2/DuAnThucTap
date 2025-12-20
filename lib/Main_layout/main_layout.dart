@@ -4,6 +4,7 @@ import '../navbar/navbar_selector.dart';
 import '../screens/Cooking_step/recipe_run_screen.dart';
 import '../screens/Crete_recipe/create_recipe_screen.dart';
 import '../screens/Home_page/mainpage_guest/home_screen.dart';
+import '../screens/Home_page/mainpage_user/mainpage_user_screen.dart';
 import '../screens/Searching/search/explore_screen.dart';
 import '../screens/Setting/settings/settings_screen.dart';
 import '../screens/prepare/prepare_page/prepare_screen.dart';
@@ -23,7 +24,7 @@ class _MainLayoutState extends State<MainLayout> {
   final ScrollController _scrollController = ScrollController();
 
   final List<Widget> _pages = const [
-    HomeScreen(),
+    HomeUserScreen(),
     ExploreScreen(),
     CreateRecipeScreen(),
     MyProfileScreen(),

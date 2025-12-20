@@ -12,11 +12,11 @@ class PublishService {
     return _firestore
         .collection('users')
         .doc(userId)
-        .collection('published_recipes') // Sub-collection bạn muốn dùng
+        .collection('published_recipes')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
-        .map((doc) => PublishRecipe.fromJson(doc.data()))
+        .map((doc) => PublishRecipe.fromFirestore(doc))
         .toList());
   }
 
@@ -25,17 +25,14 @@ class PublishService {
       final user = _auth.currentUser;
       if (user == null) return false;
 
-      // 1. Upload ảnh lên Cloudinary (Dùng RecipeService có sẵn)
-      List<String> uploadedUrls = await _recipeService.uploadImages(recipe.images);
+      // Upload ảnh
+      final uploadedUrls =
+      await _recipeService.uploadImages(recipe.images);
 
-      // 2. Chuyển sang Map và bổ sung thông tin hệ thống
-      final data = recipe.toJson();
+      final data = recipe.toFirestore();
       data['images'] = uploadedUrls;
-      data['authorId'] = user.uid; // Đảm bảo ID chính xác
-      data['createdAt'] = FieldValue.serverTimestamp(); // Thời gian thực từ server
-      data['name_lowercase'] = recipe.title.toLowerCase(); // Phục vụ search
+      data['authorId'] = user.uid;
 
-      // 3. Lưu vào sub-collection của user: users/{uid}/published_recipes
       await _firestore
           .collection('users')
           .doc(user.uid)
@@ -48,5 +45,48 @@ class PublishService {
       print("Lỗi Publish: $e");
       return false;
     }
+  }
+
+  Future<bool> deletePublishedRecipe(String userId, PublishRecipe recipe) async {
+    try {
+      // 1. Xóa ảnh trên Cloudinary trước để tránh rác dữ liệu
+      if (recipe.images.isNotEmpty) {
+        await _recipeService.deleteImages(recipe.images);
+      }
+
+      // 2. Xóa document trong sub-collection của user
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('published_recipes')
+          .doc(recipe.id)
+          .delete();
+
+      return true;
+    } catch (e) {
+      print("Lỗi khi xóa bài đăng: $e");
+      return false;
+    }
+  }
+
+  Stream<List<PublishRecipe>> getAllRecipesRealtime() {
+    return FirebaseFirestore.instance
+        .collectionGroup('published_recipes')
+        .snapshots()
+        .map((snapshot) {
+      print('🔥 SNAPSHOT SIZE = ${snapshot.docs.length}');
+      for (var doc in snapshot.docs) {
+        print('📄 DOC PATH = ${doc.reference.path}');
+        print('📄 DATA = ${doc.data()}');
+      }
+      return snapshot.docs
+          .map((doc) => PublishRecipe.fromFirestore(doc))
+          .toList();
+    });
+  }
+
+  Future<Map<String, dynamic>?> getUserInfo(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    return doc.data();
   }
 }
