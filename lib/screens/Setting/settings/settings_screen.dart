@@ -28,25 +28,15 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeProvider);
-    // Không cần watch languageProvider nữa
-
     final themeData = Theme.of(context);
     final textColor = themeData.textTheme.bodyMedium?.color ?? (isDark ? Colors.white : Colors.black87);
 
     return Scaffold(
+      // SỬA: Đưa màu nền lên trực tiếp Scaffold để đồng nhất toàn trang
+      backgroundColor: themeData.scaffoldBackgroundColor,
       body: SafeArea(
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
-          decoration: BoxDecoration(
-            color: themeData.scaffoldBackgroundColor,
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0x3F000000).withOpacity(0.05),
-                blurRadius: 10.r,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
           child: Column(
             children: [
               const TitleHeader(),
@@ -62,13 +52,13 @@ class SettingsScreen extends ConsumerWidget {
                       [
                         SettingItem(
                           iconPath: 'image/setting_noti.png',
-                          title: 'notifications'.tr(), // <--- DÙNG .tr()
+                          title: 'notifications'.tr(),
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationSettingsScreen())),
                         ),
                         _buildDivider(context),
                         SettingItem(
                           iconPath: 'image/setting_lang.png',
-                          title: 'language'.tr(), // <--- DÙNG .tr()
+                          title: 'language'.tr(),
                           onTap: () {
                             showModalBottomSheet(
                               context: context,
@@ -78,7 +68,7 @@ class SettingsScreen extends ConsumerWidget {
                             );
                           },
                           trailing: Text(
-                            context.locale.languageCode.toUpperCase(), // <--- LẤY MÃ NGÔN NGỮ ('VI' hoặc 'EN')
+                            context.locale.languageCode.toUpperCase(),
                             style: TextStyle(fontSize: 14.sp, color: textColor.withOpacity(0.6), fontWeight: FontWeight.w600),
                           ),
                         ),
@@ -151,7 +141,7 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 40.h),
+                    SizedBox(height: 30.h),
                   ],
                 ),
               ),
@@ -199,7 +189,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildDarkModeItem(BuildContext context, bool isDark, WidgetRef ref) {
     return SettingItem(
       iconPath: 'image/setting_darkmode.png',
-      title: 'dark_mode'.tr(), // <--- DÙNG .tr()
+      title: 'dark_mode'.tr(),
       showArrow: false,
       onTap: () => ref.read(themeProvider.notifier).toggle(),
       trailing: GestureDetector(
