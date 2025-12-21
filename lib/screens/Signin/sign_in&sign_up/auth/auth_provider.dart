@@ -46,7 +46,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Validate form đăng ký
   String? validateSignup(String username, String email, String pass, String confirm) {
-    if (username.trim().isEmpty) return 'Vui lòng nhập tên tài khoản';
     if (email.trim().isEmpty) return 'Vui lòng nhập email';
     if (!email.contains('@')) return 'Email không hợp lệ';
     if (pass.length < 6) return 'Mật khẩu phải ít nhất 6 ký tự';

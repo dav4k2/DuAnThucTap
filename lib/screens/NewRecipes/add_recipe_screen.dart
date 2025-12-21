@@ -11,7 +11,6 @@ import 'widgets/video_upload.dart';
 import 'widgets/dropdown_row.dart';
 import 'widgets/ingredient_item.dart';
 import 'widgets/step_item.dart';
-import 'widgets/bottom_buttons.dart';
 import 'widgets/input_field.dart';
 
 class AddRecipeScreen extends ConsumerWidget {
@@ -25,15 +24,12 @@ class AddRecipeScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
-    final textColor = isDark ? Colors.white70 : Colors.black87;
     final subtitleColor = isDark ? Colors.grey[400]! : Colors.grey.shade700;
     final borderColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
     final sectionTitleColor = isDark ? Colors.white : Colors.black87;
 
-    // --- THÊM PHẦN NÀY ---
     return GestureDetector(
       onTap: () {
-        // Hàm này sẽ tắt bàn phím khi click ra ngoài vùng nhập liệu
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
@@ -195,10 +191,13 @@ class AddRecipeScreen extends ConsumerWidget {
                         ...state.steps.asMap().entries.map((e) {
                           final i = e.key;
                           final t = e.value;
+                          // --- ĐÃ CẬP NHẬT TRUYỀN THAM SỐ CHO STEPITEM ---
                           return StepItem(
                             key: ValueKey('step_$i'),
                             index: i,
                             description: t,
+                            duration: state.stepDurations.length > i ? state.stepDurations[i] : null,
+                            mediaPaths: state.stepMedia.length > i ? state.stepMedia[i] : [],
                             onChanged: (v) => notifier.updateStep(i, v),
                             onDelete: () => notifier.removeStep(i),
                           );
@@ -282,7 +281,7 @@ class AddRecipeScreen extends ConsumerWidget {
                         ),
                       ),
 
-                      SizedBox(height: 30.h), // padding cuối để scroll thoải mái
+                      SizedBox(height: 30.h),
                     ],
                   ),
                 ),

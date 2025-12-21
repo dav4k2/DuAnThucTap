@@ -99,18 +99,6 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       children: [
         SizedBox(height: 10.h),
 
-        /// Tài khoản
-        Center(
-          child: InputField(
-            hintText: "Tài khoản",
-            controller: _usernameController,
-            width: inputWidth,
-            bgColor: bgColor,
-            textColor: textColor,
-            borderColor: borderColor,
-          ),
-        ),
-        SizedBox(height: 9.h),
 
         /// Email hoặc SĐT
         Center(
@@ -123,7 +111,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             borderColor: borderColor,
           ),
         ),
-        SizedBox(height: 9.h),
+        SizedBox(height: 12.h),
 
         /// Mật khẩu
         Center(
@@ -145,7 +133,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ),
           ),
         ),
-        SizedBox(height: 9.h),
+        SizedBox(height: 12.h),
 
         /// Nhập lại mật khẩu
         Center(
@@ -167,7 +155,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
             ),
           ),
         ),
-        SizedBox(height: 9.h),
+        SizedBox(height: 12.h),
 
         /// Checkbox đồng ý điều khoản
         Padding(

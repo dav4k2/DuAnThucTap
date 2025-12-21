@@ -11,7 +11,6 @@ class ExitConfirmationDialog extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Màu nền dialog
     final dialogBg = isDark ? Colors.grey[850] : Colors.white;
     final textColor = isDark ? Colors.white : Colors.black87;
     final secondaryTextColor = isDark ? Colors.grey[300] : Colors.grey[700];
@@ -69,17 +68,17 @@ class ExitConfirmationDialog extends ConsumerWidget {
                 decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
-
             ),
             SizedBox(height: 32.h),
             Row(
               children: [
-                // Không lưu
                 Expanded(
                   child: TextButton(
                     onPressed: () async {
+                      // Xoá nháp và reset state trước
                       await ref.read(addRecipeProvider.notifier).clearDraftAndReset();
-                      Navigator.pop(context, false);
+                      // Sau đó trả về false để handleBackPressed thực hiện pop trang chính
+                      if (context.mounted) Navigator.pop(context, false);
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
@@ -98,10 +97,7 @@ class ExitConfirmationDialog extends ConsumerWidget {
                     ),
                   ),
                 ),
-
                 SizedBox(width: 12.w),
-
-                // Hủy
                 Expanded(
                   child: TextButton(
                     onPressed: () => Navigator.pop(context, null),
@@ -122,15 +118,14 @@ class ExitConfirmationDialog extends ConsumerWidget {
                     ),
                   ),
                 ),
-
                 SizedBox(width: 12.w),
-
-                // Lưu nháp
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
+                      // Lưu nháp
                       await ref.read(addRecipeProvider.notifier).saveAsDraft(context);
-                      Navigator.of(context).pop();
+                      // Trả về true để handleBackPressed thực hiện pop trang chính
+                      if (context.mounted) Navigator.pop(context, true);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFE724C),

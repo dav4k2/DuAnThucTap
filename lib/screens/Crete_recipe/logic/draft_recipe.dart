@@ -1,17 +1,19 @@
 import 'package:uuid/uuid.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // <--- 1. BẮT BUỘC THÊM DÒNG NÀY
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DraftRecipe {
   final String id;
   final String title;
   final String description;
-  final List<String> images;
+  final List<String> images; // Ảnh đại diện của cả bài
   final String? video;
   final String? servings;
   final String? cookingTime;
   final String? difficulty;
   final List<String> ingredients;
   final List<String> steps;
+  final List<String?> stepDurations; // [MỚI] Lưu số phút từng bước
+  final List<List<String>> stepMedia; // [MỚI] Lưu danh sách ảnh/video từng bước
   final DateTime savedAt;
 
   DraftRecipe({
@@ -25,6 +27,8 @@ class DraftRecipe {
     this.difficulty,
     this.ingredients = const [],
     this.steps = const [],
+    this.stepDurations = const [],
+    this.stepMedia = const [],
     DateTime? savedAt,
   })  : id = id ?? const Uuid().v4(),
         savedAt = savedAt ?? DateTime.now();
@@ -39,32 +43,6 @@ class DraftRecipe {
     return '${savedAt.day}/${savedAt.month}';
   }
 
-  DraftRecipe copyWith({
-    String? title,
-    String? description,
-    List<String>? images,
-    String? video,
-    String? servings,
-    String? cookingTime,
-    String? difficulty,
-    List<String>? ingredients,
-    List<String>? steps,
-  }) {
-    return DraftRecipe(
-      id: id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      images: images ?? this.images,
-      video: video ?? this.video,
-      servings: servings ?? this.servings,
-      cookingTime: cookingTime ?? this.cookingTime,
-      difficulty: difficulty ?? this.difficulty,
-      ingredients: ingredients ?? this.ingredients,
-      steps: steps ?? this.steps,
-      savedAt: DateTime.now(),
-    );
-  }
-
   Map<String, dynamic> toJson() => {
     'id': id,
     'title': title,
@@ -76,16 +54,13 @@ class DraftRecipe {
     'difficulty': difficulty,
     'ingredients': ingredients,
     'steps': steps,
-    // Khi gửi lên server, Firestore sẽ tự convert DateTime thành Timestamp nếu dùng FieldValue,
-    // hoặc giữ nguyên String tùy cách bạn lưu. Ở đây cứ giữ toIso8601String để an toàn nếu lưu dạng Map thường.
+    'stepDurations': stepDurations,
+    'stepMedia': stepMedia,
     'savedAt': savedAt.toIso8601String(),
   };
 
-  // --- 2. SỬA LẠI HÀM NÀY ĐỂ FIX LỖI ---
   factory DraftRecipe.fromJson(Map<String, dynamic> json) {
     DateTime date;
-
-    // Kiểm tra dữ liệu trả về là Timestamp (của Firebase) hay String
     if (json['savedAt'] is Timestamp) {
       date = (json['savedAt'] as Timestamp).toDate();
     } else if (json['savedAt'] is String) {
@@ -95,7 +70,7 @@ class DraftRecipe {
     }
 
     return DraftRecipe(
-      id: json['id'],
+      id: json['id'] ?? const Uuid().v4(),
       title: json['title'] ?? 'Công thức không tên',
       description: json['description'] ?? '',
       images: List<String>.from(json['images'] ?? []),
@@ -105,7 +80,13 @@ class DraftRecipe {
       difficulty: json['difficulty'],
       ingredients: List<String>.from(json['ingredients'] ?? []),
       steps: List<String>.from(json['steps'] ?? []),
-      savedAt: date, // Gán giá trị date đã xử lý ở trên
+      // Parse List<String?> từ Firestore
+      stepDurations: List<String?>.from(json['stepDurations'] ?? []),
+      // Parse List<List<String>> từ Firestore
+      stepMedia: (json['stepMedia'] as List?)
+          ?.map((e) => List<String>.from(e as List))
+          .toList() ?? [],
+      savedAt: date,
     );
   }
 }
