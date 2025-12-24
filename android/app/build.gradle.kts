@@ -1,4 +1,4 @@
-    plugins {
+plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -9,9 +9,13 @@
 android {
     namespace = "com.example.fontend"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.1.12297006"
+    ndkVersion = "27.1.12297006" // Giữ nguyên NDK cụ thể của bạn
 
     compileOptions {
+        // [MỚI] Bật Desugaring để hỗ trợ các tính năng Java mới trên Android cũ
+        isCoreLibraryDesugaringEnabled = true
+
+        // Sử dụng Java 11 (tốt hơn 1.8 cho các bản Flutter/Firebase mới)
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -21,24 +25,25 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.datt.cooking"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        applicationId = "com.datt.cooking" // Giữ Application ID gốc của bạn
+
+        // [MỚI] Đảm bảo minSdk ít nhất là 21 để hỗ trợ tốt các thư viện hiện đại
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // [MỚI] Bật MultiDex để tránh lỗi giới hạn 64k phương thức (thường gặp khi dùng Firebase)
+        multiDexEnabled = true
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
 
+    // Giữ nguyên phần fix lỗi xung đột thư viện của bạn
     configurations.all {
         resolutionStrategy {
             force("androidx.browser:browser:1.8.0")
@@ -46,21 +51,15 @@ android {
             force("androidx.core:core:1.13.1")
         }
     }
-
 }
 
 dependencies {
-    // Import the Firebase BoM
+    // [MỚI] Thư viện hỗ trợ Desugaring
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // Firebase BoM và Analytics (Giữ nguyên)
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
-
-
-    // TODO: Add the dependencies for Firebase products you want to use
-    // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
-
-
-    // Add the dependencies for any other desired Firebase products
-    // https://firebase.google.com/docs/android/setup#available-libraries
 }
 
 flutter {

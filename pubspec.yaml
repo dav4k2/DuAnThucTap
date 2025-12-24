@@ -70,6 +70,8 @@ dependencies:
   live_activities: ^2.4.0
   cloudinary_public: ^0.23.1
   crypto: ^3.0.7
+  flutter_local_notifications: ^17.0.0
+  workmanager: ^0.6.0
 
 
 

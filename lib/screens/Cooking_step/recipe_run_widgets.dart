@@ -1,9 +1,9 @@
 // lib/widgets/recipe_run_widgets.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fontend/screens/Cooking_step/recipe_step_model.dart';
-import 'package:live_activities/live_activities.dart';
+
+import 'cooking_timer_service.dart';
 
 // --- HEADER, TITLE, DESCRIPTION, IMAGE (GIỮ NGUYÊN) ---
 class RecipeRunHeader extends StatelessWidget {
@@ -64,7 +64,7 @@ class RecipeRunImage extends StatelessWidget {
 }
 
 // ============================================================
-// BOTTOM CARD - FIXED TYPE ERROR
+// BOTTOM CARD - WITH LIVE ACTIVITIES INTEGRATION
 // ============================================================
 
 class RecipeSmartBottomCard extends StatefulWidget {
@@ -72,6 +72,7 @@ class RecipeSmartBottomCard extends StatefulWidget {
   final RecipeStep? nextStepData;
   final VoidCallback onNextPage;
   final VoidCallback onPrevPage;
+  final int stepNumber;
 
   const RecipeSmartBottomCard({
     super.key,
@@ -79,13 +80,14 @@ class RecipeSmartBottomCard extends StatefulWidget {
     required this.nextStepData,
     required this.onNextPage,
     required this.onPrevPage,
+    required this.stepNumber,
   });
 
   @override
   State<RecipeSmartBottomCard> createState() => _RecipeSmartBottomCardState();
 }
 
-class _RecipeSmartBottomCardState extends State<RecipeSmartBottomCard> with WidgetsBindingObserver {
+class _RecipeSmartBottomCardState extends State<RecipeSmartBottomCard> {
   late bool _isPreparing;
   Timer? _timer;
   late int _currentTime;
@@ -93,28 +95,23 @@ class _RecipeSmartBottomCardState extends State<RecipeSmartBottomCard> with Widg
   bool _hasStartedOnce = false;
 
   final Color _greenColor = const Color(0xFF00C853);
-
-  final _liveActivitiesPlugin = LiveActivities();
-  String? _activityId;
+  final _timerService = CookingTimerService();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _initLiveActivities();
+    _initializeService();
     _initStep();
   }
 
-  Future<void> _initLiveActivities() async {
-    // Đảm bảo ID này khớp với App Group trong Xcode
-    await _liveActivitiesPlugin.init(appGroupId: 'group.com.flutter.cookingapp');
+  Future<void> _initializeService() async {
+    await _timerService.initialize();
   }
 
   @override
   void didUpdateWidget(RecipeSmartBottomCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.stepData != widget.stepData) {
-      _stopLiveActivity();
       _initStep();
     }
   }
@@ -122,67 +119,18 @@ class _RecipeSmartBottomCardState extends State<RecipeSmartBottomCard> with Widg
   @override
   void dispose() {
     _timer?.cancel();
-    _stopLiveActivity();
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   void _initStep() {
     _timer?.cancel();
+    _timerService.stopTimer();
+
     _isPreparing = true;
     _currentTime = widget.stepData.prepTime;
     _isPaused = false;
     _hasStartedOnce = false;
     _startTimer();
-  }
-
-  Future<void> _startLiveActivity() async {
-    if (_isPreparing || widget.stepData.cookingTime == 0) return;
-
-    final Map<String, dynamic> activityData = {
-      'recipeName': 'Đang nấu ăn',
-      'stepName': widget.stepData.title,
-      'remainingTime': _currentTime,
-    };
-
-    try {
-      // ←←←← CÁCH GỌI ĐÚNG CHO BẢN FORK MÀ MÀY ĐANG DÙNG (có String identifier)
-      final String? activityId = await _liveActivitiesPlugin.createActivity(
-        "CookingWidgetAttributes", // ← String này PHẢI đúng tên struct Swift
-        activityData,
-      );
-
-      if (activityId != null && activityId.isNotEmpty) {
-        setState(() {
-          _activityId = activityId;
-        });
-        print("Live Activity khởi động OK: $activityId");
-      }
-    } on PlatformException catch (e) {
-      print("Lỗi Live Activity: ${e.code} - ${e.message}");
-    } catch (e) {
-      print("Lỗi khác: $e");
-    }
-  }
-
-  Future<void> _updateLiveActivity() async {
-    if (_activityId == null) return;
-
-    final Map<String, dynamic> dataToUpdate = {
-      'stepName': widget.stepData.title,
-      'remainingTime': _currentTime,
-    };
-
-    await _liveActivitiesPlugin.updateActivity(_activityId!, dataToUpdate);
-  }
-
-  Future<void> _stopLiveActivity() async {
-    if (_activityId != null) {
-      await _liveActivitiesPlugin.endActivity(_activityId!);
-      setState(() {
-        _activityId = null;
-      });
-    }
   }
 
   void _startTimer() {
@@ -194,17 +142,12 @@ class _RecipeSmartBottomCardState extends State<RecipeSmartBottomCard> with Widg
         setState(() {
           _currentTime--;
         });
-        // Update Live Activity mỗi giây để đồng bộ timer
-        if (!_isPreparing) {
-          _updateLiveActivity();
-        }
       } else {
         if (_isPreparing) {
           timer.cancel();
           _switchToCookingMode();
         } else {
           timer.cancel();
-          _stopLiveActivity();
         }
       }
     });
@@ -219,27 +162,38 @@ class _RecipeSmartBottomCardState extends State<RecipeSmartBottomCard> with Widg
     });
   }
 
-  void _onMainButtonTap() {
+  Future<void> _onMainButtonTap() async {
     if (widget.stepData.cookingTime == 0) {
-      _stopLiveActivity();
       widget.onNextPage();
       return;
     }
 
     setState(() {
-      if (!_hasStartedOnce) _hasStartedOnce = true;
+      if (!_hasStartedOnce) {
+        _hasStartedOnce = true;
+      }
       _isPaused = !_isPaused;
     });
 
     if (!_isPaused) {
+      // Starting timer
       _startTimer();
-      if (_activityId == null) {
-        _startLiveActivity();
-      } else {
-        _updateLiveActivity();
-      }
+
+      // Start background timer service
+      await _timerService.startTimer(
+        durationSeconds: _currentTime,
+        stepTitle: widget.stepData.title,
+        stepNumber: widget.stepNumber,
+      );
+
+      // Force update notification ngay lập tức nếu app ở background
+      await _timerService.forceUpdateNotification();
     } else {
-      _stopLiveActivity();
+      // Pausing timer
+      await _timerService.pauseTimer();
+
+      // Force update notification ngay lập tức nếu app ở background
+      await _timerService.forceUpdateNotification();
     }
   }
 
@@ -351,12 +305,18 @@ class _RecipeSmartBottomCardState extends State<RecipeSmartBottomCard> with Widg
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
-                onTap: () { _stopLiveActivity(); widget.onPrevPage(); },
+                onTap: () {
+                  _timerService.stopTimer();
+                  widget.onPrevPage();
+                },
                 child: const Text("Trước đó", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               ),
               Container(width: 1.5, height: 20, color: Colors.black87),
               GestureDetector(
-                onTap: () { _stopLiveActivity(); widget.onNextPage(); },
+                onTap: () {
+                  _timerService.stopTimer();
+                  widget.onNextPage();
+                },
                 child: Text(widget.nextStepData == null ? "Hoàn thành" : "Bỏ qua", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               ),
             ],

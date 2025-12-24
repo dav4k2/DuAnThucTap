@@ -1,12 +1,15 @@
-import 'package:easy_localization/easy_localization.dart'; // <--- IMPORT MỚI
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:fontend/Main_layout/main_layout.dart';
 
-// Import các màn hình của bạn
+// Import services và layout
+import 'package:fontend/Main_layout/main_layout.dart';
+import 'package:fontend/screens/Cooking_step/cooking_timer_service.dart';
+
+// Import các màn hình
 import 'package:fontend/screens/Remove/enter_new_password/reset_password_screen.dart';
 import 'package:fontend/screens/Searching/search/explore_screen.dart';
 import 'package:fontend/screens/Setting/settings/widgets/terms_and_conditions/terms.dart';
@@ -19,23 +22,31 @@ import 'package:fontend/theme/theme_provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
+  // Đảm bảo Flutter binding đã sẵn sàng
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized(); // <--- KHỞI TẠO NGÔN NGỮ
 
-  // 1. Khởi tạo Firebase
+  // 1. Khởi tạo Ngôn ngữ (Easy Localization)
+  await EasyLocalization.ensureInitialized();
+
+  // 2. Khởi tạo Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 2. Khởi tạo biến môi trường
+  // 3. Khởi tạo Biến môi trường (.env)
   await dotenv.load(fileName: ".env");
 
+  // 4. Khởi tạo Cooking Timer Service (Tính năng đếm ngược chạy ngầm)
+  final timerService = CookingTimerService();
+  await timerService.initialize();
+
   runApp(
-    // BỌC APP TRONG EASY LOCALIZATION
     EasyLocalization(
       supportedLocales: const [Locale('vi'), Locale('en')],
       path: 'assets/translations',
       fallbackLocale: const Locale('vi'),
       startLocale: const Locale('vi'),
-      child: const ProviderScope(child: MyApp()),
+      child: const ProviderScope(
+        child: MyApp(),
+      ),
     ),
   );
 }
@@ -45,8 +56,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Theo dõi trạng thái Dark Mode từ Riverpod
     final isDark = ref.watch(themeProvider);
-    // Không cần watch languageProvider nữa, EasyLocalization tự lo
 
     return ScreenUtilInit(
       designSize: const Size(402, 874),
@@ -54,16 +65,16 @@ class MyApp extends ConsumerWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp(
-          title: 'My Flutter App',
+          title: 'Cooking App',
           debugShowCheckedModeBanner: false,
           useInheritedMediaQuery: true,
 
-          // --- CẤU HÌNH NGÔN NGỮ TỰ ĐỘNG ---
+          // --- CẤU HÌNH NGÔN NGỮ ---
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
-          // ---------------------------------
 
+          // --- CẤU HÌNH THEME ---
           themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
           theme: ThemeData(
             brightness: Brightness.light,
@@ -81,14 +92,21 @@ class MyApp extends ConsumerWidget {
             ),
             useMaterial3: true,
           ),
+
+          // --- CẤU HÌNH TEXT SCALER (FIX CHỮ KHÔNG BỊ TO NHỎ THEO HỆ THỐNG) ---
           builder: (context, widget) {
             final mediaQuery = MediaQuery.of(context);
             return MediaQuery(
-              data: mediaQuery.copyWith(textScaler: const TextScaler.linear(1.0)),
+              data: mediaQuery.copyWith(
+                textScaler: const TextScaler.linear(1.0),
+              ),
               child: widget!,
             );
           },
-          home: AuthGate(),
+
+          home: const AuthGate(),
+
+          // --- HỆ THỐNG ROUTES ---
           routes: {
             '/welcome': (context) => const WelcomeScreen(),
             '/signin': (context) => const SignInScreen(),
@@ -97,8 +115,8 @@ class MyApp extends ConsumerWidget {
             '/enterpass': (context) => const EnterResetPasswordScreen(),
             '/terms': (context) => const TermsPage(),
             '/mainlayout': (context) => const MainLayout(),
-            '/survey' : (context) => const SurveyStartScreen(),
-            '/authgate' : (context) => const AuthGate(),
+            '/survey': (context) => const SurveyStartScreen(),
+            '/authgate': (context) => const AuthGate(),
           },
         );
       },
