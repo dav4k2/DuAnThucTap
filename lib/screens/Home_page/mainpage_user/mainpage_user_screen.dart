@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widgets/home_header_user.dart';
-import 'widgets/search_bar_user.dart';
+//import 'widgets/search_bar_user.dart';
 import 'widgets/featured_recipes_user.dart';
 import 'widgets/recommend_list_user.dart';
 import 'package:fontend/navbar/smart_navbar.dart';
@@ -38,7 +38,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
           children: [
             const HomeHeader(),
             const SizedBox(height: 10),
-            const SearchBarWidget(),
+            //const SearchBarWidget(),
             const SizedBox(height: 20),
 
             // ⚪ Nền nội dung chính

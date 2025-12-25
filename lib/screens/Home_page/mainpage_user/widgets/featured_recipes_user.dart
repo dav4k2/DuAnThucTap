@@ -1,28 +1,36 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm Riverpod
+import 'package:fontend/screens/food_page/logic/recipe_provider.dart'; // Import provider của bạn
+import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart'; // Import trang chi tiết
 
-class FeaturedRecipes extends StatelessWidget {
+// 1. Chuyển thành ConsumerWidget để dùng được ref.read
+class FeaturedRecipes extends ConsumerWidget {
   const FeaturedRecipes({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);
 
+    // 2. Thêm 'id' để truyền vào provider khi click
     final List<Map<String, String>> recipes = [
       {
+        'id': '1',
         'image': 'image/Rectangle301.png',
         'title': 'Gà rán Công Phượng',
         'time': '45 Phút',
         'difficulty': 'Dễ',
       },
       {
+        'id': '2',
         'image': 'image/Rectangle30.png',
         'title': 'Mỳ Ý sốt Bolognese',
         'time': '15 Phút',
         'difficulty': 'Dễ',
       },
       {
+        'id': '3',
         'image': 'image/Rectangle302.png',
         'title': 'Phở Tái',
         'time': '60 Phút',
@@ -42,7 +50,7 @@ class FeaturedRecipes extends StatelessWidget {
                 'Công thức nổi bật'.tr(),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onBackground,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               Text(
@@ -59,54 +67,65 @@ class FeaturedRecipes extends StatelessWidget {
           height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
             itemCount: recipes.length,
             itemBuilder: (context, index) {
               final recipe = recipes[index];
-              return Container(
-                width: 140,
-                margin: EdgeInsets.only(
-                  left: index == 0 ? width * 0.05 : 10,
-                  right: index == recipes.length - 1 ? width * 0.05 : 0,
-                ),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
-                        recipe['image']!,
-                        width: 140,
-                        height: 180,
-                        fit: BoxFit.cover,
-                      ),
+
+              // 3. Sử dụng GestureDetector để bắt sự kiện chạm/click
+              return GestureDetector(
+                onTap: () {
+                  // Cập nhật recipeId vào provider trước khi chuyển trang
+                  // Giả sử recipeDetailProvider là một StateProvider hoặc tương tự
+                  ref.read(recipeDetailProvider.notifier).state = recipe['id']!;
+
+                  // Chuyển sang trang RecipeDetailPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RecipeDetailPage(),
                     ),
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(12),
+                  );
+                },
+                child: Container(
+                  width: 140,
+                  margin: const EdgeInsets.only(right: 12),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Image.asset(
+                            recipe['image']!,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              recipe['title']!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            const SizedBox(height: 4),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
+                                Text(
+                                  recipe['title']!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
                                 Row(
                                   children: [
                                     const Icon(Icons.access_time,
@@ -117,18 +136,10 @@ class FeaturedRecipes extends StatelessWidget {
                                       style: const TextStyle(
                                           color: Colors.white, fontSize: 11),
                                     ),
-                                  ],
-                                ),
-                                const Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 6),
-                                  child: Text('|',
-                                      style: TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 11)),
-                                ),
-                                Row(
-                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 4),
+                                      child: Text('|', style: TextStyle(color: Colors.white70)),
+                                    ),
                                     const Icon(Icons.emoji_emotions,
                                         color: Colors.white, size: 12),
                                     const SizedBox(width: 3),
@@ -141,11 +152,11 @@ class FeaturedRecipes extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               );
             },
