@@ -26,6 +26,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cupertino_native-0.1.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker_macos-0.2.2+1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/video_player_android-2.9.1" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/workmanager-0.6.0" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_ios-6.3.6" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_android-6.2.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1" />
@@ -57,7 +58,6 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_secure_storage_web-1.2.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/video_player-2.10.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/workmanager-0.6.0" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

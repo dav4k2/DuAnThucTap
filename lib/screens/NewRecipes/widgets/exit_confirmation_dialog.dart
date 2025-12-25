@@ -75,10 +75,7 @@ class ExitConfirmationDialog extends ConsumerWidget {
                 Expanded(
                   child: TextButton(
                     onPressed: () async {
-                      // Xoá nháp và reset state trước
-                      await ref.read(addRecipeProvider.notifier).clearDraftAndReset();
-                      // Sau đó trả về false để handleBackPressed thực hiện pop trang chính
-                      if (context.mounted) Navigator.pop(context, false);
+                      Navigator.pop(context, true);
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
@@ -122,10 +119,13 @@ class ExitConfirmationDialog extends ConsumerWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
-                      // Lưu nháp
-                      await ref.read(addRecipeProvider.notifier).saveAsDraft(context);
-                      // Trả về true để handleBackPressed thực hiện pop trang chính
-                      if (context.mounted) Navigator.pop(context, true);
+                      // 1. Gọi lưu nháp (logic mới đã xử lý mảng lồng nhau)
+                      final success = await ref.read(addRecipeProvider.notifier).saveAsDraft(context);
+
+                      // 2. Chỉ thoát nếu lưu thành công
+                      if (success && context.mounted) {
+                        Navigator.pop(context, true); // Trả về true để Screen chính cũng pop
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFE724C),

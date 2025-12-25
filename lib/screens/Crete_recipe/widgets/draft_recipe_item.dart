@@ -125,7 +125,7 @@ class DraftRecipeItem extends ConsumerWidget {
                       ? (draft.images.first.startsWith('http')
                       ? Image.network(draft.images.first, fit: BoxFit.cover)
                       : Image.file(File(draft.images.first), fit: BoxFit.cover))
-                      : Image.asset('assets/images/placeholder.jpg', fit: BoxFit.cover),
+                      : Image.asset('image/empty.png', fit: BoxFit.cover),
                 ),
               ),
               SizedBox(width: 16.w),

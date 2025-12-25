@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/NewRecipes/widgets/CategorySection.dart';
 
+import '../Crete_recipe/create_recipe_screen.dart';
 import 'widgets/title_section.dart';
 import 'logic/add_recipe_provider.dart';
 import 'widgets/back_button.dart';
@@ -122,6 +124,8 @@ class AddRecipeScreen extends ConsumerWidget {
                         errorText: state.difficultyError,
                       ),
 
+                      const CategorySection(),
+
                       // ===================== NGUYÊN LIỆU =====================
                       Padding(
                         padding: EdgeInsets.only(left: 36.w, top: 40.h),
@@ -190,14 +194,15 @@ class AddRecipeScreen extends ConsumerWidget {
                       if (state.steps.isNotEmpty)
                         ...state.steps.asMap().entries.map((e) {
                           final i = e.key;
-                          final t = e.value;
-                          // --- ĐÃ CẬP NHẬT TRUYỀN THAM SỐ CHO STEPITEM ---
+                          final stepModel = e.value; // Bây giờ là RecipeStepModel
+
                           return StepItem(
                             key: ValueKey('step_$i'),
                             index: i,
-                            description: t,
-                            duration: state.stepDurations.length > i ? state.stepDurations[i] : null,
-                            mediaPaths: state.stepMedia.length > i ? state.stepMedia[i] : [],
+                            // Lấy dữ liệu từ Model thay vì các list rời rạc
+                            description: stepModel.content,
+                            duration: stepModel.duration,
+                            mediaPaths: stepModel.media,
                             onChanged: (v) => notifier.updateStep(i, v),
                             onDelete: () => notifier.removeStep(i),
                           );
@@ -232,7 +237,15 @@ class AddRecipeScreen extends ConsumerWidget {
                           children: [
                             Expanded(
                               child: GestureDetector(
-                                onTap: () => notifier.saveAsDraft(context),
+                                onTap: () async {
+                                  // 1. Gọi hàm lưu nháp từ notifier
+                                  final success = await notifier.saveAsDraft(context);
+
+                                  // 2. Nếu lưu thành công, thực hiện nhảy trang
+                                  if (success && context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                },
                                 child: Container(
                                   height: 66.h,
                                   decoration: BoxDecoration(

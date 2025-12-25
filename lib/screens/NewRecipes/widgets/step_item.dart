@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import '../logic/add_recipe_provider.dart';
 
-class StepItem extends ConsumerWidget {
+class StepItem extends ConsumerStatefulWidget {
   final int index;
   final String description;
   final String? duration;
@@ -24,15 +24,41 @@ class StepItem extends ConsumerWidget {
     this.onDelete,
   }) : super(key: key);
 
+  @override
+  ConsumerState<StepItem> createState() => _StepItemState();
+}
+
+class _StepItemState extends ConsumerState<StepItem> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.description);
+  }
+
+  @override
+  void didUpdateWidget(StepItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.description != _controller.text) {
+      _controller.text = widget.description;
+      _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   bool _isVideo(String path) {
     final ext = path.split('.').last.toLowerCase();
     return ['mp4', 'mov', 'avi', 'mkv'].contains(ext);
   }
 
-  void _showMediaPicker(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
+  void _showMediaPicker(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
       backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
@@ -49,7 +75,7 @@ class StepItem extends ConsumerWidget {
                   Navigator.pop(ctx);
                   final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (pickedFile != null) {
-                    ref.read(addRecipeProvider.notifier).addStepMedia(index, pickedFile.path);
+                    ref.read(addRecipeProvider.notifier).addStepMedia(widget.index, pickedFile.path);
                   }
                 },
               ),
@@ -60,7 +86,7 @@ class StepItem extends ConsumerWidget {
                   Navigator.pop(ctx);
                   final pickedFile = await ImagePicker().pickVideo(source: ImageSource.gallery, maxDuration: const Duration(minutes: 5));
                   if (pickedFile != null) {
-                    ref.read(addRecipeProvider.notifier).addStepMedia(index, pickedFile.path);
+                    ref.read(addRecipeProvider.notifier).addStepMedia(widget.index, pickedFile.path);
                   }
                 },
               ),
@@ -72,16 +98,14 @@ class StepItem extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final errorText = ref.watch(addRecipeProvider.select((s) => s.stepErrors.length > index ? s.stepErrors[index] : null));
-
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final errorText = ref.watch(addRecipeProvider.select(
+            (s) => (s.stepErrors.length > widget.index) ? s.stepErrors[widget.index] : null
+    ));
     final fieldBgColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFEBEBEB);
     final fieldTextColor = isDark ? Colors.white : Colors.black87;
     final primaryColor = const Color(0xFFFFB901);
-
-    // Danh sách các phút từ 1 đến 60
     final List<String> minuteOptions = List.generate(60, (i) => '${i + 1} phút');
 
     return Padding(
@@ -90,7 +114,7 @@ class StepItem extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(width: 15.w),
-          Text('${index + 1}', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: fieldTextColor)),
+          Text('${widget.index + 1}', style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: fieldTextColor)),
           SizedBox(width: 20.w),
           Container(width: 3.w, height: 46.h, color: const Color(0xFF21DB53)),
           SizedBox(width: 20.w),
@@ -101,7 +125,6 @@ class StepItem extends ConsumerWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Ô NHẬP TEXT MÔ TẢ
                     Expanded(
                       flex: 3,
                       child: Container(
@@ -111,8 +134,7 @@ class StepItem extends ConsumerWidget {
                           border: errorText != null ? Border.all(color: Colors.red, width: 1.5) : null,
                         ),
                         child: TextField(
-                          controller: TextEditingController(text: description)
-                            ..selection = TextSelection.fromPosition(TextPosition(offset: description.length)),
+                          controller: _controller,
                           style: TextStyle(fontSize: 14.sp, color: fieldTextColor),
                           decoration: InputDecoration(
                             hintText: 'Mô tả bước...',
@@ -122,12 +144,11 @@ class StepItem extends ConsumerWidget {
                             contentPadding: EdgeInsets.all(12.w),
                           ),
                           maxLines: null,
-                          onChanged: onChanged,
+                          onChanged: widget.onChanged,
                         ),
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    // DROPBOX CHỌN PHÚT
                     Expanded(
                       flex: 2,
                       child: Container(
@@ -138,7 +159,7 @@ class StepItem extends ConsumerWidget {
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            value: duration,
+                            value: widget.duration,
                             hint: Text('Phút', style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
                             isExpanded: true,
                             items: minuteOptions.map((String value) {
@@ -147,28 +168,24 @@ class StepItem extends ConsumerWidget {
                                 child: Text(value, style: TextStyle(fontSize: 13.sp, color: fieldTextColor)),
                               );
                             }).toList(),
-                            onChanged: (val) => ref.read(addRecipeProvider.notifier).updateStepDuration(index, val),
+                            onChanged: (val) => ref.read(addRecipeProvider.notifier).updateStepDuration(widget.index, val),
                           ),
                         ),
                       ),
                     ),
                   ],
                 ),
-
                 if (errorText != null)
                   Padding(
                     padding: EdgeInsets.only(top: 4.h),
                     child: Text(errorText, style: TextStyle(color: Colors.red, fontSize: 11.sp)),
                   ),
-
                 SizedBox(height: 12.h),
-
-                // GALLERY MEDIA (ẢNH/VIDEO)
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      ...mediaPaths.asMap().entries.map((entry) {
+                      ...widget.mediaPaths.asMap().entries.map((entry) {
                         int mediaIdx = entry.key;
                         String path = entry.value;
                         return Padding(
@@ -190,7 +207,7 @@ class StepItem extends ConsumerWidget {
                                 top: 2,
                                 right: 2,
                                 child: GestureDetector(
-                                  onTap: () => ref.read(addRecipeProvider.notifier).removeStepMedia(index, mediaIdx),
+                                  onTap: () => ref.read(addRecipeProvider.notifier).removeStepMedia(widget.index, mediaIdx),
                                   child: Container(
                                     decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
                                     child: Icon(Icons.close, size: 14.sp, color: Colors.white),
@@ -201,10 +218,8 @@ class StepItem extends ConsumerWidget {
                           ),
                         );
                       }),
-
-                      // NÚT THÊM TIẾP
                       GestureDetector(
-                        onTap: () => _showMediaPicker(context, ref),
+                        onTap: () => _showMediaPicker(context),
                         child: DottedBorder(
                           color: primaryColor,
                           strokeWidth: 2,
@@ -228,10 +243,10 @@ class StepItem extends ConsumerWidget {
               ],
             ),
           ),
-          if (onDelete != null)
+          if (widget.onDelete != null)
             IconButton(
               icon: Icon(Icons.close, size: 20.sp, color: Colors.grey),
-              onPressed: onDelete,
+              onPressed: widget.onDelete,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
             ),
