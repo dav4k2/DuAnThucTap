@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import '../../Crete_recipe/logic/publish_recipe.dart';
+
 class RecipeInfoSection extends StatelessWidget {
   final double width;
-  const RecipeInfoSection({super.key, required this.width});
+  final PublishRecipe recipe;
+  const RecipeInfoSection({super.key, required this.width, required this.recipe});
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +61,7 @@ class RecipeInfoSection extends StatelessWidget {
                 ),
                 // Tên món ở giữa
                 Expanded(
-                  child: Text(
-                    "PHỞ TÁI".tr(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "SF Pro Rounded",
-                      letterSpacing: 2,
-                    ),
-                  ),
+                  child: Text(recipe.title.toUpperCase().tr()),
                 ),
                 // Rating
                 Container(
@@ -97,14 +91,7 @@ class RecipeInfoSection extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             // Text 6 nguyên liệu ở giữa
-            Text(
-              "6 nguyên liệu".tr(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
+            Text("${recipe.ingredients.length} nguyên liệu".tr()),
             const SizedBox(height: 16),
             // Thông tin thời gian, độ khó, số người
             Row(
@@ -112,7 +99,7 @@ class RecipeInfoSection extends StatelessWidget {
               children: [
                 _InfoItem(
                   icon: Icons.access_time,
-                  label: "60 phút".tr(),
+                  label: recipe.cookingTime ?? "30 phút",
                   color: const Color(0xFF00D242),
                 ),
                 _InfoItem(

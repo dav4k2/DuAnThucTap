@@ -2,8 +2,11 @@ import 'dart:ui'; // ✅ QUAN TRỌNG: Import để làm mờ
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import '../../Crete_recipe/logic/publish_recipe.dart';
+
 class HeaderSection extends StatefulWidget {
-  const HeaderSection({super.key});
+  final PublishRecipe recipe;
+  const HeaderSection({super.key, required this.recipe});
 
   @override
   State<HeaderSection> createState() => _HeaderSectionState();
@@ -29,10 +32,10 @@ class _HeaderSectionState extends State<HeaderSection> {
                 bottomLeft: Radius.circular(32),
                 bottomRight: Radius.circular(32),
               ),
-              child: Image.asset(
-                "image/pho_tai_nam.png",
+              child: Image.network(
+                widget.recipe.images.isNotEmpty ? widget.recipe.images.first : '',
                 fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
+                errorBuilder: (context, error, stackTrace) => Image.asset("image/placeholder.png"), // Ảnh mặc định nếu lỗi
               ),
             ),
           ),

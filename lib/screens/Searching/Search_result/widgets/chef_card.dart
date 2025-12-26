@@ -1,12 +1,16 @@
-// lib/widgets/chef_card.dart (hoặc đường dẫn hiện tại)
+// lib/widgets/chef_card.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../Crete_recipe/logic/publish_service.dart';
 
 class ChefCard extends StatefulWidget {
   final String name;
   final String recipeCount;
   final String avatarPath;
   final bool initiallyFollowing;
+  final bool isNetworkImage;
+  final String chefId;
 
   const ChefCard({
     super.key,
@@ -14,6 +18,8 @@ class ChefCard extends StatefulWidget {
     required this.recipeCount,
     required this.avatarPath,
     this.initiallyFollowing = false,
+    this.isNetworkImage = true,
+    required this.chefId,
   });
 
   @override
@@ -30,26 +36,24 @@ class _ChefCardState extends State<ChefCard> {
   }
 
   void _toggleFollow() {
-    setState(() {
-      isFollowing = !isFollowing;
-    });
-    // TODO: Gọi API follow/unfollow ở đây
+    PublishService().toggleFollow(widget.chefId);
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    // Logic chọn ImageProvider phù hợp
+    final ImageProvider avatarImage = (widget.isNetworkImage && widget.avatarPath.isNotEmpty)
+        ? NetworkImage(widget.avatarPath)
+        : AssetImage(widget.avatarPath.isNotEmpty ? widget.avatarPath : 'assets/images/default_avatar.png') as ImageProvider;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900]! : Colors.white, // Nền đen mịn / trắng
+        color: isDark ? Colors.grey[900]! : Colors.white,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.transparent,
-          width: 1,
-        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(isDark ? 0.4 : 0.08),
@@ -60,19 +64,19 @@ class _ChefCardState extends State<ChefCard> {
       ),
       child: Row(
         children: [
-          // Avatar
+          // Avatar xử lý linh hoạt ảnh Network/Asset
           CircleAvatar(
             radius: 32.r,
-            backgroundImage: AssetImage(widget.avatarPath),
-            onBackgroundImageError: (_, __) {
-              debugPrint('Không load được ảnh: ${widget.avatarPath}');
-            },
+            backgroundImage: avatarImage,
             backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+            onBackgroundImageError: (exception, stackTrace) {
+              debugPrint('Lỗi tải ảnh đại diện: $exception');
+            },
           ),
 
           SizedBox(width: 16.w),
 
-          // Tên + số công thức
+          // Thông tin tên và số lượng bài đăng
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,47 +99,37 @@ class _ChefCardState extends State<ChefCard> {
               ],
             ),
           ),
-
-          // Nút Theo dõi / Đang theo dõi – ĐẸP CỰC KỲ Ở DARK MODE
-          GestureDetector(
-            onTap: _toggleFollow,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 9.h),
-              decoration: BoxDecoration(
-                color: isFollowing
-                    ? (isDark ? Colors.white.withOpacity(0.15) : Colors.white)
-                    : const Color(0xFFFFC735),
-                border: Border.all(
-                  color: isFollowing
-                      ? const Color(0xFFFFC836)
-                      : Colors.transparent,
-                  width: 1.8,
-                ),
-                borderRadius: BorderRadius.circular(30.r),
-                boxShadow: isFollowing
-                    ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.4 : 0.25),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
+          StreamBuilder<bool>(
+            stream: PublishService().isFollowingStream(widget.chefId),
+            builder: (context, snapshot) {
+              final following = snapshot.data ?? false;
+              return GestureDetector(
+                onTap: _toggleFollow,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 9.h),
+                  decoration: BoxDecoration(
+                    color: isFollowing
+                        ? (isDark ? Colors.white.withOpacity(0.15) : Colors.white)
+                        : const Color(0xFFFFC735),
+                    border: Border.all(
+                      color: const Color(0xFFFFC836),
+                      width: 1.8,
+                    ),
+                    borderRadius: BorderRadius.circular(30.r),
                   ),
-                ]
-                    : null,
-              ),
-              child: Text(
-                isFollowing ? 'Đang theo dõi' : 'Theo dõi',
-                style: TextStyle(
-                  fontSize: 13.5.sp,
-                  fontWeight: FontWeight.w600,
-                  color: isFollowing
-                      ? (isDark ? const Color(0xFFFFC836) : const Color(0xFFFFC836))
-                      : Colors.black,
+                  child: Text(
+                    isFollowing ? 'Đang theo dõi' : 'Theo dõi',
+                    style: TextStyle(
+                      fontSize: 13.5.sp,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFFFC836),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
+              );
+            },
+          )
         ],
       ),
     );

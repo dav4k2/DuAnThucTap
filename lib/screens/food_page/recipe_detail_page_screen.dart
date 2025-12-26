@@ -8,10 +8,12 @@ import 'package:fontend/screens/food_page/widgets/ingredients_section.dart';
 import 'package:fontend/screens/food_page/widgets/rating_section.dart';
 import 'package:fontend/screens/food_page/widgets/recipe_info_section.dart';
 import 'package:fontend/screens/food_page/widgets/steps_section.dart';
+import '../Crete_recipe/logic/publish_recipe.dart';
 import 'logic/recipe_provider.dart';
 
 class RecipeDetailPage extends ConsumerWidget {
-  const RecipeDetailPage({super.key});
+  final PublishRecipe recipe;
+  const RecipeDetailPage({super.key, required this.recipe});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,13 +31,13 @@ class RecipeDetailPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HeaderSection(),
-                  RecipeInfoSection(width: width),
-                  DescriptionSection(width: width),
-                  IngredientsSection(width: width),
-                  StepsSection(width: width),
+                  HeaderSection(recipe: recipe),
+                  RecipeInfoSection(width: width, recipe: recipe),
+                  DescriptionSection(width: width, recipe: recipe),
+                  IngredientsSection(width: width, recipe: recipe),
+                  StepsSection(width: width, recipe: recipe),
                   RatingSection(width: width),
-                  AuthorSection(width: width),
+                  AuthorSection(width: width, authorId: recipe.authorId ?? ''),
                   CommentsSection(width: width),
                   const SizedBox(height: 40),
                 ],

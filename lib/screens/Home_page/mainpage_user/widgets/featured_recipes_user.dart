@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm Riverpod
 import 'package:fontend/screens/food_page/logic/recipe_provider.dart'; // Import provider của bạn
-import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart'; // Import trang chi tiết
+import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
+
+import '../../../Crete_recipe/logic/publish_recipe.dart'; // Import trang chi tiết
 
 // 1. Chuyển thành ConsumerWidget để dùng được ref.read
 class FeaturedRecipes extends ConsumerWidget {
@@ -75,15 +77,19 @@ class FeaturedRecipes extends ConsumerWidget {
               // 3. Sử dụng GestureDetector để bắt sự kiện chạm/click
               return GestureDetector(
                 onTap: () {
-                  // Cập nhật recipeId vào provider trước khi chuyển trang
-                  // Giả sử recipeDetailProvider là một StateProvider hoặc tương tự
-                  ref.read(recipeDetailProvider.notifier).state = recipe['id']!;
+                  // Chuyển đổi Map sang PublishRecipe
+                  final publishRecipe = PublishRecipe(
+                    id: recipe['id'] ?? '',
+                    title: recipe['title'] ?? '',
+                    images: [recipe['image'] ?? ''],
+                    cookingTime: recipe['time'],
+                    difficulty: recipe['difficulty'],
+                  );
 
-                  // Chuyển sang trang RecipeDetailPage
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const RecipeDetailPage(),
+                      builder: (context) => RecipeDetailPage(recipe: publishRecipe),
                     ),
                   );
                 },

@@ -1,21 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-class IngredientsSection extends StatelessWidget {
-  final double width;
-  const IngredientsSection({super.key, required this.width});
+import '../../Crete_recipe/logic/publish_recipe.dart';
 
-  final ingredients = const [
-    "2 quả ớt (không bắt buộc)",
-    "1 gói gia vị phở",
-    "200gr xương bò",
-    "500gr bánh phở",
-    "200gr thịt bò",
-    "1 nắm hành lá",
-  ];
+class IngredientsSection extends StatelessWidget {
+  final PublishRecipe recipe;
+  final double width;
+  const IngredientsSection({super.key, required this.width, required this.recipe});
 
   @override
   Widget build(BuildContext context) {
+    final ingredients = recipe.ingredients;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

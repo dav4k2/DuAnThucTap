@@ -1,4 +1,4 @@
-// lib/widgets/recipe_card.dart (hoặc đường dẫn hiện tại của bạn)
+// lib/widgets/recipe_card.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -9,6 +9,7 @@ class RecipeCard extends StatelessWidget {
   final String author;
   final String rating;
   final String imagePath;
+  final bool isNetworkImage; // Thêm cờ đánh dấu ảnh từ internet
   final VoidCallback? onTap;
 
   const RecipeCard({
@@ -19,9 +20,11 @@ class RecipeCard extends StatelessWidget {
     required this.author,
     required this.rating,
     required this.imagePath,
+    this.isNetworkImage = true, // Mặc định là ảnh từ mạng
     this.onTap,
   });
 
+  // Giữ nguyên widget _frosted của bạn
   Widget _frosted({
     required BuildContext context,
     required Widget child,
@@ -31,7 +34,6 @@ class RecipeCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
-
         color: isDark ? Colors.black.withOpacity(0.35) : Colors.white.withOpacity(0.75),
         borderRadius: radius ?? BorderRadius.circular(20.r),
         border: Border.all(
@@ -52,15 +54,19 @@ class RecipeCard extends StatelessWidget {
       onTap: onTap,
       child: Stack(
         children: [
+          // KHỐI HÌNH ẢNH CHÍNH
           Container(
             height: 200.h,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30.r),
               image: DecorationImage(
-                image: AssetImage(imagePath),
+                // Tự động chọn AssetImage hoặc NetworkImage dựa trên biến isNetworkImage
+                image: (isNetworkImage && imagePath.isNotEmpty)
+                    ? NetworkImage(imagePath) as ImageProvider
+                    : AssetImage(imagePath.isNotEmpty ? imagePath : 'assets/images/placeholder_recipe.jpg'),
                 fit: BoxFit.cover,
               ),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
                   blurRadius: 8,
@@ -69,25 +75,31 @@ class RecipeCard extends StatelessWidget {
               ],
             ),
           ),
+
+          // LỚP PHỦ NỀN CHO CHỮ (GRADIENT HOẶC OVERLAY)
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: Container(
-              height: 50.h,
+              height: 65.h, // Tăng nhẹ để text không bị sát
               decoration: BoxDecoration(
-                color: isDark ? Colors.black.withOpacity(0.5) : Colors.white.withOpacity(0.8),
+                color: isDark ? Colors.black.withOpacity(0.6) : Colors.white.withOpacity(0.85),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(20.r),
                   bottom: Radius.circular(30.r),
                 ),
-                border: Border.all(color: isDark ? Colors.white.withOpacity(0.3) : Colors.black.withOpacity(0.5)),
+                border: Border.all(
+                  color: isDark ? Colors.white.withOpacity(0.2) : Colors.black.withOpacity(0.1),
+                ),
               ),
             ),
           ),
+
+          // TIÊU ĐỀ MÓN ĂN
           Positioned(
             left: 20.w,
-            top: 151.h,
+            top: 145.h,
             right: 20.w,
             child: Text(
               title,
@@ -96,40 +108,43 @@ class RecipeCard extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: textColor,
               ),
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ),
+
+          // THÔNG TIN CHI TIẾT (THỜI GIAN, ĐỘ KHÓ, TÁC GIẢ)
           Positioned(
             left: 16.w,
-            bottom: 5.h,
+            bottom: 10.h,
+            right: 16.w,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.access_time, size: 14.sp, color: textColor),
-                SizedBox(width: 4.w),
-                Text(time, style: TextStyle(fontSize: 12.sp, color: textColor)),
+                Row(
+                  children: [
+                    Icon(Icons.access_time, size: 14.sp, color: textColor),
+                    SizedBox(width: 4.w),
+                    Text(time, style: TextStyle(fontSize: 12.sp, color: textColor)),
+                    SizedBox(width: 12.w),
+                    Icon(Icons.whatshot, size: 14.sp, color: Colors.red),
+                    SizedBox(width: 4.w),
+                    Text(level, style: TextStyle(fontSize: 12.sp, color: textColor)),
+                  ],
+                ),
+                Text(
+                  'Bởi $author',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w500,
+                    color: textColor.withOpacity(0.8),
+                  ),
+                ),
               ],
             ),
           ),
-          Positioned(
-            left: 100.w,
-            bottom: 5.h,
-            child: Row(
-              children: [
-                Icon(Icons.whatshot, size: 14.sp, color: Colors.red),
-                SizedBox(width: 4.w),
-                Text(level, style: TextStyle(fontSize: 12.sp, color: textColor)),
-              ],
-            ),
-          ),
-          Positioned(
-            right: 20.w,
-            bottom: 5.h,
-            child: Text(
-              'Đăng bởi $author',
-              style: TextStyle(fontSize: 12.sp, color: textColor),
-            ),
-          ),
+
+          // ĐÁNH GIÁ (STAR)
           Positioned(
             left: 12.w,
             top: 12.h,
@@ -142,22 +157,21 @@ class RecipeCard extends StatelessWidget {
                   SizedBox(width: 6.w),
                   Text(
                     rating,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: textColor),
                   ),
                 ],
               ),
             ),
           ),
+
+          // NÚT YÊU THÍCH
           Positioned(
             right: 16.w,
             top: 12.h,
             child: _frosted(
               context: context,
               radius: BorderRadius.circular(16.r),
-              child: Icon(Icons.favorite, color: Color(0xFFFF6B9D), size: 18.sp),
+              child: Icon(Icons.favorite, color: const Color(0xFFFF6B9D), size: 18.sp),
             ),
           ),
         ],

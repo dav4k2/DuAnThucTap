@@ -25,13 +25,18 @@ class PublishService {
       final user = _auth.currentUser;
       if (user == null) return false;
 
-      // Upload ảnh
-      final uploadedUrls =
-      await _recipeService.uploadImages(recipe.images);
+      // Lấy thông tin người dùng hiện tại
+      final userDoc = await getUserInfo(user.uid);
+      final authorName = userDoc?['display_name'] ?? 'Người dùng';
+
+      List<String> uploadedUrls = await _recipeService.uploadImages(recipe.images);
 
       final data = recipe.toFirestore();
       data['images'] = uploadedUrls;
       data['authorId'] = user.uid;
+      data['authorName'] = authorName; // 👈 Lưu thêm tên tác giả để tìm kiếm nhanh
+      data['createdAt'] = FieldValue.serverTimestamp();
+      data['name_lowercase'] = recipe.title.toLowerCase();
 
       await _firestore
           .collection('users')
@@ -88,5 +93,79 @@ class PublishService {
   Future<Map<String, dynamic>?> getUserInfo(String uid) async {
     final doc = await _firestore.collection('users').doc(uid).get();
     return doc.data();
+  }
+
+  Stream<List<PublishRecipe>> searchRecipes(String query) {
+    final lowercaseQuery = query.toLowerCase();
+
+    return _firestore
+        .collectionGroup('published_recipes')
+        .snapshots()
+        .asyncMap((snapshot) async {
+      List<PublishRecipe> results = [];
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data();
+        final recipe = PublishRecipe.fromFirestore(doc);
+
+        // 1. Kiểm tra theo tên công thức (đã có lowercase trong DB)
+        bool matchTitle = recipe.title.toLowerCase().contains(lowercaseQuery);
+
+        // 2. Kiểm tra theo tên tác giả (Cần lấy thông tin User)
+        bool matchAuthor = false;
+        if (recipe.authorId != null) {
+          final authorInfo = await getUserInfo(recipe.authorId!);
+          final authorName = authorInfo?['display_name']?.toString().toLowerCase() ?? '';
+          if (authorName.contains(lowercaseQuery)) {
+            matchAuthor = true;
+          }
+        }
+
+        if (matchTitle || matchAuthor) {
+          results.add(recipe);
+        }
+      }
+      return results;
+    });
+  }
+
+  Future<int> getRecipeCount(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collectionGroup('published_recipes')
+          .where('authorId', isEqualTo: userId)
+          .count()
+          .get();
+      return snapshot.count ?? 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  Future<void> toggleFollow(String targetUserId) async {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+
+    final userRef = _firestore.collection('users').doc(currentUser.uid);
+    final doc = await userRef.get();
+
+    // Lấy danh sách đang theo dõi hiện tại
+    final List<String> following = List<String>.from(doc.data()?['following'] ?? []);
+
+    if (following.contains(targetUserId)) {
+      await userRef.update({'following': FieldValue.arrayRemove([targetUserId])});
+    } else {
+      await userRef.update({'following': FieldValue.arrayUnion([targetUserId])});
+    }
+  }
+
+  Stream<bool> isFollowingStream(String targetUserId) {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return Stream.value(false);
+
+    return _firestore.collection('users').doc(currentUser.uid).snapshots().map((snapshot) {
+      final List<String> following = List<String>.from(snapshot.data()?['following'] ?? []);
+      return following.contains(targetUserId);
+    });
   }
 }

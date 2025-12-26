@@ -200,7 +200,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen>
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
             ),
-            child: SearchResultsTabs(tabController: _tabController),
+            child: SearchResultsTabs(tabController: _tabController, query: widget.query,),
           ),
         ),
       ),
