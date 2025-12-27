@@ -86,6 +86,7 @@ class FeaturedRecipes extends ConsumerWidget {
                     cookingTime: recipe['time'],
                     difficulty: recipe['difficulty'],
                   );
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -111,7 +112,8 @@ class FeaturedRecipes extends ConsumerWidget {
                           left: 8,
                           right: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.black.withOpacity(0.4),
                               borderRadius: BorderRadius.circular(12),
@@ -131,27 +133,32 @@ class FeaturedRecipes extends ConsumerWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-
+                                
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
                                   alignment: Alignment.centerLeft,
                                   child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(Icons.access_time, color: Colors.white, size: 12),
+                                      const Icon(Icons.access_time,
+                                          color: Colors.white, size: 12),
                                       const SizedBox(width: 3),
                                       Text(
                                         recipe['time']!,
-                                        style: const TextStyle(color: Colors.white, fontSize: 11),
+                                        style: const TextStyle(
+                                            color: Colors.white, fontSize: 11),
                                       ),
                                       const Padding(
                                         padding: EdgeInsets.symmetric(horizontal: 4),
                                         child: Text('|', style: TextStyle(color: Colors.white70)),
                                       ),
-                                      const Icon(Icons.emoji_emotions, color: Colors.white, size: 12),
+                                      const Icon(Icons.emoji_emotions,
+                                          color: Colors.white, size: 12),
                                       const SizedBox(width: 3),
                                       Text(
                                         recipe['difficulty']!,
-                                        style: const TextStyle(color: Colors.white, fontSize: 11),
+                                        style: const TextStyle(
+                                            color: Colors.white, fontSize: 11),
                                       ),
                                     ],
                                   ),
