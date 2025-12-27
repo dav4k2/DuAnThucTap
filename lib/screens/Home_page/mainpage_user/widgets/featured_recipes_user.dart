@@ -133,7 +133,7 @@ class FeaturedRecipes extends ConsumerWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                
+
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
                                   alignment: Alignment.centerLeft,
