@@ -1,12 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm Riverpod
-import 'package:fontend/screens/food_page/logic/recipe_provider.dart'; // Import provider của bạn
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
+import '../../../Crete_recipe/logic/publish_recipe.dart';
 
-import '../../../Crete_recipe/logic/publish_recipe.dart'; // Import trang chi tiết
-
-// 1. Chuyển thành ConsumerWidget để dùng được ref.read
 class FeaturedRecipes extends ConsumerWidget {
   const FeaturedRecipes({super.key});
 
@@ -15,7 +12,6 @@ class FeaturedRecipes extends ConsumerWidget {
     final width = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);
 
-    // 2. Thêm 'id' để truyền vào provider khi click
     final List<Map<String, String>> recipes = [
       {
         'id': '1',
@@ -33,6 +29,13 @@ class FeaturedRecipes extends ConsumerWidget {
       },
       {
         'id': '3',
+        'image': 'image/Rectangle302.png',
+        'title': 'Phở Tái',
+        'time': '60 Phút',
+        'difficulty': 'Dễ',
+      },
+      {
+        'id': '4',
         'image': 'image/Rectangle302.png',
         'title': 'Phở Tái',
         'time': '60 Phút',
@@ -74,10 +77,8 @@ class FeaturedRecipes extends ConsumerWidget {
             itemBuilder: (context, index) {
               final recipe = recipes[index];
 
-              // 3. Sử dụng GestureDetector để bắt sự kiện chạm/click
               return GestureDetector(
                 onTap: () {
-                  // Chuyển đổi Map sang PublishRecipe
                   final publishRecipe = PublishRecipe(
                     id: recipe['id'] ?? '',
                     title: recipe['title'] ?? '',
@@ -85,7 +86,6 @@ class FeaturedRecipes extends ConsumerWidget {
                     cookingTime: recipe['time'],
                     difficulty: recipe['difficulty'],
                   );
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -111,8 +111,7 @@ class FeaturedRecipes extends ConsumerWidget {
                           left: 8,
                           right: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.black.withOpacity(0.4),
                               borderRadius: BorderRadius.circular(12),
@@ -132,29 +131,30 @@ class FeaturedRecipes extends ConsumerWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.access_time,
-                                        color: Colors.white, size: 12),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      recipe['time']!,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 11),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 4),
-                                      child: Text('|', style: TextStyle(color: Colors.white70)),
-                                    ),
-                                    const Icon(Icons.emoji_emotions,
-                                        color: Colors.white, size: 12),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      recipe['difficulty']!,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 11),
-                                    ),
-                                  ],
+
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.access_time, color: Colors.white, size: 12),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        recipe['time']!,
+                                        style: const TextStyle(color: Colors.white, fontSize: 11),
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 4),
+                                        child: Text('|', style: TextStyle(color: Colors.white70)),
+                                      ),
+                                      const Icon(Icons.emoji_emotions, color: Colors.white, size: 12),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        recipe['difficulty']!,
+                                        style: const TextStyle(color: Colors.white, fontSize: 11),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

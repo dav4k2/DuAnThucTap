@@ -13,6 +13,7 @@ class PublishRecipe{
   final String? difficulty;
   final List<String> ingredients;
   final List<String> steps;
+  final List<String> tags;
   final DateTime createdAt;
 
   PublishRecipe({
@@ -27,6 +28,7 @@ class PublishRecipe{
     this.difficulty,
     this.ingredients = const [],
     this.steps = const [],
+    this.tags = const [],
     DateTime? createdAt,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
@@ -52,6 +54,7 @@ class PublishRecipe{
     String? difficulty,
     List<String>? ingredients,
     List<String>? steps,
+    List<String>? tags,
   }) {
     return PublishRecipe(
       id: id,
@@ -65,6 +68,7 @@ class PublishRecipe{
       difficulty: difficulty ?? this.difficulty,
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
+      tags: tags ?? this.tags,
       createdAt: DateTime.now(),
     );
   }
@@ -81,6 +85,7 @@ class PublishRecipe{
     'difficulty': difficulty,
     'ingredients': ingredients,
     'steps': steps,
+    'tags': tags,
     'createdAt': FieldValue.serverTimestamp(),
   };
 
@@ -101,6 +106,7 @@ class PublishRecipe{
       difficulty: data['difficulty'],
       ingredients: List<String>.from(data['ingredients'] ?? []),
       steps: List<String>.from(data['steps'] ?? []),
+      tags: List<String>.from(data['tags'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ??
           DateTime.fromMillisecondsSinceEpoch(0),
     );

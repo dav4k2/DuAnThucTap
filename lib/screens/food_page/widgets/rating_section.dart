@@ -1,16 +1,23 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-class RatingSection extends StatelessWidget {
+class RatingSection extends StatefulWidget {
   final double width;
   const RatingSection({super.key, required this.width});
+
+  @override
+  State<RatingSection> createState() => _RatingSectionState();
+}
+
+class _RatingSectionState extends State<RatingSection> {
+  // 1. Khởi tạo giá trị ban đầu là 0
+  int _currentRating = 0;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         // ---------------- LEFT: SCORE + STARS ----------------
         Expanded(
           flex: 4,
@@ -23,23 +30,38 @@ class RatingSection extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              const Text(
-                "4.9",
-                style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
+              // 2. HIỂN THỊ ĐIỂM: Nếu _currentRating = 0 thì hiện 0, ngược lại hiện số sao
+              Text(
+                _currentRating == 0 ? "0" : _currentRating.toDouble().toString(),
+                style: const TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 4),
 
-              // Stars
+              // 3. DANH SÁCH SAO CÓ THỂ TƯƠNG TÁC
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  5,
-                      (index) => const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2),
-                    child: Icon(Icons.star, color: Color(0xFFFFC107), size: 26),
-                  ),
-                ),
+                children: List.generate(5, (index) {
+                  int starValue = index + 1;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _currentRating = starValue;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Icon(
+                        Icons.star,
+                        // Nếu index nhỏ hơn điểm hiện tại thì tô vàng, ngược lại màu xám
+                        color: index < _currentRating
+                            ? const Color(0xFFFFC107)
+                            : Colors.grey.shade300,
+                        size: 26,
+                      ),
+                    ),
+                  );
+                }),
               ),
 
               const SizedBox(height: 4),
@@ -54,7 +76,7 @@ class RatingSection extends StatelessWidget {
 
         const SizedBox(width: 15),
 
-        // ---------------- RIGHT: PROGRESS BARS ----------------
+        // ---------------- RIGHT: PROGRESS BARS (Giữ nguyên) ----------------
         Expanded(
           flex: 5,
           child: Column(
@@ -83,9 +105,7 @@ class RatingSection extends StatelessWidget {
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
-
           const SizedBox(width: 8),
-
           Expanded(
             child: Stack(
               children: [
@@ -101,7 +121,7 @@ class RatingSection extends StatelessWidget {
                   child: Container(
                     height: 6,
                     decoration: BoxDecoration(
-                      color: Color(0xFFFFC107),
+                      color: const Color(0xFFFFC107),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

@@ -4,36 +4,78 @@ import 'package:fontend/screens/Crete_recipe/logic/publish_recipe.dart';
 
 class DescriptionSection extends StatelessWidget {
   final double width;
-  final PublishRecipe recipe; // ✅ Nhận dữ liệu thực tế
+  final PublishRecipe recipe;
 
   const DescriptionSection({super.key, required this.width, required this.recipe});
 
   @override
   Widget build(BuildContext context) {
+    // Danh sách tags code cứng theo yêu cầu
+    final List<String> tags = ["Món Việt", "Phở", "Bữa sáng", "Món Á"];
+
     return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Text.rich(
-        TextSpan(
-          children: [
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // --- PHẦN MÔ TẢ ---
+          Text.rich(
             TextSpan(
-              // ✅ Hiển thị mô tả từ Firebase
-              text: recipe.description.isNotEmpty
-                  ? recipe.description
-                  : "Chưa có mô tả cho món ăn này.".tr(),
-              style: TextStyle(
-                  color: Colors.black.withOpacity(0.6),
-                  fontSize: 14,
-                  height: 1.6),
+              children: [
+                TextSpan(
+                  text: recipe.description.isNotEmpty
+                      ? (recipe.description.length > 100
+                      ? "${recipe.description.substring(0, 100)}..."
+                      : recipe.description)
+                      : "Chưa có mô tả cho món ăn này.".tr(),
+                  style: TextStyle(
+                      color: Colors.black.withOpacity(0.6),
+                      fontSize: 14,
+                      height: 1.6),
+                ),
+                if (recipe.description.length > 100)
+                  TextSpan(
+                    text: " Xem thêm".tr(),
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+              ],
             ),
-            if (recipe.description.length > 100)
-              TextSpan(
-                text: " Xem thêm".tr(),
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
-              ),
-          ],
+          ),
+
+          const SizedBox(height: 16), // Khoảng cách giữa mô tả và tags
+
+          // --- PHẦN TAGS (CODE CỨNG) ---
+          Wrap(
+            spacing: 8.0, // Khoảng cách ngang giữa các tag
+            runSpacing: 8.0, // Khoảng cách dọc khi xuống dòng
+            children: tags.map((tag) => _buildTagItem(tag)).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget tạo từng ô tag
+  Widget _buildTagItem(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25), // Độ bo tròn lớn tạo hình viên thuốc
+        border: Border.all(
+          color: Colors.grey.shade300, // Màu viền xám nhạt
+          width: 1,
+        ),
+      ),
+      child: Text(
+        label.tr(), // Dùng tr() để hỗ trợ đa ngôn ngữ nếu cần
+        style: const TextStyle(
+          color: Color(0xFF4A5568), // Màu chữ xanh xám đậm
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
