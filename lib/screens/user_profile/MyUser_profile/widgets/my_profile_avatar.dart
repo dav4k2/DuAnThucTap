@@ -42,7 +42,7 @@ class MyProfileAvatar extends StatelessWidget {
                 // Logic: Nếu có link ảnh -> dùng NetworkImage, ngược lại dùng AssetImage
                 image: hasImage
                     ? NetworkImage(imageUrl!) as ImageProvider
-                    : const AssetImage("image/avatar.png"), // Ảnh mặc định trong assets
+                    : const AssetImage("image/empty_user.jpg"), // Ảnh mặc định trong assets
                 fit: BoxFit.cover,
               ),
               shape: const OvalBorder(),

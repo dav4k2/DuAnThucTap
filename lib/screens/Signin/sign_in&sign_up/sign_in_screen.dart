@@ -54,7 +54,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 30.w),
                         child: Column(
                           children: [
-                            SizedBox(height: 60.h), // Điều chỉnh lại khoảng cách top
+                            SizedBox(height: 70.h), // Điều chỉnh lại khoảng cách top
 
                             // Tab Đăng nhập / Đăng ký
                             SignInTabs(
@@ -86,21 +86,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: 20.h, // Cách đáy một khoảng cố định
+                bottom: 0.h, // Cách đáy một khoảng cố định
                 child: const SignInSocialButtons(),
               ),
-
-            // =================== NÚT BACK (CỐ ĐỊNH) ===================
-            Positioned(
-              top: 61.h,
-              left: 8.w,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black, size: 33),
-                onPressed: () {
-                  Navigator.popUntil(context, ModalRoute.withName('/welcome'));
-                },
-              ),
-            ),
           ],
         ),
       ),

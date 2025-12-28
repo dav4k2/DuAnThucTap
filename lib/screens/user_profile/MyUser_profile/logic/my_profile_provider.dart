@@ -126,7 +126,7 @@ final myChefProvider = Provider<MyChef>((ref) {
     bio: survey.bio?.trim().isNotEmpty == true ? survey.bio : "Mô tả mặc định...",
     email: survey.email ?? "chua_cap_nhat@gmail.com",
     joinedDate: survey.joinedDate ?? "Đang cập nhật",
-    avatarUrl: survey.avatarFile?.path ?? "image/avatar.png",
+    avatarUrl: survey.avatarFile?.path ?? "image/profile_bg.png",
     headerImage: survey.coverFile?.path ?? "image/profile_bg.png",
     recipes: allRecipes.length,
     followers: "45.6k",

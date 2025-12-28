@@ -35,6 +35,7 @@ class SurveyState {
     File? avatarFile,
     File? coverFile,
     String? joinedDate,
+
   }) {
     return SurveyState(
       cookingTitle: cookingTitle ?? this.cookingTitle,

@@ -29,7 +29,7 @@ class ProfileAvatar extends StatelessWidget {
             height: 120.h,
             decoration: const ShapeDecoration(
               image: DecorationImage(
-                image: AssetImage("image/avatar.png"),
+                image: AssetImage("image/empty_user.jpg"),
                 fit: BoxFit.fill,
               ),
               shape: OvalBorder(),
