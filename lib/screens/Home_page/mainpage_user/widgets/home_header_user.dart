@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:fontend/screens/notification/notification_screen.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -65,6 +66,12 @@ class HomeHeader extends StatelessWidget {
             child: IconButton(
               onPressed: () {
                 // Xử lý khi nhấn nút thông báo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationScreen(),
+                  ),
+                );
               },
               icon: const Icon(
                 Icons.notifications,

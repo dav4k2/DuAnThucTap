@@ -55,12 +55,6 @@ class FeaturedRecipes extends ConsumerWidget {
                   color: theme.colorScheme.onSurface,
                 ),
               ),
-              Text(
-                'Xem thêm'.tr(),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.hintColor,
-                ),
-              ),
             ],
           ),
         ),
