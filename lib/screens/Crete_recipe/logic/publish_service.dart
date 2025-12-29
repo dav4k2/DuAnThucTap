@@ -34,7 +34,7 @@ class PublishService {
       final data = recipe.toFirestore();
       data['images'] = uploadedUrls;
       data['authorId'] = user.uid;
-      data['authorName'] = authorName; // 👈 Lưu thêm tên tác giả để tìm kiếm nhanh
+      data['authorName'] = authorName;
       data['createdAt'] = FieldValue.serverTimestamp();
       data['name_lowercase'] = recipe.title.toLowerCase();
 
