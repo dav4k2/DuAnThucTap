@@ -63,6 +63,7 @@ class MyChef {
   final String? email;
   final String? joinedDate;
   final String avatarUrl;
+  final String coverUrl;
   final String headerImage;
 
   MyChef({
@@ -80,6 +81,7 @@ class MyChef {
     this.email,
     this.joinedDate,
     required this.avatarUrl,
+    required this.coverUrl,
     required this.headerImage,
   });
 }
@@ -126,8 +128,9 @@ final myChefProvider = Provider<MyChef>((ref) {
     bio: survey.bio?.trim().isNotEmpty == true ? survey.bio : "Mô tả mặc định...",
     email: survey.email ?? "chua_cap_nhat@gmail.com",
     joinedDate: survey.joinedDate ?? "Đang cập nhật",
-    avatarUrl: survey.avatarFile?.path ?? "image/profile_bg.png",
-    headerImage: survey.coverFile?.path ?? "image/profile_bg.png",
+    avatarUrl: survey.avatarUrl ?? survey.avatarFile?.path ?? "image/avatar.png",
+    headerImage: survey.coverUrl ?? survey.coverFile?.path ?? "image/profile_bg.png",
+    coverUrl: survey.coverUrl ?? survey.coverFile?.path ?? "image/profile_bg.png", // Cần gán giá trị ở đây
     recipes: allRecipes.length,
     followers: "45.6k",
     following: 15,

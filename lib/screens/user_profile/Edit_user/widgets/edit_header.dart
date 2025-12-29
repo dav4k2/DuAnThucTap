@@ -25,8 +25,8 @@ class EditHeader extends ConsumerWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               image: state.headerFile != null
-                  ? FileImage(state.headerFile!) as ImageProvider
-                  : AssetImage(chef.headerImage), // <- dùng ảnh từ provider
+                  ? FileImage(state.headerFile!) // Ưu tiên ảnh từ máy
+                  : getImageProvider(state.coverUrl, defaultAsset: "image/profile_bg.png"),
               fit: BoxFit.cover,
             ),
           ),
@@ -65,6 +65,13 @@ class EditHeader extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  ImageProvider getImageProvider(String? path, {required String defaultAsset}) {
+    if (path == null || path.isEmpty || !path.startsWith('http')) {
+      return AssetImage(defaultAsset); // Nếu không có http, coi là Asset
+    }
+    return NetworkImage(path); // Nếu có http, dùng NetworkImage
   }
 
   void _pickHeaderImage(WidgetRef ref) async {

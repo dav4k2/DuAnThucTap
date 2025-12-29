@@ -13,83 +13,81 @@ class EditAvatarSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(editProfileProvider);
 
-    return SizedBox(
-      width: double.infinity,
-      height: 15.h, // giữ nguyên 0, không đẩy nội dung xuống
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.topCenter,
-        children: [
-          // Ảnh nền
-          Container(
-            width: double.infinity,
-            height: 180.h,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage("https://placehold.co/402x222"),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-
-          // Avatar với viền trắng
-          Positioned(
-            bottom: -10.h, // nhô ra khỏi ảnh nền
-            child: Stack(
+    return Transform.translate(
+      offset: Offset(0, -55.h),
+      child: SizedBox( // Dùng SizedBox thay cho Container nếu chỉ muốn set width
+        width: double.infinity,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
               alignment: Alignment.center,
               children: [
-                // Viền trắng
+                // Lớp viền trắng bao quanh Avatar
                 Container(
-                  width: 130.w,
-                  height: 130.h,
+                  padding: EdgeInsets.all(3.w),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
+                  child: CircleAvatar(
+                    radius: 55.r,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: _getAvatarImage(state),
+                  ),
                 ),
-
-                // Avatar
-                CircleAvatar(
-                  radius: 60.r,
-                  backgroundImage: state.avatarFile != null
-                      ? FileImage(state.avatarFile!)
-                      : const AssetImage("image/avatar.png") as ImageProvider,
-                ),
-
-                // Nút chọn ảnh (gallery)
+                // Nút chọn ảnh Avatar (Camera icon)
                 Positioned(
                   bottom: 0,
                   right: 0,
-                  child: Material(
-                    color: Colors.transparent,
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(50.r),
-                      onTap: () => _pickImage(ref),
-                      child: Container(
-                        width: 40.w,
-                        height: 40.h,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFFFDFD),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.photo_library, color: Colors.grey),
+                  child: GestureDetector(
+                    onTap: () => _pickImage(ref),
+                    child: CircleAvatar(
+                      radius: 16.r,
+                      backgroundColor: const Color(0xFFF5F5F5),
+                      child: Icon(
+                          Icons.camera_alt,
+                          size: 16.sp,
+                          color: Colors.grey[700]
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Hàm bổ trợ để lấy ImageProvider an toàn
+  ImageProvider _getAvatarImage(EditProfileState state) {
+    if (state.avatarFile != null) {
+      return FileImage(state.avatarFile!);
+    } else if (state.avatarUrl != null && state.avatarUrl!.startsWith('http')) {
+      return NetworkImage(state.avatarUrl!);
+    }
+    return const AssetImage("image/avatar.png");
+  }
+
+  Widget _buildPickerButton(WidgetRef ref) {
+    return GestureDetector(
+      onTap: () => _pickImage(ref),
+      child: Container(
+        padding: EdgeInsets.all(8.w),
+        decoration: const BoxDecoration(
+          color: Color(0xFFF5F5F5),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(Icons.camera_alt_rounded, size: 20.sp, color: Colors.grey[700]),
       ),
     );
   }
 
   void _pickImage(WidgetRef ref) async {
     final picker = ImagePicker();
-    final pickedFile =
-    await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (pickedFile != null) {
       ref.read(editProfileProvider.notifier).updateAvatar(File(pickedFile.path));
     }

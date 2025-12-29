@@ -95,6 +95,8 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
         country: user.country,
         email: user.email,
         joinedDated: joinedStr,
+        avatarUrl: user.avatarUrl,
+        coverUrl: user.coverUrl,
       );
 
       // 3. Làm mới Provider
@@ -103,9 +105,11 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
   }
 
   void _navigateToEditProfile() async {
+    final chef = ref.read(myChefProvider);
+
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+      MaterialPageRoute(builder: (context) => EditProfileScreen(user: chef)),
     );
     _refreshData();
   }

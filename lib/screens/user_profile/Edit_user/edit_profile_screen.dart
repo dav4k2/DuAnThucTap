@@ -12,7 +12,8 @@ import 'logic/edit_profile_provider.dart';
 import '../MyUser_profile/logic/my_profile_provider.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
-  const EditProfileScreen({super.key});
+  final MyChef user;
+  const EditProfileScreen({super.key, required this.user,});
 
   @override
   ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -41,47 +42,23 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // 1. Lấy dữ liệu hiện tại từ màn hình Profile
-    final currentChef = ref.read(myChefProvider);
+    _nameController = TextEditingController(text: widget.user.name);
+    _bioController = TextEditingController(text: widget.user.bio ?? "");
+    selectedLevel = widget.user.cookingTitle ?? 'Đầu bếp tại gia';
+    selectedCountry = widget.user.country ?? 'Việt Nam';
 
-    // 2. Điền vào các Controller
-    _nameController = TextEditingController(text: currentChef.name);
-
-    // Xử lý Bio: Nếu bio là mặc định thì để trống cho người dùng nhập, ngược lại thì hiện bio cũ
-    _bioController = TextEditingController(
-        text: (currentChef.bio == "Mô tả mặc định...") ? "" : currentChef.bio
-    );
-
-    // 3. Xử lý Dropdown (Trình độ & Quốc gia)
-    // Kiểm tra xem giá trị cũ có nằm trong danh sách không để tránh lỗi Crash
-    if (levels.contains(currentChef.title)) {
-      selectedLevel = currentChef.title;
-    } else {
-      selectedLevel = levels[2]; // Mặc định: Đầu bếp tại gia
-    }
-
-    if (countries.contains(currentChef.country)) {
-      selectedCountry = currentChef.country!;
-    } else {
-      selectedCountry = countries[0]; // Mặc định: Việt Nam
-    }
-
-    // 4. Cập nhật state ban đầu cho editProfileProvider (để nút Lưu hoạt động đúng)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = ref.read(editProfileProvider.notifier);
+      // Đồng bộ vào provider sau khi UI dựng xong
       notifier.updateName(_nameController.text);
       notifier.updateBio(_bioController.text);
-      notifier.updateCookingLevel(selectedLevel);
-      notifier.updateCountry(selectedCountry);
+      if (widget.user.avatarUrl != null) notifier.updateAvatarUrl(widget.user.avatarUrl!);
+      if (widget.user.coverUrl != null) notifier.updateCoverUrl(widget.user.coverUrl!);
     });
 
-    // 5. Lắng nghe thay đổi khi gõ phím
-    _nameController.addListener(() {
-      ref.read(editProfileProvider.notifier).updateName(_nameController.text);
-    });
-    _bioController.addListener(() {
-      ref.read(editProfileProvider.notifier).updateBio(_bioController.text);
-    });
+    // Listener gõ phím
+    _nameController.addListener(() => ref.read(editProfileProvider.notifier).updateName(_nameController.text));
+    _bioController.addListener(() => ref.read(editProfileProvider.notifier).updateBio(_bioController.text));
   }
 
   @override

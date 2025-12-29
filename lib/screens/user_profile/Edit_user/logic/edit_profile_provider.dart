@@ -57,7 +57,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
     bio: myChef.bio ?? '',
     country: myChef.country ?? 'Việt Nam', // Giá trị mặc định nếu null
     cookingLevel: myChef.cookingTitle ?? 'Đầu bếp tại gia',
-    avatarUrl: myChef.avatarUrl,
+    avatarUrl: myChef.avatarUrl ?? "https://placehold.co/400x400.png",
+    coverUrl: myChef.coverUrl ?? "https://placehold.co/600x200.png",
   ));
 
   void updateName(String name) => state = state.copyWith(name: name);
@@ -66,6 +67,9 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
   void updateCookingLevel(String level) => state = state.copyWith(cookingLevel: level);
   void updateAvatar(File file) => state = state.copyWith(avatarFile: file);
   void updateHeader(File file) => state = state.copyWith(headerFile: file);
+
+  void updateAvatarUrl(String url) => state = state.copyWith(avatarUrl: url);
+  void updateCoverUrl(String url) => state = state.copyWith(coverUrl: url);
 
   // 3. Hàm Save gọi API
   Future<bool> save() async {
