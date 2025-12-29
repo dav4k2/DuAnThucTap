@@ -5,6 +5,7 @@ import 'package:fontend/screens/Crete_recipe/logic/publish_recipe.dart';
 import '../../../../Service/recipe_model.dart';
 import '../../../../Service/recipe_service.dart';
 import '../../../Crete_recipe/logic/publish_service.dart';
+import '../../../food_page/recipe_detail_page_screen.dart';
 import '../logic/my_profile_provider.dart';
 import 'my_recipe_card.dart';
 
@@ -96,9 +97,21 @@ class _MyRecipeListState extends ConsumerState<MyRecipeList> {
                 (context, index) {
               if (index == 0) return _buildHeader(filteredRecipes.length);
               final recipe = filteredRecipes[index - 1];
+
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: MyRecipeCard(recipe: recipe),
+                child: GestureDetector(
+                  onTap: () {
+                    // Thực hiện chuyển trang khi nhấn vào Card
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecipeDetailPage(recipe: recipe),
+                      ),
+                    );
+                  },
+                  child: MyRecipeCard(recipe: recipe),
+                ),
               );
             },
             childCount: filteredRecipes.length + 1,
