@@ -7,10 +7,7 @@ import '../screens/Home_page/mainpage_guest/home_screen.dart';
 import '../screens/Home_page/mainpage_user/mainpage_user_screen.dart';
 import '../screens/Searching/search/explore_screen.dart';
 import '../screens/Setting/settings/settings_screen.dart';
-import '../screens/prepare/prepare_page/prepare_screen.dart';
 import '../screens/user_profile/MyUser_profile/my_profile_screen.dart';
-
-
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});

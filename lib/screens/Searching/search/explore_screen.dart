@@ -1,11 +1,9 @@
-// lib/screens/search/explore_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widgets/explore_appbar.dart';
 import 'widgets/explore_popular_user.section.dart';
 import 'widgets/explore_keyword_section.dart';
 import 'widgets/explore_highlight_recipes.dart';
-// import 'package:fontend/navbar/smart_navbar.dart';
 
 class ExploreScreen extends ConsumerStatefulWidget {
   const ExploreScreen({super.key});
@@ -16,10 +14,13 @@ class ExploreScreen extends ConsumerStatefulWidget {
 
 class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   final ScrollController _scrollController = ScrollController();
+  // Khởi tạo controller để dùng chung cho AppBar và KeywordsSection
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -34,26 +35,19 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       backgroundColor: const Color(0xFFFFC221),
       extendBody: true,
       extendBodyBehindAppBar: true,
-
       body: Stack(
         children: [
-          // ==================== NỘI DUNG CHÍNH ====================
           Column(
             children: [
-              ExploreAppBar(width: width),
+              // Truyền controller vào AppBar
+              ExploreAppBar(width: width, controller: _searchController),
 
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: backgroundColor, // Màu nền trắng
-                    // ❌ Không đặt boxShadow ở đây vì nó sẽ hắt ngược lên trên
-                  ),
-
-                  // 👇 Dùng Stack để đè lớp bóng lên trên nội dung cuộn
+                  decoration: BoxDecoration(color: backgroundColor),
                   child: Stack(
                     children: [
-                      // 1. Nội dung chính (Nằm dưới)
                       SingleChildScrollView(
                         controller: _scrollController,
                         child: Padding(
@@ -62,7 +56,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                             children: [
                               PopularUsersSection(width: width),
                               SizedBox(height: height * 0.02),
-                              KeywordsSection(width: width),
+                              // Truyền hàm callback để gán giá trị vào controller
+                              KeywordsSection(
+                                width: width,
+                                onKeywordSelected: (keyword) {
+                                  _searchController.text = keyword;
+                                },
+                              ),
                               SizedBox(height: height * 0.02),
                               HighlightRecipes(width: width),
                               const SizedBox(height: 140),
@@ -70,22 +70,19 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           ),
                         ),
                       ),
-
-                      // 2. Kẻ tạo bóng giả (Nằm trên cùng, cố định)
-                      // Đây là thủ thuật: Một đường kẻ mỏng tang đổ bóng xuống dưới
                       Positioned(
                         top: 0,
                         left: 0,
                         right: 0,
                         child: Container(
-                          height: 1, // Siêu mỏng
+                          height: 1,
                           decoration: BoxDecoration(
-                            color: backgroundColor, // Màu giống nền để tàng hình
+                            color: backgroundColor,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.15), // Màu bóng
-                                offset: const Offset(0, 4), // 👇 Đổ bóng XUỐNG DƯỚI (vào phần trắng)
-                                blurRadius: 10,  // Độ nhòe
+                                color: Colors.black.withOpacity(0.15),
+                                offset: const Offset(0, 4),
+                                blurRadius: 10,
                                 spreadRadius: 1,
                               ),
                             ],

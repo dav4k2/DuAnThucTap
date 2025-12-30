@@ -1,20 +1,35 @@
 // lib/screens/search/widgets/explore_appbar.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../search_content/search_screen.dart';
 
-class ExploreAppBar extends ConsumerWidget {
+class ExploreAppBar extends StatefulWidget {
   final double width;
-  const ExploreAppBar({super.key, required this.width});
+  final TextEditingController? controller; // Nhận controller từ bên ngoài nếu cần
+
+  const ExploreAppBar({super.key, required this.width, this.controller});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<ExploreAppBar> createState() => _ExploreAppBarState();
+}
+
+class _ExploreAppBarState extends State<ExploreAppBar> {
+  late TextEditingController _internalController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Sử dụng controller truyền vào hoặc tạo mới
+    _internalController = widget.controller ?? TextEditingController();
+    // Lắng nghe để cập nhật giao diện (hiện/ẩn nút X) khi gõ chữ
+    _internalController.addListener(() => setState(() {}));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final textAndIconColor = isDarkMode ? Colors.white : Colors.black;
 
     return Container(
-      width: width,
+      width: widget.width,
       color: const Color(0xFFFFC221),
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
@@ -25,7 +40,6 @@ class ExploreAppBar extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Tiêu đề + back button
           Row(
             children: [
               Expanded(
@@ -43,8 +57,6 @@ class ExploreAppBar extends ConsumerWidget {
             ],
           ),
           SizedBox(height: 12.h),
-
-          // THANH TÌM KIẾM – ĐÚNG Y HỆT SearchBarWidget
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20.w),
             decoration: BoxDecoration(
@@ -56,13 +68,7 @@ class ExploreAppBar extends ConsumerWidget {
               borderRadius: BorderRadius.circular(50),
             ),
             child: TextField(
-              readOnly: true,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SearchScreen()),
-                );
-              },
+              controller: _internalController,
               style: TextStyle(
                 color: isDarkMode ? Colors.white : Colors.black,
                 fontSize: 14.5.sp,
@@ -80,6 +86,16 @@ class ExploreAppBar extends ConsumerWidget {
                   color: isDarkMode ? Colors.white70 : Colors.black54,
                   size: 24,
                 ),
+                // Nút X: Chỉ hiện khi có chữ
+                suffixIcon: _internalController.text.isNotEmpty
+                    ? IconButton(
+                  icon: Icon(Icons.cancel, color: isDarkMode ? Colors.white70 : Colors.black54),
+                  onPressed: () {
+                    _internalController.clear();
+                    setState(() {});
+                  },
+                )
+                    : null,
               ),
             ),
           ),
