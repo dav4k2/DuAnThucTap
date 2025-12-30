@@ -13,6 +13,7 @@ class PublishRecipe{
   final String? difficulty;
   final List<String> ingredients;
   final List<String> steps;
+  final List<String> durations;
   final List<String> tags;
   final DateTime createdAt;
 
@@ -28,6 +29,7 @@ class PublishRecipe{
     this.difficulty,
     this.ingredients = const [],
     this.steps = const [],
+    this.durations = const [],
     this.tags = const [],
     DateTime? createdAt,
   })  : id = id ?? const Uuid().v4(),
@@ -54,6 +56,7 @@ class PublishRecipe{
     String? difficulty,
     List<String>? ingredients,
     List<String>? steps,
+    List<String>? durations,
     List<String>? tags,
   }) {
     return PublishRecipe(
@@ -68,6 +71,7 @@ class PublishRecipe{
       difficulty: difficulty ?? this.difficulty,
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
+      durations: durations ?? this.durations,
       tags: tags ?? this.tags,
       createdAt: DateTime.now(),
     );
@@ -85,14 +89,15 @@ class PublishRecipe{
     'difficulty': difficulty,
     'ingredients': ingredients,
     'steps': steps,
+    'durations': durations,
     'tags': tags,
     'createdAt': FieldValue.serverTimestamp(),
   };
 
   factory PublishRecipe.fromFirestore(
-      QueryDocumentSnapshot<Map<String, dynamic>> doc,
+      DocumentSnapshot<Map<String, dynamic>> doc,
       ) {
-    final data = doc.data();
+    final data = doc.data() ?? {};
 
     return PublishRecipe(
       id: doc.id,
@@ -106,6 +111,7 @@ class PublishRecipe{
       difficulty: data['difficulty'],
       ingredients: List<String>.from(data['ingredients'] ?? []),
       steps: List<String>.from(data['steps'] ?? []),
+      durations: List<String>.from(data['durations'] ?? []),
       tags: List<String>.from(data['tags'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ??
           DateTime.fromMillisecondsSinceEpoch(0),
