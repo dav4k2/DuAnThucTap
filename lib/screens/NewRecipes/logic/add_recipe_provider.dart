@@ -368,7 +368,8 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
         difficulty: state.difficulty,
         ingredients: state.ingredients,
         steps: state.steps.map((s) => s.content).toList(),
-        // Đừng quên thêm tags vào publishData nếu service của Sơn hỗ trợ
+        durations: state.steps.map((s) => s.duration ?? '0 phút').toList(),
+        tags: state.selectedCategories,
       );
 
       final success = await _publishService.publishToUserCollection(publishData);
