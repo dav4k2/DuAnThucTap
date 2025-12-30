@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fontend/screens/Cooking_step/recipe_run_screen.dart';
 import '../../Cooking_step/recipe_run_provider.dart';
 import '../../Cooking_step/recipe_step_model.dart';
+import '../../Cooking_step/recipe_step_model.dart' as run_model;
 import '../../Crete_recipe/logic/publish_recipe.dart';
 
 class StepsSection extends ConsumerWidget {
@@ -49,33 +50,38 @@ class StepsSection extends ConsumerWidget {
         Center(
           child: GestureDetector(
             onTap: () {
-              // 1. CHUYỂN ĐỔI DỮ LIỆU: List<String> -> List<RecipeStep>
-              final List<RecipeStep> mappedSteps = recipe.steps.asMap().entries.map((entry) {
+              // 1. Logic ánh xạ dữ liệu bao gồm cả thời gian nấu
+              final List<run_model.RecipeStep> mappedSteps = recipe.steps.asMap().entries.map((entry) {
                 int index = entry.key;
-                String description = entry.value;
 
-                return RecipeStep(
+                // Kiểm tra kỹ mảng durations
+                String durationStr = (recipe.durations.length > index)
+                    ? recipe.durations[index]
+                    : "0 phút";
+
+                // Debug để kiểm tra chuỗi lấy được
+                print("Step $index duration: $durationStr");
+
+                int minutes = int.tryParse(durationStr.split(' ')[0]) ?? 0;
+                int cookSeconds = minutes * 60;
+
+                return run_model.RecipeStep(
                   title: "Bước ${index + 1}",
-                  description: description,
-                  // Lấy ảnh từ recipe nếu có, nếu không dùng ảnh mặc định
-                  imagePath: (recipe.images.isNotEmpty)
-                      ? recipe.images[0]
-                      : "image/p1.png",
-                  prepTime: 5,        // Mặc định 5s chuẩn bị
-                  cookingTime: 0,    // Bạn có thể tùy chỉnh logic lấy thời gian ở đây
+                  description: entry.value,
+                  imagePath: (recipe.images.isNotEmpty) ? recipe.images[0] : "image/p1.png",
+                  prepTime: 5,
+                  cookingTime: cookSeconds,
                 );
               }).toList();
 
-              // 2. CẬP NHẬT VÀO PROVIDER
+              // 2. Cập nhật trạng thái (Chỉ gọi 1 lần duy nhất)
               ref.read(recipeStepsProvider.notifier).state = mappedSteps;
-              ref.read(currentStepIndexProvider.notifier).state = 0; // Reset về bước 1
+              ref.read(currentStepIndexProvider.notifier).state = 0;
 
-              // 3. ĐIỀU HƯỚNG
+              // 3. Điều hướng
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const RecipeRunScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const RecipeRunScreen()),
               );
             },
             child: Container(
