@@ -59,6 +59,7 @@ class RecipeInfoSection extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(width: 10,),
                 // Tên món ở giữa
                 Expanded(
                   child: Text(recipe.title.toUpperCase().tr()),

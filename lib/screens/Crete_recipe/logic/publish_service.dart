@@ -168,4 +168,93 @@ class PublishService {
       return following.contains(targetUserId);
     });
   }
+
+  //Hàm đánh giá
+  Future<void> submitRating(String authorId, String recipeId, int rating) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    // Đường dẫn tới tài liệu đánh giá của người dùng hiện tại trong món ăn này
+    final ratingRef = _firestore
+        .collection('users')
+        .doc(authorId)
+        .collection('published_recipes')
+        .doc(recipeId)
+        .collection('ratings')
+        .doc(user.uid);
+
+    final recipeRef = _firestore
+        .collection('users')
+        .doc(authorId)
+        .collection('published_recipes')
+        .doc(recipeId);
+
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot ratingSnapshot = await transaction.get(ratingRef);
+      DocumentSnapshot recipeSnapshot = await transaction.get(recipeRef);
+
+      if (!recipeSnapshot.exists) return;
+
+      Map<String, dynamic> recipeData = recipeSnapshot.data() as Map<String, dynamic>;
+      double oldAverage = (recipeData['averageRating'] ?? 0.0).toDouble();
+      int oldTotal = recipeData['totalRatings'] ?? 0;
+
+      if (ratingSnapshot.exists) {
+        // TRƯỜNG HỢP: Đã đánh giá trước đó -> Cập nhật lại điểm trung bình (thay thế điểm cũ)
+        int previousRating = ratingSnapshot.get('score');
+
+        // Công thức cập nhật: (Tổng điểm cũ - Điểm cũ + Điểm mới) / Tổng lượt đánh giá
+        double newAverage = ((oldAverage * oldTotal) - previousRating + rating) / oldTotal;
+
+        transaction.update(recipeRef, {'averageRating': newAverage});
+        transaction.update(ratingRef, {
+          'score': rating,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        // TRƯỜNG HỢP: Đánh giá lần đầu -> Thêm mới và tăng tổng lượt đánh giá
+        int newTotal = oldTotal + 1;
+        double newAverage = ((oldAverage * oldTotal) + rating) / newTotal;
+
+        transaction.update(recipeRef, {
+          'averageRating': newAverage,
+          'totalRatings': newTotal,
+        });
+        transaction.set(ratingRef, {
+          'userId': user.uid,
+          'score': rating,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+    });
+  }
+
+  Stream<List<PublishRecipe>> getRecommendedRecipes() {
+    return _firestore
+        .collectionGroup('published_recipes')
+        .where('averageRating', isGreaterThanOrEqualTo: 4.0)
+        .orderBy('averageRating', descending: true)
+        .limit(10)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => PublishRecipe.fromFirestore(doc))
+        .toList());
+  }
+
+  // Hàm để lấy điểm mà người dùng hiện tại đã đánh giá cho món ăn này
+  Future<int> getUserRatingForRecipe(String authorId, String recipeId) async {
+    final user = _auth.currentUser;
+    if (user == null) return 0;
+
+    final doc = await _firestore
+        .collection('users')
+        .doc(authorId)
+        .collection('published_recipes')
+        .doc(recipeId)
+        .collection('ratings')
+        .doc(user.uid)
+        .get();
+
+    return doc.exists ? (doc.data()?['score'] ?? 0) : 0;
+  }
 }

@@ -1,17 +1,69 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import '../../Crete_recipe/logic/publish_recipe.dart';
+import '../../Crete_recipe/logic/publish_service.dart';
+
 class RatingSection extends StatefulWidget {
   final double width;
-  const RatingSection({super.key, required this.width});
+  final PublishRecipe recipe;
+  const RatingSection({super.key, required this.width, required this.recipe});
 
   @override
   State<RatingSection> createState() => _RatingSectionState();
 }
 
 class _RatingSectionState extends State<RatingSection> {
-  // 1. Khởi tạo giá trị ban đầu là 0
   int _currentRating = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRating(); // Tải đánh giá cũ của người dùng
+  }
+
+  Future<void> _loadUserRating() async {
+    int rating = await PublishService().getUserRatingForRecipe(
+      widget.recipe.authorId!,
+      widget.recipe.id,
+    );
+    if (mounted) {
+      setState(() {
+        _currentRating = rating;
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _updateRating(int starValue) async {
+    // Lưu lại điểm cũ để rollback nếu lỗi
+    int oldRating = _currentRating;
+
+    setState(() {
+      _currentRating = starValue;
+    });
+
+    try {
+      await PublishService().submitRating(
+        widget.recipe.authorId!,
+        widget.recipe.id,
+        starValue,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(oldRating == 0 ? "Đã gửi đánh giá!" : "Đã cập nhật đánh giá!")),
+        );
+      }
+    } catch (e) {
+      setState(() { _currentRating = oldRating; }); // Rollback nếu lỗi
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Lỗi khi gửi đánh giá. Vui lòng thử lại.")),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +96,7 @@ class _RatingSectionState extends State<RatingSection> {
                 children: List.generate(5, (index) {
                   int starValue = index + 1;
                   return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _currentRating = starValue;
-                      });
-                    },
+                    onTap: () => _updateRating(starValue),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 2),
                       child: Icon(

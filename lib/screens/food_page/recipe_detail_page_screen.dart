@@ -36,7 +36,7 @@ class RecipeDetailPage extends ConsumerWidget {
                   DescriptionSection(width: width, recipe: recipe),
                   IngredientsSection(width: width, recipe: recipe),
                   StepsSection(width: width, recipe: recipe),
-                  RatingSection(width: width),
+                  RatingSection(width: width, recipe: recipe,),
                   AuthorSection(width: width, authorId: recipe.authorId ?? ''),
                   CommentsSection(width: width),
                   const SizedBox(height: 40),

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -16,6 +18,8 @@ class PublishRecipe{
   final List<String> durations;
   final List<String> tags;
   final DateTime createdAt;
+  final double averageRating;
+  final int totalRatings;
 
   PublishRecipe({
     String? id,
@@ -32,6 +36,8 @@ class PublishRecipe{
     this.durations = const [],
     this.tags = const [],
     DateTime? createdAt,
+    this.averageRating = 0.0,
+    this.totalRatings = 0,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
@@ -92,6 +98,8 @@ class PublishRecipe{
     'durations': durations,
     'tags': tags,
     'createdAt': FieldValue.serverTimestamp(),
+    'averageRating': averageRating,
+    'totalRatings': totalRatings,
   };
 
   factory PublishRecipe.fromFirestore(
@@ -115,6 +123,8 @@ class PublishRecipe{
       tags: List<String>.from(data['tags'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ??
           DateTime.fromMillisecondsSinceEpoch(0),
+      averageRating: (data['averageRating'] ?? 0.0).toDouble(),
+      totalRatings: data['totalRatings'] ?? 0,
     );
   }
 }
