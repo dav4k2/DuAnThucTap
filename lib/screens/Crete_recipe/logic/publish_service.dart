@@ -174,7 +174,6 @@ class PublishService {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    // Đường dẫn tới tài liệu đánh giá của người dùng hiện tại trong món ăn này
     final ratingRef = _firestore
         .collection('users')
         .doc(authorId)
@@ -189,44 +188,58 @@ class PublishService {
         .collection('published_recipes')
         .doc(recipeId);
 
-    await _firestore.runTransaction((transaction) async {
-      DocumentSnapshot ratingSnapshot = await transaction.get(ratingRef);
-      DocumentSnapshot recipeSnapshot = await transaction.get(recipeRef);
+    try {
+      await _firestore.runTransaction((transaction) async {
+        // 🟢 BƯỚC 1: ĐỌC TẤT CẢ DỮ LIỆU TRƯỚC
+        DocumentSnapshot ratingSnapshot = await transaction.get(ratingRef);
+        DocumentSnapshot recipeSnapshot = await transaction.get(recipeRef);
 
-      if (!recipeSnapshot.exists) return;
+        if (!recipeSnapshot.exists) {
+          throw Exception("Công thức không tồn tại!");
+        }
 
-      Map<String, dynamic> recipeData = recipeSnapshot.data() as Map<String, dynamic>;
-      double oldAverage = (recipeData['averageRating'] ?? 0.0).toDouble();
-      int oldTotal = recipeData['totalRatings'] ?? 0;
-
-      if (ratingSnapshot.exists) {
-        // TRƯỜNG HỢP: Đã đánh giá trước đó -> Cập nhật lại điểm trung bình (thay thế điểm cũ)
-        int previousRating = ratingSnapshot.get('score');
-
-        // Công thức cập nhật: (Tổng điểm cũ - Điểm cũ + Điểm mới) / Tổng lượt đánh giá
-        double newAverage = ((oldAverage * oldTotal) - previousRating + rating) / oldTotal;
-
-        transaction.update(recipeRef, {'averageRating': newAverage});
-        transaction.update(ratingRef, {
-          'score': rating,
-          'updatedAt': FieldValue.serverTimestamp(),
+        // 🟢 BƯỚC 2: TÍNH TOÁN LOGIC
+        Map<String, dynamic> recipeData = recipeSnapshot.data() as Map<String, dynamic>;
+        double oldAverage = (recipeData['averageRating'] ?? 0.0).toDouble();
+        int oldTotal = recipeData['totalRatings'] ?? 0;
+        Map<String, int> ratingCount = Map<String, int>.from(recipeData['ratingCount'] ?? {
+          "1": 0, "2": 0, "3": 0, "4": 0, "5": 0
         });
-      } else {
-        // TRƯỜNG HỢP: Đánh giá lần đầu -> Thêm mới và tăng tổng lượt đánh giá
-        int newTotal = oldTotal + 1;
-        double newAverage = ((oldAverage * oldTotal) + rating) / newTotal;
 
+        double newAverage;
+        int newTotal = oldTotal;
+
+        if (ratingSnapshot.exists) {
+          // Người dùng đổi đánh giá
+          int previousRating = ratingSnapshot.get('score');
+          ratingCount[previousRating.toString()] = (ratingCount[previousRating.toString()] ?? 1) - 1;
+          ratingCount[rating.toString()] = (ratingCount[rating.toString()] ?? 0) + 1;
+
+          newAverage = ((oldAverage * oldTotal) - previousRating + rating) / oldTotal;
+        } else {
+          // Người dùng đánh giá mới
+          newTotal = oldTotal + 1;
+          ratingCount[rating.toString()] = (ratingCount[rating.toString()] ?? 0) + 1;
+          newAverage = ((oldAverage * oldTotal) + rating) / newTotal;
+        }
+
+        // 🟢 BƯỚC 3: GHI DỮ LIỆU SAU CÙNG
         transaction.update(recipeRef, {
           'averageRating': newAverage,
           'totalRatings': newTotal,
+          'ratingCount': ratingCount,
         });
+
         transaction.set(ratingRef, {
           'userId': user.uid,
           'score': rating,
-          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
         });
-      }
-    });
+      });
+    } catch (e) {
+      print("Transaction error: $e");
+      rethrow; // Đẩy lỗi ra ngoài để UI nhận diện và hiện SnackBar
+    }
   }
 
   Stream<List<PublishRecipe>> getRecommendedRecipes() {
@@ -256,5 +269,22 @@ class PublishService {
         .get();
 
     return doc.exists ? (doc.data()?['score'] ?? 0) : 0;
+  }
+
+  Stream<List<PublishRecipe>> getRecipesByTags(List<String> tags) {
+    if (tags.isEmpty) {
+      // Nếu không có tag nào, trả về các công thức được đề xuất chung
+      return getRecommendedRecipes();
+    }
+
+    return _firestore
+        .collectionGroup('published_recipes')
+    // Lọc các công thức có chứa ít nhất một trong các tag người dùng chọn
+        .where('tags', arrayContainsAny: tags)
+        .limit(10) // Giới hạn số lượng hiển thị
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => PublishRecipe.fromFirestore(doc))
+        .toList());
   }
 }

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../Service/user_model.dart';
+import '../../../../Service/user_service.dart';
 import '../../../user_profile/User_profile/chef_profile_screen.dart';
 
 class PopularUsersSection extends StatelessWidget {
   final double width;
-  const PopularUsersSection({super.key, required this.width});
+  final UserService _userService = UserService();
+
+  PopularUsersSection({super.key, required this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -29,27 +33,27 @@ class PopularUsersSection extends StatelessWidget {
                   color: isDark ? Colors.white : Colors.black,
                 ),
               ),
-              /*
-              Text(
-                'Xem thêm',
-                style: TextStyle(
-                  fontSize: 14.5.sp,
-                  fontWeight: FontWeight.w600,
-                  color: seeMoreColor,
-                ),
-              ),
-
-               */
             ],
           ),
           SizedBox(height: 20.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _userItem(context, 'Mr.Dean', 'image/bean.png', isDark),
-              _userItem(context, 'Donald D.', 'image/vit.png', isDark),
-              _userItem(context, 'Cristiano M.', 'image/7ga.png', isDark),
-            ],
+          FutureBuilder<List<UserModel>>(
+            future: _userService.getPopularChefsByRatings(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Text("Không có người dùng phổ biến nào.");
+              }
+
+              final users = snapshot.data!;
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: users.map((user) => _userItem(context, user, isDark)).toList(),
+              );
+            },
           ),
         ],
       ),
@@ -57,9 +61,10 @@ class PopularUsersSection extends StatelessWidget {
   }
 
   // Cập nhật hàm _userItem
-  static Widget _userItem(BuildContext context, String name, String imagePath, bool isDark) {
+  static Widget _userItem(BuildContext context, UserModel user, bool isDark) {
     return GestureDetector(
       onTap: () {
+        // Có thể truyền user.id qua ChefProfileScreen để hiển thị chi tiết
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -71,12 +76,15 @@ class PopularUsersSection extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 40.r,
-            backgroundImage: AssetImage(imagePath),
-            backgroundColor: Colors.transparent,
+            // Sử dụng avatarUrl từ Cloudinary, nếu null thì dùng ảnh mặc định
+            backgroundImage: user.avatarUrl != null
+                ? NetworkImage(user.avatarUrl!)
+                : const AssetImage('image/default_avatar.png') as ImageProvider,
+            backgroundColor: Colors.grey[200],
           ),
           SizedBox(height: 10.h),
           Text(
-            name,
+            user.displayName ?? 'Ẩn danh',
             style: TextStyle(
               fontSize: 14.5.sp,
               fontWeight: FontWeight.w600,

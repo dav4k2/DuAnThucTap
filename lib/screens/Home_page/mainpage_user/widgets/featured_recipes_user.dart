@@ -12,154 +12,121 @@ class FeaturedRecipes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Theo dõi dữ liệu từ provider
+    final recipesAsync = ref.watch(featuredRecipesProvider);
     final width = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);
-
-    // 2. Thêm 'id' để truyền vào provider khi click
-    final List<Map<String, String>> recipes = [
-      {
-        'id': '1',
-        'image': 'image/Rectangle301.png',
-        'title': 'Gà rán Công Phượng',
-        'time': '45 Phút',
-        'difficulty': 'Dễ',
-      },
-      {
-        'id': '2',
-        'image': 'image/Rectangle30.png',
-        'title': 'Mỳ Ý sốt Bolognese',
-        'time': '15 Phút',
-        'difficulty': 'Dễ',
-      },
-      {
-        'id': '3',
-        'image': 'image/Rectangle302.png',
-        'title': 'Phở Tái',
-        'time': '60 Phút',
-        'difficulty': 'Dễ',
-      },
-    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Công thức nổi bật'.tr(),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ],
+          child: Text(
+            'Công thức nổi bật'.tr(),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
         ),
         const SizedBox(height: 8),
         SizedBox(
           height: 180,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-            itemCount: recipes.length,
-            itemBuilder: (context, index) {
-              final recipe = recipes[index];
+          child: recipesAsync.when(
+            data: (recipes) {
+              if (recipes.isEmpty) {
+                return const Center(child: Text("Chưa có công thức phù hợp"));
+              }
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+                itemCount: recipes.length,
+                itemBuilder: (context, index) {
+                  final recipe = recipes[index];
 
-              // 3. Sử dụng GestureDetector để bắt sự kiện chạm/click
-              return GestureDetector(
-                onTap: () {
-                  // Chuyển đổi Map sang PublishRecipe
-                  final publishRecipe = PublishRecipe(
-                    id: recipe['id'] ?? '',
-                    title: recipe['title'] ?? '',
-                    images: [recipe['image'] ?? ''],
-                    cookingTime: recipe['time'],
-                    difficulty: recipe['difficulty'],
-                  );
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RecipeDetailPage(recipe: publishRecipe),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecipeDetailPage(recipe: recipe),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 150,
+                      margin: const EdgeInsets.only(right: 12),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Image.network(
+                                recipe.images.isNotEmpty ? recipe.images.first : 'assets/images/placeholder_recipe.jpg',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Image.asset('assets/images/placeholder_recipe.jpg', fit: BoxFit.cover),
+                              ),
+                            ),
+                            Positioned(
+                              top: 8, left: 8, right: 8,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      recipe.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.access_time, color: Colors.white, size: 12),
+                                        const SizedBox(width: 3),
+                                        // Sử dụng Expanded để bao bọc phần Text có độ dài biến động
+                                        Expanded(
+                                          child: Text(
+                                            recipe.cookingTime ?? '--',
+                                            style: const TextStyle(color: Colors.white, fontSize: 11),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis, // Thêm dấu ... nếu chữ quá dài
+                                          ),
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 4),
+                                          child: Text('|', style: TextStyle(color: Colors.white70)),
+                                        ),
+                                        const Icon(Icons.star, color: Colors.amber, size: 12),
+                                        const SizedBox(width: 3),
+                                        Text(
+                                          recipe.averageRating.toStringAsFixed(1),
+                                          style: const TextStyle(color: Colors.white, fontSize: 10),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
-                child: Container(
-                  width: 140,
-                  margin: const EdgeInsets.only(right: 12),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Image.asset(
-                            recipe['image']!,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          right: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  recipe['title']!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.access_time,
-                                        color: Colors.white, size: 12),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      recipe['time']!,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 11),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 4),
-                                      child: Text('|', style: TextStyle(color: Colors.white70)),
-                                    ),
-                                    const Icon(Icons.emoji_emotions,
-                                        color: Colors.white, size: 12),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      recipe['difficulty']!,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 11),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               );
             },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => Center(child: Text("Lỗi: $err")),
           ),
         ),
       ],

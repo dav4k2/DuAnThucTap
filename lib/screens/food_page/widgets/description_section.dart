@@ -10,8 +10,7 @@ class DescriptionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Danh sách tags code cứng theo yêu cầu
-    final List<String> tags = ["Món Việt", "Phở", "Bữa sáng", "Món Á"];
+    final List<String> recipeTags = recipe.tags;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -45,14 +44,17 @@ class DescriptionSection extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16), // Khoảng cách giữa mô tả và tags
+          const SizedBox(height: 16),
 
-          // --- PHẦN TAGS (CODE CỨNG) ---
-          Wrap(
-            spacing: 8.0, // Khoảng cách ngang giữa các tag
-            runSpacing: 8.0, // Khoảng cách dọc khi xuống dòng
-            children: tags.map((tag) => _buildTagItem(tag)).toList(),
-          ),
+          if (recipeTags.isNotEmpty) ...[
+            const SizedBox(height: 16),
+
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: recipeTags.map((tag) => _buildTagItem(tag)).toList(),
+            ),
+          ],
         ],
       ),
     );

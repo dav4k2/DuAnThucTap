@@ -87,4 +87,46 @@ class UserService {
       return false;
     }
   }
+
+  Future<List<UserModel>> getPopularChefsByRatings({int limit = 5}) async {
+    try {
+      // 1. Lấy tất cả công thức từ tất cả người dùng có averageRating >= 4.0
+      // Lưu ý: Cần tạo Index cho averageRating trong Firebase Console nếu chưa có
+      QuerySnapshot recipeSnapshot = await _firestore
+          .collectionGroup('published_recipes')
+          .where('averageRating', isGreaterThanOrEqualTo: 4.0)
+          .get();
+
+      // 2. Thống kê số lượng công thức đạt chuẩn của mỗi Author
+      Map<String, int> authorCount = {};
+      for (var doc in recipeSnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final authorId = data['authorId'] as String?;
+
+        if (authorId != null) {
+          authorCount[authorId] = (authorCount[authorId] ?? 0) + 1;
+        }
+      }
+
+      // 3. Sắp xếp AuthorId theo số lượng công thức giảm dần
+      var sortedAuthorIds = authorCount.keys.toList()
+        ..sort((a, b) => authorCount[b]!.compareTo(authorCount[a]!));
+
+      // 4. Lấy thông tin chi tiết UserModel từ danh sách AuthorId
+      List<UserModel> popularChefs = [];
+      final topIds = sortedAuthorIds.take(limit).toList();
+
+      for (String uid in topIds) {
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+          popularChefs.add(UserModel.fromSnapshot(userDoc));
+        }
+      }
+
+      return popularChefs;
+    } catch (e) {
+      print("Lỗi khi lấy người dùng phổ biến: $e");
+      return [];
+    }
+  }
 }
