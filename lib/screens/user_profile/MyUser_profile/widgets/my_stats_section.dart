@@ -1,129 +1,91 @@
-// lib/widgets/my_stats_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../logic/follower_provider.dart';
 
-class MyStatsSection extends StatelessWidget {
+class MyStatsSection extends ConsumerWidget {
   final int recipes;
-  final String followers;
-  final int following;
+  // ✅ Thêm 2 callback để xử lý bấm từ bên ngoài
+  final VoidCallback onFollowersTap;
+  final VoidCallback onFollowingTap;
 
   const MyStatsSection({
     super.key,
     required this.recipes,
-    required this.followers,
-    required this.following,
+    required this.onFollowersTap,
+    required this.onFollowingTap,
   });
 
   @override
-  Widget build(BuildContext context) {
-    // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Tự động lấy số lượng từ Riverpod để hiển thị
+    final followersCount = ref.watch(followersListProvider).length;
+    final followingCount = ref.watch(followingListProvider).length;
+
     final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
-    final secondaryColor = textColor.withOpacity(0.6);     // Màu phụ (60%)
-    final dividerColor = textColor.withOpacity(0.3);       // Vạch ngăn (30%)
+    final secondaryColor = textColor.withOpacity(0.6);
+    final dividerColor = textColor.withOpacity(0.3);
 
     return Stack(
       children: [
         // SỐ CÔNG THỨC
         Positioned(
-          left: 63.w,
-          top: 370.h,
-          child: Text(
-            '$recipes',
-            style: TextStyle(
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-          ),
+          left: 63.w, top: 370.h,
+          child: Text('$recipes', style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: textColor)),
         ),
         Positioned(
-          left: 23.w,
-          top: 405.h,
-          child: Text(
-            'Số công thức',
-            style: TextStyle(
-              color: secondaryColor,
-              fontSize: 15.sp,
-            ),
-          ),
+          left: 23.w, top: 405.h,
+          child: Text('Số công thức', style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
         ),
 
-        // FOLLOWERS
+        // MỤC FOLLOWER
         Positioned(
-          left: 167.w,
-          top: 370.h,
-          child: Text(
-            followers,
-            style: TextStyle(
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-          ),
-        ),
-        Positioned(
-          left: 171.w,
-          top: 405.h,
-          child: Text(
-            'Follower',
-            style: TextStyle(
-              color: secondaryColor,
-              fontSize: 15.sp,
-            ),
-          ),
-        ),
-
-        // FOLLOWING
-        Positioned(
-          left: 312.w,
-          top: 370.h,
-          child: Text(
-            '$following',
-            style: TextStyle(
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-          ),
-        ),
-        Positioned(
-          left: 293.w,
-          top: 405.h,
-          child: Text(
-            'Đã follow',
-            style: TextStyle(
-              color: secondaryColor,
-              fontSize: 15.sp,
-            ),
-          ),
-        ),
-
-        // VẠCH NGĂN 1
-        Positioned(
-          left: 115.w,
-          top: 395.h,
-          child: Transform.rotate(
-            angle: 1.55,
+          left: 140.w, top: 360.h,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onFollowersTap, // ✅ Gọi hàm truyền từ bên ngoài
             child: Container(
-              width: 50.w,
-              height: 1.5.h,
-              color: dividerColor,
+              width: 100.w, height: 70.h,
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('$followersCount', style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: textColor)),
+                  Text('Follower', style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
+                ],
+              ),
             ),
           ),
         ),
 
-        // VẠCH NGĂN 2
+        // MỤC ĐÃ FOLLOW
         Positioned(
-          left: 240.w,
-          top: 395.h,
-          child: Transform.rotate(
-            angle: 1.55,
+          left: 275.w, top: 360.h,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onFollowingTap, // ✅ Gọi hàm truyền từ bên ngoài
             child: Container(
-              width: 50.w,
-              height: 1.5.h,
-              color: dividerColor,
+              width: 100.w, height: 70.h,
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('$followingCount', style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: textColor)),
+                  Text('Đã follow', style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
+                ],
+              ),
             ),
           ),
+        ),
+
+        // VẠCH NGĂN
+        Positioned(
+          left: 115.w, top: 395.h,
+          child: Transform.rotate(angle: 1.55, child: Container(width: 50.w, height: 1.5.h, color: dividerColor)),
+        ),
+        Positioned(
+          left: 240.w, top: 395.h,
+          child: Transform.rotate(angle: 1.55, child: Container(width: 50.w, height: 1.5.h, color: dividerColor)),
         ),
       ],
     );

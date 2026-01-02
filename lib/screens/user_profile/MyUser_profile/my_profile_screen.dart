@@ -1,6 +1,10 @@
 // lib/screens/my_profile_screen.dart
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:fontend/screens/user_profile/MyUser_profile/widgets/follower.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,9 +20,6 @@ import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_recipe_li
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_review_filter_header.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_review_tab.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_stats_section.dart';
-
-import '../../../Service/recipe_model.dart';
-import '../../../Service/recipe_service.dart';
 import '../../../Service/user_model.dart';
 import '../../../Service/user_service.dart';
 import '../../survey/logic/survey_provider.dart';
@@ -121,6 +122,17 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
     super.dispose();
   }
 
+  void _showFollowersDialog(BuildContext context, bool isFollowingTab) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5), // Nền tối hơn giúp Box trắng nổi bật
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4), // Mờ nền phía sau
+        child: FollowersListPage(isFollowingTab: isFollowingTab),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final chef = ref.watch(myChefProvider);
@@ -193,8 +205,12 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                         ),
                         MyStatsSection(
                           recipes: chef.recipes,
-                          followers: chef.followers,
-                          following: chef.following,
+                          onFollowersTap: () {
+                            _showFollowersDialog(context, false);
+                          },
+                          onFollowingTap: () {
+                            _showFollowersDialog(context, true);
+                          },
                         ),
                         EditProfileButton(onTap: _navigateToEditProfile),     // ← Nút chỉnh sửa
                         const MyProfileTabs(),
@@ -215,8 +231,6 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                 // === TAB CÔNG THỨC ===
                 if (profileTab == ProfileTab.congThuc)
                   KeepAliveWrapper(
-                    // QUAN TRỌNG: Gọi Widget MyRecipeList đã tách file
-                    // Thay vì viết StreamBuilder trực tiếp ở đây
                     child: MyRecipeList(userId: user.id),
                   ),
 
