@@ -5,7 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../logic/chef_provider.dart';
 
 class BioTab extends ConsumerWidget {
-  const BioTab({super.key});
+  final String? bioText;
+  final String? email;
+  final String? joinedDate;
+
+  const BioTab({super.key, this.bioText, this.email, this.joinedDate});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,20 +21,20 @@ class BioTab extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // === GIỚI THIỆU ===
           _buildSectionTitle('Giới thiệu'),
           SizedBox(height: 8.h),
-          _buildExpandableBio(chef.bio ?? _defaultBio),
+          // 2. Sử dụng bioText truyền vào, nếu null thì mới dùng provider hoặc mặc định
+          _buildExpandableBio(bioText ?? chef.bio ?? _defaultBio),
           SizedBox(height: 24.h),
 
-          // === LIÊN HỆ ===
           _buildSectionTitle('Liên hệ'),
           SizedBox(height: 8.h),
-          _buildContactInfo(chef.email ?? 'kongfuongchef@gmail.com'),
+          // 3. Sử dụng email truyền vào
+          _buildContactInfo(email ?? chef.email ?? 'chưa cập nhật'),
           SizedBox(height: 16.h),
 
-          // === ĐÃ THAM GIA ===
-          _buildJoinedDate(chef.joinedDate ?? '10/09/2024'),
+          // 4. Sử dụng joinedDate truyền vào
+          _buildJoinedDate(joinedDate ?? chef.joinedDate ?? 'chưa rõ'),
         ],
       ),
     );

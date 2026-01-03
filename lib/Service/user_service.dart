@@ -2,8 +2,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloudinary_public/cloudinary_public.dart'; // 1. Import thư viện mới
+import 'package:fontend/Service/recipe_model.dart';
 import 'package:fontend/Service/user_model.dart';
 import '../Service/user_model.dart';
+import '../screens/Crete_recipe/logic/publish_recipe.dart';
+import '../screens/user_profile/MyUser_profile/logic/my_profile_provider.dart';
 
 class UserService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -127,6 +130,47 @@ class UserService {
     } catch (e) {
       print("Lỗi khi lấy người dùng phổ biến: $e");
       return [];
+    }
+  }
+
+  Future<UserModel?> getUserById(String uid) async {
+    try {
+      DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists) {
+        return UserModel.fromSnapshot(doc);
+      }
+    } catch (e) {
+      print("Lỗi khi lấy thông tin user theo ID: $e");
+    }
+    return null;
+  }
+
+  Future<List<PublishRecipe>> getRecipesByUserId(String uid) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('published_recipes')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      // Chuyển đổi từ QueryDocumentSnapshot sang PublishRecipe
+      return snapshot.docs.map((doc) =>
+          PublishRecipe.fromFirestore(doc as DocumentSnapshot<Map<String, dynamic>>)
+      ).toList();
+    } catch (e) {
+      print("Lỗi lấy công thức: $e");
+      return [];
+    }
+  }
+
+// Hàm chuyển đổi String từ DB sang Enum MealTab trong chef_provider
+  MealTab _mapCategoryToMeal(String? category) {
+    switch (category) {
+      case 'Bữa sáng': return MealTab.buaSang;
+      case 'Bữa trưa': return MealTab.buaTrua;
+      case 'Ăn vặt': return MealTab.anVat;
+      default: return MealTab.tatCa;
     }
   }
 }

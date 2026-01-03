@@ -5,8 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ExploreAppBar extends StatefulWidget {
   final double width;
   final TextEditingController? controller; // Nhận controller từ bên ngoài nếu cần
+  final Function(String)? onSubmitted;
 
-  const ExploreAppBar({super.key, required this.width, this.controller});
+  const ExploreAppBar({super.key, required this.width, this.controller, this.onSubmitted});
 
   @override
   State<ExploreAppBar> createState() => _ExploreAppBarState();
@@ -69,6 +70,8 @@ class _ExploreAppBarState extends State<ExploreAppBar> {
             ),
             child: TextField(
               controller: _internalController,
+              onSubmitted: widget.onSubmitted,
+              textInputAction: TextInputAction.search,
               style: TextStyle(
                 color: isDarkMode ? Colors.white : Colors.black,
                 fontSize: 14.5.sp,

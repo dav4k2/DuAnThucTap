@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileAvatar extends StatelessWidget {
-  const ProfileAvatar({super.key});
+  final String? imageUrl;
+  const ProfileAvatar({super.key, this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +28,15 @@ class ProfileAvatar extends StatelessWidget {
           child: Container(
             width: 120.w,
             height: 120.h,
-            decoration: const ShapeDecoration(
-              image: DecorationImage(
-                image: AssetImage("image/empty_user.jpg"),
-                fit: BoxFit.fill,
-              ),
-              shape: OvalBorder(),
+            child: ClipOval(
+              child: (imageUrl != null && imageUrl!.isNotEmpty)
+                  ? Image.network(
+                imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Image.asset("image/empty_user.jpg", fit: BoxFit.fill),
+              )
+                  : Image.asset("image/empty_user.jpg", fit: BoxFit.fill),
             ),
           ),
         ),

@@ -64,11 +64,11 @@ class PopularUsersSection extends StatelessWidget {
   static Widget _userItem(BuildContext context, UserModel user, bool isDark) {
     return GestureDetector(
       onTap: () {
-        // Có thể truyền user.id qua ChefProfileScreen để hiển thị chi tiết
+        // Truyền user.uid (lấy từ Firestore) sang màn hình Profile
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const ChefProfileScreen(),
+            builder: (context) => ChefProfileScreen(userId: user.id ?? ''),
           ),
         );
       },
@@ -76,7 +76,6 @@ class PopularUsersSection extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 40.r,
-            // Sử dụng avatarUrl từ Cloudinary, nếu null thì dùng ảnh mặc định
             backgroundImage: user.avatarUrl != null
                 ? NetworkImage(user.avatarUrl!)
                 : const AssetImage('image/default_avatar.png') as ImageProvider,

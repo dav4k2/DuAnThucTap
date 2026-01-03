@@ -1,5 +1,10 @@
 // lib/logic/chef_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fontend/Service/recipe_model.dart';
+
+import '../../../../Service/user_model.dart';
+import '../../../../Service/user_service.dart';
+import '../../../Crete_recipe/logic/publish_recipe.dart';
 
 // === ENUMS ===
 enum ProfileTab { congThuc, tieuSu, anh, danhGia }
@@ -148,4 +153,15 @@ final filteredReviewsProvider = Provider<List<Review>>((ref) {
   }
 
   return sorted;
+});
+
+final chefDataProvider = FutureProvider.family<UserModel?, String>((ref, userId) async {
+  final userService = UserService();
+  // Giả sử bạn có hàm getUserById trong UserService, nếu chưa có hãy dùng getUserProfile cũ nhưng truyền ID vào
+  return await userService.getUserById(userId);
+});
+
+final userRecipesProvider = FutureProvider.family<List<PublishRecipe>, String>((ref, userId) async {
+  final userService = UserService();
+  return await userService.getRecipesByUserId(userId);
 });

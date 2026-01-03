@@ -21,7 +21,9 @@ import 'package:fontend/screens/user_profile/User_profile/widgets/stats_section.
 import 'logic/chef_provider.dart';
 
 class ChefProfileScreen extends ConsumerStatefulWidget {
-  const ChefProfileScreen({super.key});
+  final String userId;
+
+  const ChefProfileScreen({super.key, required this.userId});
 
   @override
   ConsumerState<ChefProfileScreen> createState() => _ChefProfileScreenState();
@@ -69,114 +71,102 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final chef = ref.watch(chefProvider);
+    final chefAsync = ref.watch(chefDataProvider(widget.userId));
+    // Lấy danh sách công thức thực tế của người dùng này
+    final recipesAsync = ref.watch(userRecipesProvider(widget.userId));
+
     final profileTab = ref.watch(profileTabProvider);
     final mealTab = ref.watch(mealTabProvider);
+    final mockChefData = ref.watch(chefProvider);
 
-    // GIỮ NGUYÊN LOGIC CỦA BẠN
-    if (profileTab == ProfileTab.congThuc) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToTop());
-    }
+    return chefAsync.when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, stack) => Scaffold(body: Center(child: Text('Lỗi: $err'))),
+      data: (user) {
+        if (user == null) return const Scaffold(body: Center(child: Text('Không thấy người dùng')));
 
-    return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Theme.of(context).brightness == Brightness.dark
-              ? Brightness.light
-              : Brightness.dark,
-        ),
-        child: CustomScrollView(
-          controller: _mainScrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 510.h,
-              floating: false,
-              pinned: true,
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              elevation: 0.5,
-              automaticallyImplyLeading: false,
-              title: Opacity(
-                opacity: _titleOpacity,
-                child: Text(
-                  chef.name,
-                  style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w600),
-                ),
-              ),
-              centerTitle: true,
-              flexibleSpace: FlexibleSpaceBar(
-                collapseMode: CollapseMode.parallax,
-                background: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      top: 195.h,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: ShapeDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        return Scaffold(
+          body: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Theme.of(context).brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+            ),
+            child: CustomScrollView(
+              controller: _mainScrollController,
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 510.h,
+                  pinned: true,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  automaticallyImplyLeading: true, // Cho phép quay lại trang trước
+                  title: Opacity(
+                    opacity: _titleOpacity,
+                    child: Text(user.displayName ?? 'Ẩn danh'),
+                  ),
+                  centerTitle: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          top: 195.h,
+                          left: 0, right: 0,
+                          child: Container(
+                            height: 400.h,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                            ),
                           ),
                         ),
-                      ),
+                        HeaderImage(imageUrl: user.coverUrl),
+                        ProfileAvatar(imageUrl: user.avatarUrl),
+                        ChefInfo(
+                            name: user.displayName ?? 'Ẩn danh',
+                            title: user.cookingLevel ?? 'Thành viên'
+                        ),
+                        recipesAsync.when(
+                          data: (recipes) => StatsSection(
+                            recipes: recipes.length,
+                            followers: "0", // Sau này lấy từ user model
+                            following: 0,
+                          ),
+                          loading: () => const StatsSection(recipes: 0, followers: "0", following: 0),
+                          error: (_, __) => const StatsSection(recipes: 0, followers: "0", following: 0),
+                        ),
+                        const FollowButton(),
+                        const ProfileTabs(),
+                      ],
                     ),
-                    const HeaderImage(),
-                    const ProfileAvatar(),
-                    ChefInfo(name: chef.name, title: chef.title),
-                    StatsSection(
-                        recipes: chef.recipes,
-                        followers: chef.followers,
-                        following: chef.following),
-                    const FollowButton(),
-                    const ProfileTabs(),
-                  ],
-                ),
-              ),
-            ),
-
-            // SỬA XONG – XÓA const Ở 2 CHỖ NÀY THÔI
-            if (profileTab == ProfileTab.congThuc)
-              KeepAliveWrapper(
-                child: SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _MealFilterDelegate(),
-                ),
-              ),
-
-            if (profileTab == ProfileTab.danhGia)
-              KeepAliveWrapper(
-                child: SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _ReviewFilterDelegate(),
-                ),
-              ),
-
-            if (profileTab == ProfileTab.congThuc)
-              KeepAliveWrapper(
-                child: PrimaryScrollController(
-                  controller: _recipeScrollController,
-                  child: RecipeList(
-                    key: ValueKey('$profileTab-$mealTab'),
-                    recipes: chef.allRecipes
-                        .where((r) => mealTab == MealTab.tatCa || r.meal == mealTab)
-                        .toList(),
                   ),
                 ),
-              ),
 
-            if (profileTab == ProfileTab.danhGia) const KeepAliveWrapper(child: ReviewTab()),
-            if (profileTab == ProfileTab.tieuSu)
-              const KeepAliveWrapper(child: SliverToBoxAdapter(child: BioTab())),
-            if (profileTab == ProfileTab.anh)
-              const KeepAliveWrapper(child: SliverToBoxAdapter(child: PhotoGrid())),
+                // Logic hiển thị Tabs
+                if (profileTab == ProfileTab.congThuc) ...[
+                  SliverPersistentHeader(pinned: true, delegate: const _MealFilterDelegate()),
+                  recipesAsync.when(
+                    data: (recipeModels) {
+                      // Chuyển đổi từ RecipeModel sang List hiển thị nếu cần
+                      // hoặc cập nhật RecipeList để nhận RecipeModel
+                      return RecipeList(
+                        recipes: recipeModels, // Truyền list từ Firestore về
+                      );
+                    },
+                    loading: () => const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
+                    error: (err, _) => SliverToBoxAdapter(child: Text('Lỗi tải công thức: $err')),
+                  ),
+                ],
 
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
-          ],
-        ),
-      ),
+                if (profileTab == ProfileTab.danhGia) const KeepAliveWrapper(child: ReviewTab()),
+                if (profileTab == ProfileTab.tieuSu) SliverToBoxAdapter(child: BioTab(bioText: user.bio)),
+                if (profileTab == ProfileTab.anh) const KeepAliveWrapper(child: SliverToBoxAdapter(child: PhotoGrid())),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

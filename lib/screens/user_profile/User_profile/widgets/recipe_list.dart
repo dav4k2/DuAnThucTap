@@ -2,11 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/Crete_recipe/logic/publish_recipe.dart';
+import '../../../../Service/recipe_model.dart';
 import '../logic/chef_provider.dart';
 import 'recipe_card.dart';
 
 class RecipeList extends ConsumerWidget {
-  final List<Recipe> recipes;
+  final List<PublishRecipe> recipes;
   final ScrollController? controller; // ← thêm controller
 
   const RecipeList({super.key, required this.recipes, this.controller});
@@ -14,7 +16,12 @@ class RecipeList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (recipes.isEmpty) {
-      return const SliverToBoxAdapter(child: SizedBox.shrink());
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.only(top: 50),
+          child: Center(child: Text("Chưa có công thức nào")),
+        ),
+      );
     }
 
     final totalRecipes = ref.read(chefProvider).allRecipes.length;
@@ -24,14 +31,16 @@ class RecipeList extends ConsumerWidget {
       delegate: SliverChildBuilderDelegate(
             (context, index) {
           if (index == 0) {
-            return _buildHeader(totalRecipes);
+            return _buildHeader(recipes.length);
           }
           final recipe = recipes[index - 1];
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: RecipeCard(
-              recipe: recipe,
-              onTap: () {},
+              recipe: recipe, // RecipeCard cũng cần được cập nhật
+              onTap: () {
+                // Chuyển sang trang chi tiết với recipe.id
+              },
             ),
           );
         },

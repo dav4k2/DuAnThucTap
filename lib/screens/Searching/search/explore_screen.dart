@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../Search_result/search_results_screen.dart';
 import 'widgets/explore_appbar.dart';
 import 'widgets/explore_popular_user.section.dart';
 import 'widgets/explore_keyword_section.dart';
@@ -40,7 +41,22 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           Column(
             children: [
               // Truyền controller vào AppBar
-              ExploreAppBar(width: width, controller: _searchController),
+              ExploreAppBar(
+                width: width,
+                controller: _searchController,
+                onSubmitted: (query) {
+                  final trimmedQuery = query.trim();
+                  if (trimmedQuery.isNotEmpty) {
+                    // Điều hướng đến màn hình kết quả tìm kiếm
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SearchResultsScreen(query: trimmedQuery),
+                      ),
+                    );
+                  }
+                },
+              ),
 
               Expanded(
                 child: Container(

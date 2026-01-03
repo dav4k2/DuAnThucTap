@@ -83,10 +83,9 @@ class SearchResultsTabs extends StatelessWidget {
           builder: (context, snapshot) {
             if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-            // Bước 1: Lấy danh sách ID tác giả duy nhất
             final authorIds = snapshot.data!
                 .map((r) => r.authorId)
-                .whereType<String>() // Loại bỏ các ID null
+                .whereType<String>()
                 .toSet()
                 .toList();
 
@@ -94,35 +93,34 @@ class SearchResultsTabs extends StatelessWidget {
               padding: EdgeInsets.all(20.w),
               itemCount: authorIds.length,
               itemBuilder: (context, index) {
-                // ĐỊNH NGHĨA BIẾN authorId Ở ĐÂY
                 final authorId = authorIds[index];
 
-                // Lấy thông tin User (Tên, Ảnh)
                 return FutureBuilder<Map<String, dynamic>?>(
                   future: service.getUserInfo(authorId),
                   builder: (context, userSnap) {
                     if (userSnap.connectionState == ConnectionState.waiting) return const SizedBox();
                     if (!userSnap.hasData) return const SizedBox();
 
-                    // ĐỊNH NGHĨA authorName VÀ avatarUrl TỪ DỮ LIỆU USER
                     final userData = userSnap.data!;
                     final String authorName = userData['display_name'] ?? 'Người dùng';
-                    final String avatarUrl = userData['photo_url'] ?? '';
 
-                    // Lọc theo query tìm kiếm nếu cần
-                    if (!authorName.toLowerCase().contains(query.toLowerCase())) {
+                    // FIX 1: Lấy đúng key 'avatar_url' từ Cloudinary/Firestore
+                    final String avatarUrl = userData['avatar_url'] ?? userData['photo_url'] ?? '';
+
+                    // Lọc theo query
+                    if (!authorName.toLowerCase().contains(lowercaseQuery)) {
                       return const SizedBox.shrink();
                     }
 
-                    // Bước 2: Gọi FutureBuilder để đếm số lượng công thức
                     return FutureBuilder<int>(
                       future: service.getRecipeCount(authorId),
                       builder: (context, countSnapshot) {
                         return ChefCard(
-                          chefId: authorId, // Đừng quên ID để dùng cho Follow
-                          name: authorName, // Truyền biến đã định nghĩa ở trên
+                          chefId: authorId,
+                          name: authorName,
                           recipeCount: "${countSnapshot.data ?? 0} công thức",
-                          avatarPath: avatarUrl, // Truyền biến đã định nghĩa ở trên
+                          // FIX 2: Sử dụng biến avatarUrl đã định nghĩa ở trên, bỏ 'chef.'
+                          avatarPath: avatarUrl,
                           isNetworkImage: true,
                         );
                       },

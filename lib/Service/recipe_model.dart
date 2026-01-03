@@ -14,6 +14,9 @@ class RecipeModel {
   final List<String> steps;
   final int likesCount;
   final DateTime createdAt;
+  final double averageRating;
+  final int reviewCount;
+  final String? category;
 
   RecipeModel({
     required this.id,
@@ -29,6 +32,9 @@ class RecipeModel {
     required this.steps,
     this.likesCount = 0,
     required this.createdAt,
+    this.averageRating = 0.0,
+    this.reviewCount = 0,
+    this.category,
   });
 
   Map<String, dynamic> toJson() {
@@ -64,6 +70,9 @@ class RecipeModel {
       steps: List<String>.from(data['steps'] ?? []),
       likesCount: data['likesCount'] ?? 0,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      averageRating: (data['averageRating'] ?? 0).toDouble(),
+      reviewCount: data['reviewCount'] ?? 0,
+      category: data['category'],
     );
   }
 }
