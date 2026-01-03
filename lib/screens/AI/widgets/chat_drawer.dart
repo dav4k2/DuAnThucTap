@@ -33,7 +33,7 @@ class _ChatDrawerState extends ConsumerState<ChatDrawer> {
       return title.contains(query);
     }).toList();
 
-    // Theme config
+    // Theme darkmode
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final drawerColor = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF9F9F9);
@@ -147,7 +147,7 @@ class _ChatDrawerState extends ConsumerState<ChatDrawer> {
               ),
             ),
 
-            // User Info
+            // tên người dùng
             Padding(
               padding: EdgeInsets.all(16.w),
               child: Row(

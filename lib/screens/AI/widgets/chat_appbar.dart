@@ -1,5 +1,3 @@
-// lib/screens/chat/widgets/chat_appbar.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -31,7 +29,6 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: bgColor,
       elevation: 0,
 
-      // ===== BÊN TRÁI: BACK + MENU (nằm cạnh nhau) =====
       leading: Row(
         children: [
           // Nút Back
@@ -51,10 +48,8 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
 
-      // Để Row không bị tràn ra ngoài leading (44x56), ta override leadingWidth
-      leadingWidth: 96.w, // 48 (back) + 48 (menu)
+      leadingWidth: 96.w,
 
-      // ===== BÊN PHẢI: Tạo đoạn chat mới =====
       actions: [
         IconButton(
           icon: Icon(Icons.edit_square, color: textColor),

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 // --- API KEY ---
 final _apiKey = dotenv.env['GROQ_API_KEY'] ?? '';
 
-// --- MODEL 1: TIN NHẮN ---
+// ---  TIN NHẮN ---
 class ChatMessage {
   final String text;
   final bool isUser;
@@ -21,10 +21,10 @@ class ChatMessage {
   });
 }
 
-// --- MODEL 2: PHIÊN CHAT (SESSION) ---
+// ---  PHIÊN CHAT (SESSION) ---
 class ChatSession {
   final String id;
-  final String title; // Tiêu đề (lấy từ tin nhắn đầu tiên)
+  final String title;
   final List<ChatMessage> messages;
   final DateTime createdAt;
 
@@ -38,9 +38,9 @@ class ChatSession {
 
 // --- STATE CỦA PROVIDER ---
 class ChatState {
-  final List<ChatSession> history; // Danh sách lịch sử
-  final String? currentSessionId;  // ID cuộc hội thoại đang mở (null = chưa tạo mới)
-  final List<ChatMessage> currentMessages; // Tin nhắn đang hiển thị trên màn hình
+  final List<ChatSession> history;
+  final String? currentSessionId;
+  final List<ChatMessage> currentMessages;
 
   ChatState({
     this.history = const [],
@@ -48,6 +48,7 @@ class ChatState {
     this.currentMessages = const [],
   });
 
+  //Lấy lại lịch sử đoạn chat cũ
   ChatState copyWith({
     List<ChatSession>? history,
     String? currentSessionId,
@@ -87,23 +88,21 @@ class ChatNotifier extends StateNotifier<ChatState> {
   Future<void> sendMessage(String inputRaw) async {
     if (inputRaw.trim().isEmpty) return;
 
-    // A. Thêm tin nhắn User vào UI
+    //  Thêm tin nhắn User vào UI
     final userMsg = ChatMessage(text: inputRaw, isUser: true);
-    final loadingMsg = ChatMessage(text: 'Đang suy nghĩ công thức...', isUser: false, isLoading: true);
+    List<ChatMessage> newMessages = [...state.currentMessages, userMsg];
 
-    List<ChatMessage> newMessages = [...state.currentMessages, userMsg, loadingMsg];
-
-    // B. Quản lý Session
+    //  Quản lý Session
     String sessionId = state.currentSessionId ?? DateTime.now().millisecondsSinceEpoch.toString();
     String sessionTitle = state.currentSessionId == null ? inputRaw : (state.history.firstWhere((s) => s.id == sessionId).title);
 
-    _updateState(sessionId, sessionTitle, newMessages);
+      _updateState(sessionId, sessionTitle, newMessages);
 
-    // C. Gọi API (Lần đầu -> excludeDishName = null)
+    // C. Gọi API
     await _callGroq(sessionId, sessionTitle, inputRaw, excludeDishName: null);
   }
 
-  // === 4. ĐỔI MÓN KHÁC (LOGIC ĐÃ SỬA: LẤY MÓN CŨ ĐỂ NÉ) ===
+    // === 4. ĐỔI MÓN KHÁC  ===
   Future<void> requestAnotherRecipe() async {
     // 1. Lấy input gốc của user (tin nhắn user gần nhất)
     final lastUserMsg = state.currentMessages.lastWhere(
@@ -112,7 +111,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
     );
     final originalInput = lastUserMsg.text;
 
-    // 2. Lấy tên món vừa gợi ý (để bảo AI đừng lặp lại)
+    // 2. Lấy tên món vừa gợi ý để bảo AI đừng lặp lại
     String? lastDishName;
     try {
       final lastBotMsg = state.currentMessages.lastWhere((m) => !m.isUser && m.recipeData != null);
@@ -122,10 +121,8 @@ class ChatNotifier extends StateNotifier<ChatState> {
     }
 
     // 3. Update UI
-    final userRequest = ChatMessage(text: "Tìm món khác giúp tôi...", isUser: true);
-    final loadingMsg = ChatMessage(text: 'Đang tìm món khác...', isUser: false, isLoading: true);
-
-    List<ChatMessage> newMessages = [...state.currentMessages, userRequest, loadingMsg];
+    final userRequest = ChatMessage(text: "Tìm món khác giúp tôi", isUser: true);
+    List<ChatMessage> newMessages = [...state.currentMessages, userRequest];
 
     if (state.currentSessionId == null) return;
     String sessionId = state.currentSessionId!;
@@ -133,11 +130,11 @@ class ChatNotifier extends StateNotifier<ChatState> {
 
     _updateState(sessionId, sessionTitle, newMessages);
 
-    // 4. Gọi API với tham số loại trừ
+    // 4. Gọi API
     await _callGroq(sessionId, sessionTitle, originalInput, excludeDishName: lastDishName);
   }
 
-  // === HELPER: CẬP NHẬT STATE VÀ HISTORY ===
+  // CẬP NHẬT STATE VÀ HISTORY ===
   void _updateState(String sessionId, String title, List<ChatMessage> messages) {
     final index = state.history.indexWhere((s) => s.id == sessionId);
     List<ChatSession> newHistory = [...state.history];
@@ -163,13 +160,12 @@ class ChatNotifier extends StateNotifier<ChatState> {
     );
   }
 
-  // === LOGIC GỌI GROQ API (ĐÃ TỐI ƯU PROMPT) ===
+  // === LOGIC GỌI GROQ API  ===
   Future<void> _callGroq(String sessionId, String sessionTitle, String userInput, {String? excludeDishName}) async {
     try {
-      final url = Uri.parse('https://api.groq.com/openai/v1/chat/completions');
+      final url = Uri.parse('https://api.groq.com/openai/v1/chat/completions');//endpoint API
 
-      // --- PROMPT "SENIOR" ---
-      // Dùng kỹ thuật Chain-of-Thought (Chuỗi suy luận) để AI không bị ngu ngơ
+      // --- PROMPT ---
       final systemPrompt = '''
       Bạn là "Chef AI" - Đầu bếp 5 sao chuyên nghiệp, am hiểu ẩm thực Việt Nam.
       
@@ -215,7 +211,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
             {"role": "system", "content": systemPrompt},
             {"role": "user", "content": "Gợi ý món từ: $userInput"}
           ],
-          "temperature": 0.6, // Giảm temperature để AI bớt ảo, tập trung vào logic
+          "temperature": 0.6,
           "response_format": {"type": "json_object"}
         }),
       );
@@ -229,11 +225,9 @@ class ChatNotifier extends StateNotifier<ChatState> {
         try {
           data = jsonDecode(content);
         } catch (e) {
-          // Fallback nếu AI trả về lỗi format (hiếm khi xảy ra với JSON mode)
+          // Fallback nếu AI trả về lỗi format
           throw Exception("AI trả về dữ liệu không đúng định dạng.");
         }
-
-        // Xoá loading message
         final currentMsgs = List<ChatMessage>.from(state.currentMessages);
         if (currentMsgs.isNotEmpty && currentMsgs.last.isLoading) {
           currentMsgs.removeLast();
@@ -244,9 +238,9 @@ class ChatNotifier extends StateNotifier<ChatState> {
         // Tạo câu dẫn dắt tự nhiên hơn
         String botIntroText;
         if (excludeDishName != null) {
-          botIntroText = "Nếu bạn không thích **$excludeDishName**, tôi nghĩ món **$title** này sẽ hợp ý bạn:";
+          botIntroText = "Nếu bạn không thích $excludeDishName, tôi nghĩ món $title này sẽ hợp ý bạn:";
         } else {
-          botIntroText = "Với **$userInput**, Bếp trưởng đề xuất món **$title**:";
+          botIntroText = "Với $userInput, Bếp trưởng đề xuất món :$title :";
         }
 
         currentMsgs.add(ChatMessage(
@@ -260,9 +254,9 @@ class ChatNotifier extends StateNotifier<ChatState> {
       } else {
         throw Exception('Lỗi API: ${response.statusCode}');
       }
+
     } catch (e) {
       final currentMsgs = List<ChatMessage>.from(state.currentMessages);
-      // Xoá loading nếu có lỗi
       if (currentMsgs.isNotEmpty && currentMsgs.last.isLoading) {
         currentMsgs.removeLast();
       }

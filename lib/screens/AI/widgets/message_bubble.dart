@@ -65,9 +65,9 @@ class MessageBubble extends StatelessWidget {
   }
 }
 
-// ==========================================
-// WIDGET CARD CÔNG THỨC (Tích hợp tại đây để tránh lỗi import)
-// ==========================================
+
+// WIDGET CARD CÔNG THỨC
+
 class RecipePreviewCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final bool isDark;
