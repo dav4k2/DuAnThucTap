@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../Main_layout/main_layout.dart';
+import '../../Home_page/mainpage_guest/home_screen.dart';
 import 'widgets/welcome_logo.dart';
 import 'widgets/welcome_texts.dart';
 import 'widgets/welcome_buttons.dart';
@@ -57,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MainLayout(),
+                      builder: (context) => const HomeScreen(),
                     ),
                   );
                 },

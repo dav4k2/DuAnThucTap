@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fontend/screens/Start/welcome/welcome_screen.dart';
 import 'package:fontend/screens/survey/survey_0.dart';
 import '../../../../Main_layout/main_layout.dart';
 import '../../../../Service/user_service.dart';
@@ -21,7 +22,7 @@ class AuthGate extends ConsumerWidget {
         }
 
         if (!authSnapshot.hasData) {
-          return const SignInScreen();
+          return const WelcomeScreen();
         }
 
         return FutureBuilder<UserModel?>(
@@ -36,7 +37,7 @@ class AuthGate extends ConsumerWidget {
 
             if (user == null) {
               FirebaseAuth.instance.signOut();
-              return const SignInScreen();
+              return const WelcomeScreen();
             }
 
             if (user.isProfileCompleted == true) {

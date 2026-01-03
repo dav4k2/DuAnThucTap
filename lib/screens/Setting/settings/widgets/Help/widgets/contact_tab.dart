@@ -9,7 +9,7 @@ class ContactTab extends StatelessWidget {
 
   static const String phone = "03618183636";
   static const String zalo = "03618183636";
-  static const String email = "sonchimto@cookhub.vn";
+  static const String email = "cookhub@gmail.com";
   static const String facebook   = "https://facebook.com/cookhub.vn";
   static const String instagram  = "https://instagram.com/cookhub.vn";
   static const String xTwitter   = "https://x.com/cookhubvn";
@@ -140,7 +140,7 @@ class ContactTab extends StatelessWidget {
 
           const SizedBox(height: 60),
           Text(
-            '© 2025 Cookhub. All rights reserved.',
+            '© 2025 Cookhub',
             style: TextStyle(fontSize: 12, color: trailingColor),
           ),
           const SizedBox(height: 40),

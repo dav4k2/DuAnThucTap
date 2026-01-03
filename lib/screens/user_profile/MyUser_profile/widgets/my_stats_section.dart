@@ -40,7 +40,7 @@ class MyStatsSection extends ConsumerWidget {
 
         // MỤC FOLLOWER
         Positioned(
-          left: 140.w, top: 360.h,
+          left: 150.w, top: 360.h,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onFollowersTap, // ✅ Gọi hàm truyền từ bên ngoài

@@ -1,4 +1,3 @@
-// lib/widgets/stats_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,116 +15,59 @@ class StatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
-    final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
+    // LẤY MÀU TỪ THEME
+    final textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black;
     final secondaryColor = textColor.withOpacity(0.6);
-    final dividerColor = textColor.withOpacity(0.3);
+    final dividerColor = textColor.withOpacity(0.15);
 
-    return Stack(
+    return Container(
+      // Dùng margin hoặc padding thay vì Positioned top nếu có thể
+      margin: EdgeInsets.only(top: 370.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildStatItem('$recipes', 'Số công thức', textColor, secondaryColor),
+          _buildDivider(dividerColor),
+          _buildStatItem(followers, 'Follower', textColor, secondaryColor),
+          _buildDivider(dividerColor),
+          _buildStatItem('$following', 'Đã follow', textColor, secondaryColor),
+        ],
+      ),
+    );
+  }
+
+  // Widget con để hiển thị từng cột chỉ số
+  Widget _buildStatItem(String value, String label, Color textColor, Color secondaryColor) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        // SỐ CÔNG THỨC
-        Positioned(
-          left: 63.w,
-          top: 370.h,
-          child: Text(
-            '$recipes',
-            style: TextStyle(
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w500,
-              color: textColor, // TỰ ĐỔI: ĐEN → TRẮNG
-            ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 24.sp, // Giảm nhẹ sp để fit với designSize 402
+            fontWeight: FontWeight.w600,
+            color: textColor,
           ),
         ),
-        Positioned(
-          left: 23.w,
-          top: 405.h,
-          child: Text(
-            'Số công thức',
-            style: TextStyle(
-              color: secondaryColor, // TỰ ĐỔI: XÁM → TRẮNG NHẠT
-              fontSize: 15.sp,
-            ),
-          ),
-        ),
-
-        // FOLLOWERS
-        Positioned(
-          left: 167.w,
-          top: 370.h,
-          child: Text(
-            followers,
-            style: TextStyle(
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-          ),
-        ),
-        Positioned(
-          left: 171.w,
-          top: 405.h,
-          child: Text(
-            'Follower',
-            style: TextStyle(
-              color: secondaryColor,
-              fontSize: 15.sp,
-            ),
-          ),
-        ),
-
-        // FOLLOWING
-        Positioned(
-          left: 312.w,
-          top: 370.h,
-          child: Text(
-            '$following',
-            style: TextStyle(
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-          ),
-        ),
-        Positioned(
-          left: 293.w,
-          top: 405.h,
-          child: Text(
-            'Đã follow',
-            style: TextStyle(
-              color: secondaryColor,
-              fontSize: 15.sp,
-            ),
-          ),
-        ),
-
-        // VẠCH NGĂN 1
-        Positioned(
-          left: 115.w,
-          top: 395.h,
-          child: Transform.rotate(
-            angle: 1.55,
-            child: Container(
-              width: 50.w,
-              height: 1.5.h,
-              color: dividerColor, // TỰ ĐỔI: XÁM → TRẮNG NHẠT
-            ),
-          ),
-        ),
-
-        // VẠCH NGĂN 2
-        Positioned(
-          left: 240.w,
-          top: 395.h,
-          child: Transform.rotate(
-            angle: 1.55,
-            child: Container(
-              width: 50.w,
-              height: 1.5.h,
-              color: dividerColor,
-            ),
+        SizedBox(height: 4.h),
+        Text(
+          label,
+          style: TextStyle(
+            color: secondaryColor,
+            fontSize: 14.sp,
           ),
         ),
       ],
+    );
+  }
+
+  // Widget vạch ngăn dọc chuyên nghiệp hơn Transform.rotate
+  Widget _buildDivider(Color color) {
+    return Container(
+      height: 30.h,
+      width: 1.w,
+      color: color,
     );
   }
 }

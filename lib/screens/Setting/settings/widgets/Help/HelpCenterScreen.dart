@@ -51,7 +51,6 @@ class HelpCenterScreen extends StatefulWidget {
 class _HelpCenterScreenState extends State<HelpCenterScreen> {
   final List<String> faqTopics = [
     'Làm sao để đăng ký tài khoản Cookhub?',
-    'Bị Gay có dùng được không ?',
     'Sự cố kỹ thuật',
     'Giới thiệu về Cookhub',
     'Giới thiệu về AI trên Cookhub',

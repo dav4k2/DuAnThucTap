@@ -103,7 +103,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         /// Email hoặc SĐT
         Center(
           child: InputField(
-            hintText: "Email hoặc SĐT",
+            hintText: "Email",
             controller: _emailController,
             width: inputWidth,
             bgColor: bgColor,
