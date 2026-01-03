@@ -1,7 +1,6 @@
-import 'dart:ui'; // ✅ QUAN TRỌNG: Import để làm mờ
+import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
 import '../../Crete_recipe/logic/publish_recipe.dart';
 
 class HeaderSection extends StatefulWidget {
@@ -18,49 +17,46 @@ class _HeaderSectionState extends State<HeaderSection> {
 
   @override
   Widget build(BuildContext context) {
-    const double headerHeight = 380;
+    const double headerHeight = 400; // Chiều cao tổng thể của header
 
     return SizedBox(
       height: headerHeight,
       width: double.infinity,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          // 1. Ảnh nền
+          // 1. Ảnh nền - Tràn lên sát mép trên cùng
           Positioned.fill(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(32),
-                bottomRight: Radius.circular(32),
-              ),
-              child: Image.network(
-                widget.recipe.images.isNotEmpty ? widget.recipe.images.first : '',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Image.asset("image/placeholder.png"), // Ảnh mặc định nếu lỗi
-              ),
+            child: Image.network(
+              widget.recipe.images.isNotEmpty ? widget.recipe.images.first : '',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  Image.asset("image/placeholder.png", fit: BoxFit.cover),
             ),
           ),
 
-          // 2. Gradient
+          // 2. Lớp màu trắng tạo độ bo góc ở đáy ảnh
           Positioned(
-            top: 0, left: 0, right: 0, height: 160,
+            left: 0,
+            right: 0,
+            bottom: -1,
+            height: 40,
             child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.6),
-                    Colors.black.withOpacity(0.2),
-                    Colors.transparent,
-                  ],
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(35),
+                  topRight: Radius.circular(35),
                 ),
               ),
             ),
           ),
 
-          // 3. Thanh điều hướng
+          // 3. Thanh điều hướng (Nút Back, Heart, Menu)
           Positioned(
-            top: 50, left: 16, right: 16,
+            top: 50, // Khoảng cách từ mép trên để tránh camera nốt ruồi
+            left: 16,
+            right: 16,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -72,12 +68,10 @@ class _HeaderSectionState extends State<HeaderSection> {
                   children: [
                     _iconButton(
                       icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                      backgroundColor: isFavorite ? Colors.red.withOpacity(0.9) : null,
-                      iconColor: isFavorite ? Colors.white : null,
+                      backgroundColor: isFavorite ? Colors.red : null,
+                      iconColor: Colors.white,
                       onTap: () => setState(() => isFavorite = !isFavorite),
                     ),
-                    const SizedBox(width: 12),
-                    _editButton(onTap: () => print("Chỉnh sửa".tr())),
                     const SizedBox(width: 12),
                     _iconButton(
                       icon: Icons.menu_rounded,
@@ -91,7 +85,7 @@ class _HeaderSectionState extends State<HeaderSection> {
             ),
           ),
 
-          // 4. Lớp phủ tắt menu
+          // 4. Logic Menu (Giữ nguyên logic cũ của bạn)
           if (showMenu)
             Positioned.fill(
               child: GestureDetector(
@@ -100,7 +94,6 @@ class _HeaderSectionState extends State<HeaderSection> {
               ),
             ),
 
-          // 5. Menu Dropdown
           if (showMenu)
             Positioned(
               top: 100, right: 16,
@@ -118,13 +111,7 @@ class _HeaderSectionState extends State<HeaderSection> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _menuItem("Thêm vào bộ sưu tập".tr(), onTap: () {}),
-                      const Divider(height: 1),
-                      _menuItem("Chia sẻ".tr(), onTap: () {}),
-                      const Divider(height: 1),
-                      _menuItem("Xem thống kê".tr(), onTap: () {}),
-                      const Divider(height: 1),
-                      // 👇 Gọi hàm xóa ở đây
+                      _menuItem("chỉnh sửa món ăn".tr(), onTap: () {}),
                       _menuItem("Xóa món này".tr(), color: Colors.red, onTap: _showDeleteDialog),
                     ],
                   ),
@@ -136,19 +123,15 @@ class _HeaderSectionState extends State<HeaderSection> {
     );
   }
 
-  // ============================================
-  // ✅ HÀM HIỂN THỊ DIALOG XÓA (CÓ BLUR)
-  // ============================================
+  // --- Các hàm logic hiển thị Dialog và Button (Giữ nguyên bản gốc) ---
   void _showDeleteDialog() {
-    setState(() => showMenu = false); // Tắt menu trước
-
+    setState(() => showMenu = false);
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.2), // Màu nền tối nhẹ
+      barrierColor: Colors.black.withOpacity(0.2),
       builder: (ctx) {
-        // 👇 Widget BackdropFilter tạo hiệu ứng mờ
         return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4), // Chỉnh độ mờ tại đây
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
           child: AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             title: Text("Xóa công thức này?".tr(), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
@@ -162,7 +145,6 @@ class _HeaderSectionState extends State<HeaderSection> {
               TextButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  print("Đã xóa!".tr()); // Logic xóa thực tế
                 },
                 child: Text("Xóa".tr(), style: const TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
               ),
@@ -173,38 +155,24 @@ class _HeaderSectionState extends State<HeaderSection> {
     );
   }
 
-  Widget _editButton({required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 46, padding: const EdgeInsets.symmetric(horizontal: 16),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(color: const Color(0xFFFFC107), borderRadius: BorderRadius.circular(12)),
-        child: Text("Chỉnh sửa".tr(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
-      ),
-    );
-  }
-
   Widget _iconButton({required IconData icon, Color? backgroundColor, Color? iconColor, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 46, height: 46,
         decoration: BoxDecoration(
-          color: backgroundColor ?? Colors.white.withOpacity(0.25),
+          color: backgroundColor ?? Colors.black.withOpacity(0.25),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withOpacity(0.7), width: 1.4),
         ),
         child: Icon(icon, color: iconColor ?? Colors.white, size: 22),
       ),
     );
   }
 
-  // Sửa lại _menuItem để nhận onTap
   Widget _menuItem(String text, {Color? color, required VoidCallback onTap}) {
     return InkWell(
       onTap: () {
-        if (text != "Xóa món này".tr()) setState(() => showMenu = false); // Nếu không phải nút xóa thì tự tắt menu
+        if (text != "Xóa món này".tr()) setState(() => showMenu = false);
         onTap();
       },
       child: Padding(

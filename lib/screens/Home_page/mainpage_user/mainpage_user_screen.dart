@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widgets/home_header_user.dart';
-//import 'widgets/search_bar_user.dart';
 import 'widgets/featured_recipes_user.dart';
 import 'widgets/recommend_list_user.dart';
 import 'package:fontend/navbar/smart_navbar.dart';
@@ -31,9 +30,9 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFC221),
-      extendBody: true, // ← Cho phép body kéo dài xuống dưới navbar
+      extendBody: true,
       body: SafeArea(
-        bottom: false, // ← Không dùng safe area ở bottom
+        bottom: false,
         child: Column(
           children: [
             const HomeHeader(),
@@ -53,7 +52,10 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const FeaturedRecipes(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: const FeaturedRecipes(),
+                    ),
                     const SizedBox(height: 10),
 
                     // 🧍 Tiêu đề cố định (bỏ const để nhận theme)
@@ -68,6 +70,8 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                     ),
 
                     const SizedBox(height: 10),
+
+                    SizedBox(height: 24.h),
 
                     // 📜 Phần cuộn
                     Expanded(
