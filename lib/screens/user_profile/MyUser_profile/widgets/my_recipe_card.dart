@@ -14,7 +14,7 @@ class MyRecipeCard extends StatelessWidget {
     this.onTap,
   });
 
-  // Widget nền mờ (Giữ nguyên logic giao diện của bạn)
+  // Widget nền mờ
   Widget _frostedContainer({
     required BuildContext context,
     required Widget child,
@@ -57,7 +57,7 @@ class MyRecipeCard extends StatelessWidget {
     final iconColor = textColor.withOpacity(0.85);
     final shadowColor = isDark ? Colors.black.withOpacity(0.6) : const Color(0x3F000000);
 
-    // 3. Lấy ảnh đầu tiên từ mảng images (Sử dụng dữ liệu từ Cloudinary URL)
+    // . Lấy ảnh đầu tiên từ mảng images
     final String imageUrl = recipe.images.isNotEmpty
         ? recipe.images.first
         : 'https://placehold.co/400x300?text=No+Image';
@@ -80,7 +80,7 @@ class MyRecipeCard extends StatelessWidget {
               onPressed: () async {
                 Navigator.pop(dialogContext); // Đóng dialog
 
-                // Thực hiện xóa thông qua PublishService
+                // Thực hiện xóa thông qua
                 final success = await PublishService().deletePublishedRecipe(
                   recipe.authorId ?? '',
                   recipe,

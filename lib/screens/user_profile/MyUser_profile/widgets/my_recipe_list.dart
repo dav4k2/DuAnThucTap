@@ -23,7 +23,6 @@ class MyRecipeList extends ConsumerStatefulWidget {
 }
 
 class _MyRecipeListState extends ConsumerState<MyRecipeList> {
-  // Giữ Stream để không bị load lại (xoay vòng tròn) khi chuyển Tab
   late Stream<List<PublishRecipe>> _recipeStream;
 
   @override

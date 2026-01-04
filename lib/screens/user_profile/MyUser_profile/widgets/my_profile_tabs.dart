@@ -50,7 +50,7 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
     totalWidth -= _tabSpacing; // bỏ spacing cuối cùng
 
     final screenWidth = MediaQuery.of(context).size.width;
-    double startLeft = (screenWidth - totalWidth) / 2; // ⭐ CĂN GIỮA Ở ĐÂY
+    double startLeft = (screenWidth - totalWidth) / 2; //  CĂN GIỮA Ở ĐÂY
 
     double currentLeft = startLeft;
     bool needsUpdate = false;
@@ -94,7 +94,7 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
           left: 0,
           right: 0,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center, // ⭐ CHỈNH Ở ĐÂY
+            mainAxisAlignment: MainAxisAlignment.center, //  CHỈNH Ở ĐÂY
             mainAxisSize: MainAxisSize.max,
             children: _tabs.map((item) {
               final tab = item.tab;

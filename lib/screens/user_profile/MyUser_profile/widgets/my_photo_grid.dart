@@ -6,9 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 // Giả sử các file này tồn tại và cần thiết cho Recipe và MealTab
 import '../../User_profile/logic/chef_provider.dart';
 
-// ************************
-// PHẦN LOGIC DỮ LIỆU (Giữ nguyên)
-// ************************
+
 enum RecipeStatus { pending, rejected }
 
 class RecipeWithStatus {

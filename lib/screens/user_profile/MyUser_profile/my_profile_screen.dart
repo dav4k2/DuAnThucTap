@@ -213,7 +213,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                             _showFollowersDialog(context, true);
                           },
                         ),
-                        EditProfileButton(onTap: _navigateToEditProfile),     // ← Nút chỉnh sửa
+                        EditProfileButton(onTap: _navigateToEditProfile),     // Nút chỉnh sửa
                         const MyProfileTabs(),
                       ],
                     ),

@@ -38,9 +38,9 @@ class MyReviewTab extends ConsumerWidget {
     );
   }
 
-  // ===========================
+
   // HEADER
-  // ===========================
+
   Widget _buildHeader(int totalReviews, Color textColor, Color subText) {
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
@@ -82,9 +82,8 @@ class MyReviewTab extends ConsumerWidget {
     );
   }
 
-  // ===========================
   // REVIEW ITEM
-  // ===========================
+
   Widget _reviewItem(
       Review review,
       Color cardColor,

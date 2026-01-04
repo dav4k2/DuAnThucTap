@@ -44,7 +44,7 @@ class MyStatsSection extends ConsumerWidget {
           left: 150.w, top: 360.h,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: onFollowersTap, // ✅ Gọi hàm truyền từ bên ngoài
+            onTap: onFollowersTap, //  Gọi hàm truyền từ bên ngoài
             child: Container(
               width: 100.w, height: 70.h,
               alignment: Alignment.center,
@@ -64,7 +64,7 @@ class MyStatsSection extends ConsumerWidget {
           left: 275.w, top: 360.h,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: onFollowingTap, // ✅ Gọi hàm truyền từ bên ngoài
+            onTap: onFollowingTap, //  Gọi hàm truyền từ bên ngoài
             child: Container(
               width: 100.w, height: 70.h,
               alignment: Alignment.center,
