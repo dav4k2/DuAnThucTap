@@ -1,5 +1,6 @@
 /// Sơn – WelcomeScreen
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -58,12 +59,12 @@ class WelcomeScreen extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
+                      builder: (context) => const MainLayout(),
                     ),
                   );
                 },
                 child: Text(
-                  'Tiếp tục với tư cách Khách',
+                  'Tiếp tục với tư cách Khách'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black,

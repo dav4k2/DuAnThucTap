@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fontend/screens/Cooking_step/recipe_run_screen.dart';
 import '../../Cooking_step/recipe_run_provider.dart';
-import '../../Cooking_step/recipe_step_model.dart';
 import '../../Cooking_step/recipe_step_model.dart' as run_model;
 import '../../Crete_recipe/logic/publish_recipe.dart';
 
@@ -17,7 +16,20 @@ class StepsSection extends ConsumerWidget {
     required this.recipe,
   });
 
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu sắc theo theme
+    final titleColor = isDark ? Colors.white : Colors.black;
+    final stepNumberColor = isDark ? Colors.white : Colors.black;
+    final stepLineColor = isDark ? Colors.green[600]! : Colors.green;
+    final stepTextColor = isDark ? Colors.white70 : Colors.black.withOpacity(0.75);
+    final emptyTextColor = isDark ? Colors.white60 : Colors.black54;
+    final buttonBgColor = isDark ? const Color(0xFFFFD54F).withOpacity(0.9) : const Color(0xFFFFD54F);
+    final buttonTextColor = Colors.black;
+
     final recipeSteps = recipe.steps;
 
     return Column(
@@ -27,21 +39,37 @@ class StepsSection extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             "Cách làm :".tr(),
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: titleColor,
+            ),
           ),
         ),
         const SizedBox(height: 20),
 
         if (recipeSteps.isEmpty)
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text("Chưa có hướng dẫn các bước thực hiện."),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              "Chưa có hướng dẫn các bước thực hiện.",
+              style: TextStyle(
+                fontSize: 16,
+                color: emptyTextColor,
+              ),
+            ),
           )
         else
           ...recipeSteps.asMap().entries.map((entry) {
             int index = entry.key;
             String text = entry.value;
-            return _StepItem(number: index + 1, text: text);
+            return _StepItem(
+              number: index + 1,
+              text: text,
+              numberColor: stepNumberColor,
+              lineColor: stepLineColor,
+              textColor: stepTextColor,
+            );
           }),
 
         const SizedBox(height: 20),
@@ -50,16 +78,14 @@ class StepsSection extends ConsumerWidget {
         Center(
           child: GestureDetector(
             onTap: () {
-              // 1. Logic ánh xạ dữ liệu bao gồm cả thời gian nấu
+              // 1. Logic ánh xạ dữ liệu (giữ nguyên 100%)
               final List<run_model.RecipeStep> mappedSteps = recipe.steps.asMap().entries.map((entry) {
                 int index = entry.key;
 
-                // Kiểm tra kỹ mảng durations
                 String durationStr = (recipe.durations.length > index)
                     ? recipe.durations[index]
                     : "0 phút";
 
-                // Debug để kiểm tra chuỗi lấy được
                 print("Step $index duration: $durationStr");
 
                 int minutes = int.tryParse(durationStr.split(' ')[0]) ?? 0;
@@ -74,7 +100,7 @@ class StepsSection extends ConsumerWidget {
                 );
               }).toList();
 
-              // 2. Cập nhật trạng thái (Chỉ gọi 1 lần duy nhất)
+              // 2. Cập nhật provider
               ref.read(recipeStepsProvider.notifier).state = mappedSteps;
               ref.read(currentStepIndexProvider.notifier).state = 0;
 
@@ -87,15 +113,16 @@ class StepsSection extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 20),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFD54F),
+                color: buttonBgColor,
                 borderRadius: BorderRadius.circular(32),
+                
               ),
               child: Text(
                 "Thực hiện món ăn".tr(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: buttonTextColor,
                 ),
               ),
             ),
@@ -107,14 +134,20 @@ class StepsSection extends ConsumerWidget {
   }
 }
 
-// Widget con hiển thị từng bước (đã đơn giản hóa để khớp với List<String>)
+// Widget con hiển thị từng bước
 class _StepItem extends StatelessWidget {
   final int number;
   final String text;
+  final Color numberColor;
+  final Color lineColor;
+  final Color textColor;
 
   const _StepItem({
     required this.number,
     required this.text,
+    required this.numberColor,
+    required this.lineColor,
+    required this.textColor,
   });
 
   @override
@@ -128,10 +161,14 @@ class _StepItem extends StatelessWidget {
             children: [
               Text(
                 '$number',
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: numberColor,
+                ),
               ),
               const SizedBox(width: 8),
-              Container(width: 3, height: 50, color: Colors.green),
+              Container(width: 3, height: 50, color: lineColor),
             ],
           ),
           const SizedBox(width: 16),
@@ -140,7 +177,7 @@ class _StepItem extends StatelessWidget {
               text,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black.withOpacity(0.75),
+                color: textColor,
                 height: 1.35,
               ),
             ),

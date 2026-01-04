@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../Crete_recipe/logic/publish_recipe.dart';
 import '../../../Crete_recipe/logic/publish_service.dart';
@@ -31,14 +32,14 @@ class RecommendedList extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: recipes.map((recipe) {
-            final difficulty = recipe.difficulty ?? 'Dễ';
+            final difficulty = recipe.difficulty ?? 'Dễ'.tr();
             String emoji = '😊';
             Color levelColor = Colors.green;
 
-            if (difficulty.contains('Trung')) {
+            if (difficulty.contains('Trung'.tr())) {
               emoji = '😐';
               levelColor = Colors.orange;
-            } else if (difficulty.contains('Khó')) {
+            } else if (difficulty.contains('Khó'.tr())) {
               emoji = '😅';
               levelColor = Colors.red;
             }
@@ -107,7 +108,7 @@ class RecommendedList extends StatelessWidget {
                                 final userName = userSnapshot.data?['display_name'] ?? 'Người dùng';
 
                                 return Text(
-                                  "Đăng bởi: $userName",
+                                  "Đăng bởi: $userName".tr(),
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),

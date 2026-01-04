@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../Crete_recipe/logic/publish_recipe.dart';
@@ -68,12 +69,12 @@ class MyRecipeCard extends StatelessWidget {
       showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Xác nhận xóa'),
-          content: const Text('Bạn có chắc chắn muốn xóa bài đăng này vĩnh viễn không?'),
+          title:  Text('Xác nhận xóa').tr(),
+          content:  Text('Bạn có chắc chắn muốn xóa bài đăng này vĩnh viễn không?').tr(),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Hủy'),
+              child:  Text('Hủy').tr(),
             ),
             TextButton(
               onPressed: () async {
@@ -87,11 +88,11 @@ class MyRecipeCard extends StatelessWidget {
 
                 if (success && context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đã xóa bài đăng thành công')),
+                     SnackBar(content: Text('Đã xóa bài đăng thành công').tr()),
                   );
                 }
               },
-              child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+              child:  Text('Xóa'.tr(), style: TextStyle(color: Colors.red)),
             ),
           ],
         ),
@@ -179,7 +180,7 @@ class MyRecipeCard extends StatelessWidget {
                 Icon(Icons.whatshot, size: 13.sp, color: Colors.red.withOpacity(0.9)),
                 SizedBox(width: 5.w),
                 // Hiển thị độ khó (ví dụ: 'Dễ')
-                Text(recipe.difficulty ?? 'Trung bình', style: _info(textColor)),
+                Text(recipe.difficulty ?? 'Trung bình'.tr(), style: _info(textColor)),
               ],
             ),
           ),
@@ -234,13 +235,13 @@ class MyRecipeCard extends StatelessWidget {
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                   PopupMenuItem(
                     value: 'delete',
                     child: Row(
                       children: [
                         Icon(Icons.delete_outline, color: Colors.red, size: 20),
                         SizedBox(width: 8),
-                        Text('Xóa bài đăng', style: TextStyle(color: Colors.red)),
+                        Text('Xóa bài đăng'.tr(), style: TextStyle(color: Colors.red)),
                       ],
                     ),
                   ),

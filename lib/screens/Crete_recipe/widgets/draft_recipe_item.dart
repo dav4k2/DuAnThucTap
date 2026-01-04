@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,21 +58,25 @@ class DraftRecipeItem extends ConsumerWidget {
             backgroundColor: bgColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
             title: Text(
-              'Xóa bản nháp?',
+              'Xóa bản nháp?'.tr(),
               style: TextStyle(color: titleColor, fontWeight: FontWeight.bold),
             ),
             content: Text(
-              'Bạn có chắc chắn muốn xóa công thức "${draft.title}" không? Hành động này không thể hoàn tác.',
+              tr(
+                "delete_recipe_confirmation",
+                namedArgs: {"title": draft.title},
+              ),
               style: TextStyle(color: subtitleColor),
+              textAlign: TextAlign.center,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false), // Trả về false -> Hủy xóa
-                child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
+                child: const Text('Hủy', style: TextStyle(color: Colors.grey)).tr(),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true), // Trả về true -> Đồng ý xóa
-                child: const Text('Xóa', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                child: const Text('Xóa', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)).tr()
               ),
             ],
           ),
@@ -85,7 +90,12 @@ class DraftRecipeItem extends ConsumerWidget {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(' Đã xóa bản nháp: ${draft.title}'),
+            content: Text(
+              tr(
+                "draft_deleted_snackbar",
+                namedArgs: {"title": draft.title},
+              ),
+            ),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -145,7 +155,14 @@ class DraftRecipeItem extends ConsumerWidget {
                     ),
                     SizedBox(height: 6.h),
                     Text(
-                      'Sửa ${draft.timeAgo} • ${draft.steps.length} bước • ${draft.ingredients.length} nguyên liệu',
+                      tr(
+                        "draft_info_line",
+                        namedArgs: {
+                          "timeAgo": draft.timeAgo,
+                          "steps": draft.steps.length.toString(),
+                          "ingredients": draft.ingredients.length.toString(),
+                        },
+                      ),
                       style: TextStyle(
                         fontSize: 13.sp,
                         color: subtitleColor,

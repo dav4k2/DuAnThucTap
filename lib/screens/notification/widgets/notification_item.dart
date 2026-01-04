@@ -12,36 +12,36 @@ class NotificationItem extends StatelessWidget {
     this.onTap,
   });
 
-  Widget _buildIcon() {
+  Widget _buildIcon(Color iconColor, Color overlayBackground) {
     switch (data.iconType) {
       case IconType.recipe:
-        return const Icon(
+        return Icon(
           Icons.restaurant_menu,
           size: 24,
-          color: Colors.black87,
+          color: iconColor,
         );
       case IconType.follow:
         return Stack(
           alignment: Alignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.person_outline,
               size: 22,
-              color: Colors.black87,
+              color: iconColor,
             ),
             Positioned(
               right: -2,
               bottom: -2,
               child: Container(
                 padding: const EdgeInsets.all(1),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: overlayBackground,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.add_circle,
                   size: 12,
-                  color: Colors.black87,
+                  color: iconColor,
                 ),
               ),
             ),
@@ -51,10 +51,10 @@ class NotificationItem extends StatelessWidget {
         return Stack(
           clipBehavior: Clip.none,
           children: [
-            const Icon(
+            Icon(
               Icons.chat_bubble_outline,
               size: 22,
-              color: Colors.black87,
+              color: iconColor,
             ),
             Positioned(
               right: -4,
@@ -63,9 +63,9 @@ class NotificationItem extends StatelessWidget {
                 width: 10,
                 height: 10,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: overlayBackground,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black87, width: 1.5),
+                  border: Border.all(color: iconColor, width: 1.5),
                 ),
               ),
             ),
@@ -74,10 +74,10 @@ class NotificationItem extends StatelessWidget {
       case IconType.achievement:
         return Transform.rotate(
           angle: -math.pi / 4,
-          child: const Icon(
+          child: Icon(
             Icons.celebration_outlined,
             size: 24,
-            color: Colors.black87,
+            color: iconColor,
           ),
         );
     }
@@ -85,45 +85,63 @@ class NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu sắc theo theme
+    final backgroundColor = isDark ? Colors.grey[900]! : Colors.white;
+    final iconColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final secondaryTextColor = isDark ? Colors.grey[400]! : Colors.grey[500]!;
+    final borderColor = isDark ? Colors.grey[700]! : const Color(0xFFDDDDDD);
+    final overlayBackground = isDark ? Colors.grey[900]! : Colors.white; // nền cho dấu + hoặc chấm nhỏ
+
+    // Màu ripple & highlight
+    final splashColor = isDark ? Colors.white.withOpacity(0.2) : Colors.grey.withOpacity(0.2);
+    final highlightColor = isDark ? Colors.white.withOpacity(0.1) : Colors.grey.withOpacity(0.1);
+
     return Material(
-      color: Colors.white, // ❗ BỎ MÀU XÁM HARD-CODE
+      color: backgroundColor,
       child: InkWell(
         onTap: onTap,
-        splashColor: Colors.grey.withOpacity(0.2),      // Chỉ hiện khi tap
-        highlightColor: Colors.grey.withOpacity(0.1),   // Màu giữ khi nhấn
+        splashColor: splashColor,
+        highlightColor: highlightColor,
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Vòng tròn chứa icon
               Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: backgroundColor, // cùng nền với item để hòa hợp
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFDDDDDD), width: 1),
+                  border: Border.all(color: borderColor, width: 1),
                 ),
-                child: Center(child: _buildIcon()),
+                child: Center(child: _buildIcon(iconColor, overlayBackground)),
               ),
               const SizedBox(width: 14),
+              // Nội dung thông báo
               Expanded(
                 child: Text(
                   data.message,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: Colors.black,
+                    color: textColor,
                     height: 1.4,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
+              // Thời gian
               Text(
                 data.time,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[500],
+                  color: secondaryTextColor,
                   fontWeight: FontWeight.w400,
                 ),
               ),

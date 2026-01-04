@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -61,7 +62,7 @@ class _MyRecipeListState extends ConsumerState<MyRecipeList> {
           final text = '${recipe.title} ${recipe.description}'.toLowerCase();
 
           if (currentTab == MealTab.buaSang) {
-            return text.contains('sáng') || text.contains('bánh mì') || text.contains('phở') || text.contains('xôi') || text.contains('trứng');
+            return text.contains('sáng'.tr()) || text.contains('bánh mì') || text.contains('phở') || text.contains('xôi') || text.contains('trứng');
           }
           if (currentTab == MealTab.buaTrua) {
             return text.contains('trưa') || text.contains('cơm') || text.contains('bún') || text.contains('thịt');
@@ -75,8 +76,8 @@ class _MyRecipeListState extends ConsumerState<MyRecipeList> {
         // --- HIỂN THỊ ---
         if (filteredRecipes.isEmpty) {
           String msg = currentTab == MealTab.tatCa
-              ? "Chưa có công thức nào"
-              : "Không có món phù hợp";
+              ? "Chưa có công thức nào".tr()
+              : "Không có món phù hợp".tr();
 
           return SliverToBoxAdapter(
             child: Padding(
@@ -125,7 +126,7 @@ class _MyRecipeListState extends ConsumerState<MyRecipeList> {
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 5.h),
       child: Text(
-        'Danh sách ($count)',
+        'Danh sách ($count)'.tr(),
         style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Colors.grey[700]),
       ),
     );

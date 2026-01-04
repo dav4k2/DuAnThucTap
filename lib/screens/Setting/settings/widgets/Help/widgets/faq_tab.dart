@@ -15,10 +15,12 @@ class _FAQTabState extends State<FAQTab> {
   final Map<String, String> faqAnswers = {
     'Làm sao để đăng ký tài khoản Cookhub?':
     'Mở ứng dụng → Chọn “Đăng ký” → Nhập số điện thoại → Nhận mã OTP → Điền thông tin → Hoàn tất trong 30 giây!',
+
     'Sự cố kỹ thuật':
     '• Ứng dụng bị crash: Cập nhật phiên bản mới nhất.\n'
         '• Không nhận OTP: Chờ 60 giây hoặc liên hệ Hotline.\n'
         '• Màn hình trắng: Xóa cache hoặc cài lại ứng dụng.',
+
     'Giới thiệu về Cookhub':
     'Cookhub là ứng dụng đặt món ăn nhanh, giao tận nơi với hàng nghìn quán ăn tại hơn 25 tỉnh thành Việt Nam. Giao hàng trong 25-35 phút, hỗ trợ 24/7, hoàn tiền 100% nếu lỗi từ hệ thống.',
     'Giới thiệu về AI trên Cookhub':
@@ -38,7 +40,8 @@ class _FAQTabState extends State<FAQTab> {
         '• Cập nhật địa chỉ thường dùng\n'
         '• Xem lịch sử đơn hàng\n'
         '• Đổi mật khẩu / Đăng xuất tất cả thiết bị',
-
+    'Xóa tài khoản' :
+    'Xóa bth',
   };
 
   final Set<int> _expandedIndices = {};

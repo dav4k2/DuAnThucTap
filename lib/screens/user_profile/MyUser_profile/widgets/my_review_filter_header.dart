@@ -1,4 +1,5 @@
 // lib/widgets/my_review_filter_header.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,11 +28,11 @@ class MyReviewFilterHeader extends ConsumerWidget {
         physics: const BouncingScrollPhysics(),
         child: Row(
           children: [
-            _chip('Mới nhất', ReviewFilter.newest, filter == ReviewFilter.newest, notifier, inactiveColor, textColor),
+            _chip('Mới nhất'.tr(), ReviewFilter.newest, filter == ReviewFilter.newest, notifier, inactiveColor, textColor),
             SizedBox(width: 8.w),
-            _chip('Cũ nhất', ReviewFilter.oldest, filter == ReviewFilter.oldest, notifier, inactiveColor, textColor),
+            _chip('Cũ nhất'.tr(), ReviewFilter.oldest, filter == ReviewFilter.oldest, notifier, inactiveColor, textColor),
             SizedBox(width: 8.w),
-            _chip('Tất cả', ReviewFilter.all, filter == ReviewFilter.all, notifier, inactiveColor, textColor),
+            _chip('Tất cả'.tr(), ReviewFilter.all, filter == ReviewFilter.all, notifier, inactiveColor, textColor),
           ],
         ),
       ),

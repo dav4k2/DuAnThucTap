@@ -56,6 +56,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     'Giới thiệu về AI trên Cookhub',
     'Chính sách thanh toán và hoàn tiền',
     'Quản lý tài khoản',
+    'Xóa tài khoản',
   ];
 
   @override

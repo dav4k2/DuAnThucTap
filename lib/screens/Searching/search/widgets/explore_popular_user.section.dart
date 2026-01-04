@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../Service/user_model.dart';
@@ -26,7 +27,7 @@ class PopularUsersSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Người dùng phổ biến',
+                'Người dùng phổ biến'.tr(),
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
@@ -44,7 +45,7 @@ class PopularUsersSection extends StatelessWidget {
               }
 
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Text("Không có người dùng phổ biến nào.");
+                return const Text("Không có người dùng phổ biến nào.").tr();
               }
 
               final users = snapshot.data!;

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +36,7 @@ class MyStatsSection extends ConsumerWidget {
         ),
         Positioned(
           left: 23.w, top: 405.h,
-          child: Text('Số công thức', style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
+          child: Text('Số công thức', style: TextStyle(color: secondaryColor, fontSize: 15.sp)).tr(),
         ),
 
         // MỤC FOLLOWER
@@ -51,7 +52,7 @@ class MyStatsSection extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('$followersCount', style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: textColor)),
-                  Text('Follower', style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
+                  Text('Follower'.tr(), style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
                 ],
               ),
             ),
@@ -71,7 +72,7 @@ class MyStatsSection extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('$followingCount', style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: textColor)),
-                  Text('Đã follow', style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
+                  Text('Đã follow'.tr(), style: TextStyle(color: secondaryColor, fontSize: 15.sp)),
                 ],
               ),
             ),

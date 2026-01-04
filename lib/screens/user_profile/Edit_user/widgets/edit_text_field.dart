@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EditTextField extends StatelessWidget {
-  final String label;           // ← Không required nữa
+  final String label; // Không required
   final String hintText;
   final TextEditingController controller;
   final int? maxLength;
@@ -13,7 +13,7 @@ class EditTextField extends StatelessWidget {
 
   const EditTextField({
     super.key,
-    this.label = '',           // ← Mặc định rỗng → không bắt buộc truyền
+    this.label = '', // Mặc định rỗng
     required this.hintText,
     required this.controller,
     this.maxLength,
@@ -24,6 +24,17 @@ class EditTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu sắc theo theme
+    final backgroundColor = isDark ? Colors.grey[800]! : const Color(0xFFEBEBEB);
+    final borderColor = isDark ? Colors.white.withOpacity(0.4) : Colors.black.withOpacity(0.4);
+    final labelColor = isDark ? Colors.white : Colors.black;
+    final hintColor = isDark ? Colors.white60 : Colors.black54;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final counterColor = isDark ? Colors.white60 : Colors.black54;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -32,32 +43,36 @@ class EditTextField extends StatelessWidget {
             padding: EdgeInsets.only(left: 17.w, bottom: 8.h),
             child: Text(
               label,
-              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w500,
+                color: labelColor,
+              ),
             ),
           ),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10.w),
           decoration: BoxDecoration(
-            color: const Color(0xFFEBEBEB),
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(color: Colors.black.withOpacity(0.4)),
+            border: Border.all(color: borderColor),
           ),
           child: TextField(
             controller: controller,
             readOnly: readOnly,
             maxLines: maxLines,
             maxLength: maxLength,
+            style: TextStyle(fontSize: 16.sp, color: textColor),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: TextStyle(color: Colors.black54, fontSize: 16.sp),
+              hintStyle: TextStyle(color: hintColor, fontSize: 16.sp),
               border: InputBorder.none,
               counterText: showCounter && maxLength != null
                   ? '${controller.text.length}/$maxLength'
                   : '',
-              counterStyle: TextStyle(fontSize: 13.sp, color: Colors.black54),
+              counterStyle: TextStyle(fontSize: 13.sp, color: counterColor),
               contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             ),
-            style: TextStyle(fontSize: 16.sp),
           ),
         ),
       ],

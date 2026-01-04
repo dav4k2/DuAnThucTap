@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,11 +10,11 @@ import 'package:fontend/screens/user_profile/Edit_user/widgets/edit_text_field.d
 import '../../survey/logic/survey_provider.dart';
 import '../MyUser_profile/logic/my_profile_provider.dart';
 import 'logic/edit_profile_provider.dart';
-import '../MyUser_profile/logic/my_profile_provider.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   final MyChef user;
-  const EditProfileScreen({super.key, required this.user,});
+
+  const EditProfileScreen({super.key, required this.user});
 
   @override
   ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -28,15 +29,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late String selectedCountry;
 
   final levels = [
-    'Mới tập nấu',
-    'Nghiệp dư',
-    'Đầu bếp tại gia',
-    'Đầu bếp chuyên nghiệp',
-    'Không chắc chắn'
+    'Mới tập nấu'.tr(),
+    'Nghiệp dư'.tr(),
+    'Đầu bếp tại gia'.tr(),
+    'Đầu bếp chuyên nghiệp'.tr(),
+    'Không chắc chắn'.tr(),
   ];
+
   final countries = [
-    'Việt Nam', 'Thái Lan', 'Nhật Bản', 'Hàn Quốc', 'Trung Quốc',
-    'Pháp', 'Ý', 'Mỹ', 'Ấn Độ', 'Khác'
+    'Việt Nam'.tr(),
+    'Thái Lan'.tr(),
+    'Nhật Bản'.tr(),
+    'Hàn Quốc'.tr(),
+    'Trung Quốc'.tr(),
+    'Pháp'.tr(),
+    'Ý'.tr(),
+    'Mỹ'.tr(),
+    'Ấn Độ'.tr(),
+    'Khác'.tr(),
   ];
 
   @override
@@ -44,19 +54,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.user.name);
     _bioController = TextEditingController(text: widget.user.bio ?? "");
-    selectedLevel = widget.user.cookingTitle ?? 'Đầu bếp tại gia';
-    selectedCountry = widget.user.country ?? 'Việt Nam';
+
+    selectedLevel = widget.user.cookingTitle ?? 'Đầu bếp tại gia'.tr();
+    selectedCountry = widget.user.country ?? 'Việt Nam'.tr();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = ref.read(editProfileProvider.notifier);
-      // Đồng bộ vào provider sau khi UI dựng xong
       notifier.updateName(_nameController.text);
       notifier.updateBio(_bioController.text);
       if (widget.user.avatarUrl != null) notifier.updateAvatarUrl(widget.user.avatarUrl!);
       if (widget.user.coverUrl != null) notifier.updateCoverUrl(widget.user.coverUrl!);
     });
 
-    // Listener gõ phím
     _nameController.addListener(() => ref.read(editProfileProvider.notifier).updateName(_nameController.text));
     _bioController.addListener(() => ref.read(editProfileProvider.notifier).updateBio(_bioController.text));
   }
@@ -70,11 +79,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch state để cập nhật UI nếu cần thiết
-    // final state = ref.watch(editProfileProvider);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu sắc theo theme
+    final backgroundColor = isDark ? Colors.grey[900]! : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final subtitleColor = isDark ? Colors.white70 : Colors.black87;
+    final requiredColor = const Color(0xFFFF5959); // Giữ màu đỏ bắt buộc
+    final backButtonBg = isDark ? Colors.black54 : Colors.white70;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       extendBodyBehindAppBar: true,
       body: SafeArea(
         top: false,
@@ -94,14 +110,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       onTap: () => Navigator.pop(context),
                       child: CircleAvatar(
                         radius: 15.5.r,
-                        backgroundColor: Colors.white70,
-                        child: Icon(Icons.arrow_back_ios_new_rounded, size: 16.sp),
+                        backgroundColor: backButtonBg,
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 16.sp,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-
               const EditAvatarSection(),
               SizedBox(height: 20.h),
 
@@ -110,14 +129,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(left: 7.w),
-                    child: Text('Tên người dùng', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500)),
+                    child: Text(
+                      'Tên người dùng'.tr(),
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w500,
+                        color: textColor,
+                      ),
+                    ),
                   ),
-                  Text(' (*)', style: TextStyle(color: const Color(0xFFFF5959), fontSize: 13.sp)),
+                  Text(
+                    ' (*)',
+                    style: TextStyle(color: requiredColor, fontSize: 13.sp),
+                  ),
                 ],
               ),
               SizedBox(height: 8.h),
               EditTextField(
-                hintText: 'Nhập tên của bạn',
+                hintText: 'Nhập tên của bạn'.tr(),
                 controller: _nameController,
                 maxLength: 30,
               ),
@@ -125,12 +154,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
               // Level Dropdown
               EditDropdownField(
-                label: 'Trình độ',
+                label: 'Trình độ'.tr(),
                 value: selectedLevel,
                 items: levels,
                 onChanged: (v) {
                   setState(() => selectedLevel = v!);
-                  // Cập nhật Provider khi chọn
                   ref.read(editProfileProvider.notifier).updateCookingLevel(v!);
                 },
               ),
@@ -138,8 +166,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
               // Bio Field
               EditTextField(
-                label: 'Tiểu sử',
-                hintText: 'Giới thiệu về bạn...',
+                label: 'Tiểu sử'.tr(),
+                hintText: 'Giới thiệu về bạn...'.tr(),
                 controller: _bioController,
                 maxLines: 6,
                 maxLength: 200,
@@ -148,34 +176,26 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
               // Country Dropdown
               EditDropdownField(
-                label: 'Quốc gia',
+                label: 'Quốc gia'.tr(),
                 value: selectedCountry,
                 items: countries,
                 onChanged: (v) {
                   setState(() => selectedCountry = v!);
-                  // Cập nhật Provider khi chọn
                   ref.read(editProfileProvider.notifier).updateCountry(v!);
                 },
               ),
               SizedBox(height: 40.h),
 
-              // Save Button Logic
+              // Save Button
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: EditSaveButton(
                   onPressed: () async {
-                    // 1. Gọi API lưu lên Server
                     final success = await ref.read(editProfileProvider.notifier).save();
-
                     if (!mounted) return;
 
                     if (success) {
-                      // 2. QUAN TRỌNG: Cập nhật lại dữ liệu dưới máy (Local State)
-                      // Lấy dữ liệu vừa nhập xong
                       final editState = ref.read(editProfileProvider);
-
-                      // Cập nhật vào surveyProvider (vì myChefProvider lắng nghe cái này)
-                      // Lưu ý: Bạn cần import surveyProvider ở đầu file
                       ref.read(surveyProvider.notifier).updateUserData(
                         displayName: editState.name,
                         bio: editState.bio,
@@ -184,13 +204,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Đã lưu thành công!')),
+                        SnackBar(content: Text('Đã lưu thành công!'.tr())),
                       );
-
                       Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Lỗi khi lưu hồ sơ')),
+                        SnackBar(content: Text('Lỗi khi lưu hồ sơ'.tr())),
                       );
                     }
                   },

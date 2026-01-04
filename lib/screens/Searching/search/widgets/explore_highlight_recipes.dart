@@ -1,4 +1,5 @@
 // lib/widgets/highlight_recipes.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -46,7 +47,7 @@ class HighlightRecipes extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Công thức nổi bật',
+                'Công thức nổi bật'.tr(),
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
@@ -54,7 +55,7 @@ class HighlightRecipes extends StatelessWidget {
                 ),
               ),
               Text(
-                'Xem thêm',
+                'Xem thêm'.tr(),
                 style: TextStyle(
                   fontSize: 14.5.sp,
                   fontWeight: FontWeight.w600,
@@ -75,7 +76,7 @@ class HighlightRecipes extends StatelessWidget {
               }
 
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Text("Không có công thức nổi bật.");
+                return const Text("Không có công thức nổi bật.").tr();
               }
 
               final recipes = snapshot.data!;

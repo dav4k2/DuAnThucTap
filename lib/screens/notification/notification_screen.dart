@@ -13,8 +13,14 @@ class NotificationScreen extends ConsumerWidget {
     final todayData = ref.watch(notificationProvider);
     final yesterdayData = ref.watch(notificationProviderYesterday);
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Nền toàn màn hình theo theme
+    final scaffoldBackgroundColor = isDark ? Colors.grey[900]! : Colors.white;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: NotificationHeader(
@@ -32,6 +38,9 @@ class NotificationScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           const NotificationSectionTitle(title: "HÔM QUA"),
           ...yesterdayData.map((e) => NotificationItem(data: e)),
+
+          // Khoảng trống dưới cùng để dễ cuộn
+          const SizedBox(height: 20),
         ],
       ),
     );

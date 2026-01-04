@@ -10,10 +10,23 @@ class NotificationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu nền header – vàng sáng ở light mode, màu tối nổi bật ở dark mode
+    final backgroundColor = isDark ? const Color(0xFFFFC221) : const Color(0xFFFFC221);
+
+    // Màu chữ và icon – đen ở light, trắng ở dark
+    final textAndIconColor = isDark ? Colors.white : Colors.black;
+
+
+    // Màu ripple/highlight – nhẹ nhàng phù hợp với theme
+    final rippleColor = isDark ? Colors.white24 : Colors.black12;
+
     return Container(
-      color: const Color(0xFFFFC221),
+      color: backgroundColor,
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top, // vùng tai thỏ
+        top: MediaQuery.of(context).padding.top, // vùng tai thỏ / notch
       ),
       child: SizedBox(
         height: 56,
@@ -21,17 +34,17 @@ class NotificationHeader extends StatelessWidget {
           children: [
             // Nút Back
             IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black, size: 24),
+              icon: Icon(Icons.arrow_back, color: textAndIconColor, size: 24),
               onPressed: () => Navigator.pop(context),
             ),
 
             // Title căn giữa
-            const Expanded(
+            Expanded(
               child: Center(
                 child: Text(
                   'Thông báo',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: textAndIconColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
                   ),
@@ -39,25 +52,24 @@ class NotificationHeader extends StatelessWidget {
               ),
             ),
 
-            // Nút Mới 1 – giống iOS
+            // Nút "Mới 1" – thiết kế giống iOS
             Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Material(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
+                elevation: isDark ? 2 : 0, // thêm chút nổi ở dark mode
                 child: InkWell(
                   onTap: onMarkRead,
                   borderRadius: BorderRadius.circular(20),
-                  splashColor: Colors.black12,      // ripple xám
-                  highlightColor: Colors.black12,   // highlight khi giữ
-                  child: const Padding(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  splashColor: rippleColor,
+                  highlightColor: rippleColor,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: Text(
                       'Mới 1',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: textAndIconColor,
                         fontSize: 13,
                       ),
                     ),

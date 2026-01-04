@@ -1,6 +1,7 @@
 // lib/screens/my_profile_screen.dart
 import 'dart:ui';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
@@ -153,7 +154,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
             }
 
             if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-              return Center(child: Text("Không thể tải thông tin người dùng"));
+              return Center(child: Text("Hãy đăng nhập để sử duụng tính năng này".tr()));
             }
 
             final user = snapshot.data!;

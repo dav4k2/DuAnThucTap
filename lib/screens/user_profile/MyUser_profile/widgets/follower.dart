@@ -11,23 +11,39 @@ class FollowersListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final list = isFollowingTab
-        ? ref.watch(followingListProvider)
-        : ref.watch(followersListProvider);
+    final list = isFollowingTab ? ref.watch(followingListProvider) : ref.watch(followersListProvider);
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu sắc an toàn với fallback (tránh Color? → Color lỗi)
+    final backgroundColor = isDark ? Colors.grey[900]! : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final secondaryColor = isDark ? Colors.white.withOpacity(0.6) : Colors.grey[600]!;
+    final dividerColor = isDark ? Colors.grey[700]! : Colors.grey[300]!;
+    final shadowColor = isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.12);
+    final iconColor = isDark ? Colors.grey[500]! : Colors.grey[400]!;
+    final avatarBackground = isDark ? Colors.grey[800]! : Colors.grey[100]!;
+    final emptyIconColor = isDark ? Colors.grey[500]! : Colors.grey[300]!;
+    final emptyTextColor = isDark ? Colors.grey[500]! : Colors.grey[400]!;
+
+    // Màu cho nút "Theo dõi" khi đang follow (dark mode)
+    final followingButtonTextColor = isDark ? const Color(0xFFFFCC33) : const Color(0xFFFFCC33);
+    final unfollowButtonTextColor = isDark ? Colors.white : Colors.black;
 
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       insetPadding: EdgeInsets.symmetric(horizontal: 25.w),
       child: Container(
-        height: 500.h, // Tăng nhẹ chiều cao để danh sách thoáng hơn
+        height: 500.h,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(28.r), // Bo góc mềm mại hơn
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(28.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.12),
+              color: shadowColor,
               blurRadius: 20,
               offset: const Offset(0, 10),
             )
@@ -45,67 +61,68 @@ class FollowersListPage extends ConsumerWidget {
                     isFollowingTab ? "Đang theo dõi" : "Người theo dõi",
                     style: TextStyle(
                       fontSize: 18.sp,
-                      fontWeight: FontWeight.w800, // Đậm hơn để tạo điểm nhấn
+                      fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
+                      color: textColor,
                     ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.close_rounded, color: Colors.grey[400], size: 24.sp),
+                    icon: Icon(Icons.close_rounded, color: iconColor, size: 24.sp),
                   )
                 ],
               ),
             ),
-            const Divider(height: 1, thickness: 0.5),
-
+            Divider(height: 1, thickness: 0.5, color: dividerColor),
             // --- Danh sách ---
             Expanded(
               child: list.isEmpty
-                  ? _buildEmptyState()
+                  ? _buildEmptyState(emptyIconColor, emptyTextColor)
                   : ListView.separated(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                 itemCount: list.length,
-                physics: const BouncingScrollPhysics(), // Hiệu ứng cuộn mượt kiểu iOS
+                physics: const BouncingScrollPhysics(),
                 separatorBuilder: (context, index) => SizedBox(height: 18.h),
                 itemBuilder: (context, index) {
                   final user = list[index];
-                  return _buildUserTile(context, ref, user);
+                  return _buildUserTile(
+                    context,
+                    ref,
+                    user,
+                    textColor,
+                    secondaryColor,
+                    avatarBackground,
+                    shadowColor,
+                  );
                 },
               ),
             ),
-
-            // --- Footer ---
-            Padding(
-              padding: EdgeInsets.only(bottom: 15.h, top: 5.h),
-              child: TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFFFFCC33),
-                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
-                ),
-                child: Text(
-                  "Đóng",
-                  style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold),
-                ),
-              ),
-            )
           ],
         ),
       ),
     );
   }
 
-  // Widget hiển thị từng dòng người dùng
-  Widget _buildUserTile(BuildContext context, WidgetRef ref, Follower user) {
+  Widget _buildUserTile(
+      BuildContext context,
+      WidgetRef ref,
+      Follower user,
+      Color textColor,
+      Color secondaryColor,
+      Color avatarBackground,
+      Color shadowColor,
+      ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
-        // Avatar với đổ bóng nhẹ
+        // Avatar
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: shadowColor,
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               )
@@ -113,47 +130,47 @@ class FollowersListPage extends ConsumerWidget {
           ),
           child: CircleAvatar(
             radius: 28.r,
-            backgroundColor: Colors.grey[100],
+            backgroundColor: avatarBackground,
             backgroundImage: user.avatarUrl.isNotEmpty ? NetworkImage(user.avatarUrl) : null,
-            child: user.avatarUrl.isEmpty ? Icon(Icons.person, size: 24.sp, color: Colors.grey[400]) : null,
+            child: user.avatarUrl.isEmpty ? Icon(Icons.person, size: 24.sp, color: secondaryColor) : null,
           ),
         ),
         SizedBox(width: 14.w),
-        // Thông tin tên
+        // Thông tin
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 user.name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp, color: Colors.black87),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp, color: textColor),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 2.h),
               Text(
                 '${user.recipeCount} công thức',
-                style: TextStyle(color: Colors.grey[500], fontSize: 12.sp),
+                style: TextStyle(color: secondaryColor, fontSize: 12.sp),
               ),
             ],
           ),
         ),
-        // Nút bấm trạng thái
-        _buildActionButton(ref, user),
+        // Nút theo dõi
+        _buildActionButton(ref, user, isDark),
       ],
     );
   }
 
-  // Widget Nút Follow/Unfollow
-  Widget _buildActionButton(WidgetRef ref, Follower user) {
+  Widget _buildActionButton(WidgetRef ref, Follower user, bool isDark) {
     final bool isFollowing = user.isFollowedByMe;
+
     return GestureDetector(
       onTap: () => ref.read(followerProvider.notifier).toggleFollow(user.id),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
         decoration: BoxDecoration(
-          color: isFollowing ? Colors.white : const Color(0xFFFFCC33),
+          color: isFollowing ? Colors.transparent : const Color(0xFFFFCC33),
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: const Color(0xFFFFCC33),
@@ -161,28 +178,38 @@ class FollowersListPage extends ConsumerWidget {
           ),
           boxShadow: isFollowing
               ? null
-              : [BoxShadow(color: const Color(0xFFFFCC33).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))],
+              : [
+            BoxShadow(
+              color: const Color(0xFFFFCC33).withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ],
         ),
         child: Text(
           isFollowing ? "Đang theo dõi" : "Theo dõi",
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.bold,
-            color: isFollowing ? const Color(0xFFFFCC33) : Colors.black,
+            color: isFollowing
+                ? const Color(0xFFFFCC33)
+                : isDark
+                ? Colors.black
+                : Colors.black,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(Color iconColor, Color textColor) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.people_outline_rounded, size: 40.sp, color: Colors.grey[300]),
+          Icon(Icons.people_outline_rounded, size: 40.sp, color: iconColor),
           SizedBox(height: 10.h),
-          Text("Chưa có ai ở đây", style: TextStyle(color: Colors.grey[400], fontSize: 14.sp)),
+          Text("Chưa có ai ở đây", style: TextStyle(color: textColor, fontSize: 14.sp)),
         ],
       ),
     );

@@ -14,45 +14,46 @@ class BioTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chef = ref.watch(chefProvider);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : Colors.black;
+    final textColor = isDark ? Colors.white.withOpacity(0.8) : Colors.black.withOpacity(0.8);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('Giới thiệu'),
+          _buildSectionTitle('Giới thiệu', titleColor),
           SizedBox(height: 8.h),
           // 2. Sử dụng bioText truyền vào, nếu null thì mới dùng provider hoặc mặc định
-          _buildExpandableBio(bioText ?? chef.bio ?? _defaultBio),
+          _buildExpandableBio(bioText ?? chef.bio ?? _defaultBio, textColor),
           SizedBox(height: 24.h),
-
-          _buildSectionTitle('Liên hệ'),
+          _buildSectionTitle('Liên hệ', titleColor),
           SizedBox(height: 8.h),
           // 3. Sử dụng email truyền vào
-          _buildContactInfo(email ?? chef.email ?? 'chưa cập nhật'),
+          _buildContactInfo(email ?? chef.email ?? 'chưa cập nhật', textColor),
           SizedBox(height: 16.h),
-
           // 4. Sử dụng joinedDate truyền vào
-          _buildJoinedDate(joinedDate ?? chef.joinedDate ?? 'chưa rõ'),
+          _buildJoinedDate(joinedDate ?? chef.joinedDate ?? 'chưa rõ', textColor),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, Color titleColor) {
     return Text(
       title,
       style: TextStyle(
         fontSize: 16.sp,
         fontWeight: FontWeight.w400,
-        color: Colors.black,
+        color: titleColor,
         height: 1.31,
       ),
     );
   }
 
-  Widget _buildExpandableBio(String fullText) {
+  Widget _buildExpandableBio(String fullText, Color textColor) {
     const int maxLines = 3;
     const String viewMore = 'Xem thêm';
 
@@ -63,7 +64,7 @@ class BioTab extends ConsumerWidget {
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w300,
-            color: Colors.black.withOpacity(0.8),
+            color: textColor,
             height: 1.31,
           ),
         );
@@ -83,7 +84,7 @@ class BioTab extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w300,
-                    color: Colors.black.withOpacity(0.8),
+                    color: textColor,
                     height: 1.31,
                   ),
                 ),
@@ -102,13 +103,12 @@ class BioTab extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
           );
         }
-
         return Text(
           fullText,
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w300,
-            color: Colors.black.withOpacity(0.8),
+            color: textColor,
             height: 1.31,
           ),
         );
@@ -116,25 +116,25 @@ class BioTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildContactInfo(String email) {
+  Widget _buildContactInfo(String email, Color textColor) {
     return Text(
       'Email: $email',
       style: TextStyle(
         fontSize: 15.sp,
         fontWeight: FontWeight.w300,
-        color: Colors.black.withOpacity(0.8),
+        color: textColor,
         height: 1.40,
       ),
     );
   }
 
-  Widget _buildJoinedDate(String date) {
+  Widget _buildJoinedDate(String date, Color textColor) {
     return Text(
       'Đã tham gia vào $date',
       style: TextStyle(
         fontSize: 13.sp,
         fontWeight: FontWeight.w300,
-        color: Colors.black.withOpacity(0.8),
+        color: textColor,
         height: 1.62,
       ),
     );

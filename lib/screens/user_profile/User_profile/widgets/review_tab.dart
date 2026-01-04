@@ -12,16 +12,23 @@ class ReviewTab extends ConsumerWidget {
     final reviews = ref.watch(filteredReviewsProvider);
     final totalReviews = ref.read(chefProvider).allReviews.length;
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : Colors.black;
+    final subtitleColor = isDark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6);
+    final textColor = isDark ? Colors.white : Colors.black;
+    final itemBackgroundColor = isDark ? Colors.grey[850] : Colors.grey[100];
+
     return SliverList(
       delegate: SliverChildBuilderDelegate(
             (context, index) {
           if (index == 0) {
-            return _buildHeader(totalReviews);
+            return _buildHeader(totalReviews, titleColor, subtitleColor);
           }
           final review = reviews[index - 1];
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: _reviewItem(review),
+            child: _reviewItem(review, textColor, subtitleColor),
           );
         },
         childCount: reviews.length + 1,
@@ -29,7 +36,7 @@ class ReviewTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(int totalReviews) {
+  Widget _buildHeader(int totalReviews, Color titleColor, Color subtitleColor) {
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
       child: Row(
@@ -38,10 +45,10 @@ class ReviewTab extends ConsumerWidget {
           Text.rich(
             TextSpan(
               children: [
-                TextSpan(text: 'Đánh giá', style: TextStyle(fontSize: 15.sp)),
+                TextSpan(text: 'Đánh giá', style: TextStyle(fontSize: 15.sp, color: titleColor)),
                 TextSpan(
                   text: ' ($totalReviews)',
-                  style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
+                  style: TextStyle(fontSize: 15.sp, color: subtitleColor),
                 ),
               ],
             ),
@@ -58,12 +65,11 @@ class ReviewTab extends ConsumerWidget {
     );
   }
 
-  Widget _reviewItem(Review review) {
+  Widget _reviewItem(Review review, Color textColor, Color subtitleColor, ) {
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
@@ -82,7 +88,7 @@ class ReviewTab extends ConsumerWidget {
                   children: [
                     Text(
                       review.name,
-                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700, color: textColor),
                     ),
                     Row(
                       children: [
@@ -97,7 +103,7 @@ class ReviewTab extends ConsumerWidget {
                         SizedBox(width: 8.w),
                         Text(
                           '${review.rating}',
-                          style: TextStyle(fontSize: 15.sp, color: Colors.black.withOpacity(0.6)),
+                          style: TextStyle(fontSize: 15.sp, color: subtitleColor),
                         ),
                       ],
                     ),
@@ -106,12 +112,12 @@ class ReviewTab extends ConsumerWidget {
               ),
               Text(
                 review.timeAgo,
-                style: TextStyle(fontSize: 13.sp, color: Colors.black.withOpacity(0.6)),
+                style: TextStyle(fontSize: 13.sp, color: subtitleColor),
               ),
             ],
           ),
           SizedBox(height: 8.h),
-          Text(review.comment, style: TextStyle(fontSize: 16.sp)),
+          Text(review.comment, style: TextStyle(fontSize: 16.sp, color: textColor)),
         ],
       ),
     );

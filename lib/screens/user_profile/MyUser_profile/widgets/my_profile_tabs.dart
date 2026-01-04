@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../logic/my_profile_provider.dart';   // dùng provider của trang cá nhân
+import '../logic/my_profile_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // Helper class for tab item data
 class _TabItem {
@@ -24,11 +25,11 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
   final double _tabSpacing = 30.w;
   final double _tabTopPosition = 500.h;
 
-  final List<_TabItem> _tabs = const [
-    _TabItem(ProfileTab.congThuc, 'Công thức'),
-    _TabItem(ProfileTab.tieuSu, 'Tiểu sử'),
-    _TabItem(ProfileTab.anh, 'Chờ duyệt'),
-    _TabItem(ProfileTab.danhGia, 'Đánh giá'),
+  final List<_TabItem> _tabs = [
+    _TabItem(ProfileTab.congThuc, 'Công thức'.tr()),
+    _TabItem(ProfileTab.tieuSu, 'Tiểu sử'.tr()),
+    _TabItem(ProfileTab.anh, 'Chờ duyệt'.tr()),
+    _TabItem(ProfileTab.danhGia, 'Đánh giá'.tr()),
   ];
 
   @override
@@ -85,9 +86,9 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
 
     return Stack(
       children: [
-        /// =======================
-        ///   DÃY TAB (CĂN GIỮA)
-        /// =======================
+
+        //  DÃY TAB (CĂN GIỮA)
+
         Positioned(
           top: _tabTopPosition,
           left: 0,
@@ -110,9 +111,9 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
           ),
         ),
 
-        /// ==========================
-        ///  THANH GẠCH DƯỚI ANIMATION
-        /// ==========================
+
+        // THANH GẠCH DƯỚI ANIMATION
+
         if (_tabWidths[cur] != null && _tabLefts[cur] != null)
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),

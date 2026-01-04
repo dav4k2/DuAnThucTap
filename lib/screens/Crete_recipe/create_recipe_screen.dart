@@ -1,4 +1,5 @@
 // lib/screens/create_recipe_screen.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,7 +52,7 @@ class CreateRecipeScreen extends ConsumerWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.w),
               child: Text(
-                'Thêm công thức mớiii',
+                'Thêm công thức mới'.tr(),
                 style: TextStyle(
                   color: textColor,
                   fontSize: 24.sp,
@@ -70,7 +71,7 @@ class CreateRecipeScreen extends ConsumerWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Khám phá sự sáng tạo trong căn bếp của bạn',
+                      text: 'Khám phá sự sáng tạo trong căn bếp của bạn'.tr(),
                       style: TextStyle(
                         color: textColor,
                         fontSize: 28.sp,
@@ -89,7 +90,7 @@ class CreateRecipeScreen extends ConsumerWidget {
               child: SizedBox(
                 width: 356.w,
                 child: Text(
-                  'Đóng góp công thức nấu ăn của bạn vào cộng đồng Cookhub...',
+                  'Đóng góp công thức nấu ăn của bạn vào cộng đồng Cookhub...'.tr(),
                   style: TextStyle(
                     color: subTextColor,
                     fontSize: 15.sp,
@@ -113,8 +114,8 @@ class CreateRecipeScreen extends ConsumerWidget {
                   _CardWithHelp(
                     onHelpTap: () => _showGuide(context, manualGuideSteps),
                     child: ResponsiveButtonCard(
-                      title: 'Tự tạo',
-                      subtitle: 'Nhập thủ công',
+                      title: 'Tự tạo'.tr(),
+                      subtitle: 'Nhập thủ công'.tr(),
                       onTap: () => _navigateToScreen(context, const AddRecipeScreen()),
                       titleColorLight: const Color(0xFF1F2937),
                       subtitleColorLight: const Color(0xFF9CA3AF),
@@ -132,14 +133,14 @@ class CreateRecipeScreen extends ConsumerWidget {
                   _CardWithHelp(
                     onHelpTap: () => _showGuide(context, aiGuideSteps),
                     child: ResponsiveButtonCard(
-                      title: 'Tạo với AI',
-                      subtitle: 'Gợi ý thông minh',
+                      title: 'Tạo với AI'.tr(),
+                      subtitle: 'Gợi ý thông minh'.tr(),
                       onTap: () => _navigateToScreen(context, const ChatScreen()),
                       titleColorLight: const Color(0xFF78350F),
                       subtitleColorLight: const Color(0xFF92400E),
                       backgroundColorLight: const Color(0xFFFEF3C7),
-                      titleColorDark: Colors.white,
-                      subtitleColorDark: Colors.grey[300]!,
+                      titleColorDark: Colors.black,
+                      subtitleColorDark: Colors.black,
                       backgroundColorDark: const Color(0xFFFFC836),
                       icon: Icon(Icons.auto_fix_high, size: 40.w, color: const Color(0xFFD97706)),
                     ),
@@ -153,7 +154,7 @@ class CreateRecipeScreen extends ConsumerWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.w),
               child: Text(
-                'Bản nháp gần đây',
+                'Bản nháp gần đây'.tr(),
                 style: TextStyle(
                   color: textColor,
                   fontSize: 18.sp,
@@ -184,7 +185,7 @@ class CreateRecipeScreen extends ConsumerWidget {
                         if (drafts.isEmpty) {
                           return Center(
                             child: Text(
-                              'Chưa có bản nháp nào',
+                              'Chưa có bản nháp nào'.tr(),
                               style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
                             ),
                           );

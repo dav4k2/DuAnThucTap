@@ -19,10 +19,8 @@ class _ProfileTabsState extends ConsumerState<ProfileTabs> {
   Widget build(BuildContext context) {
     final cur = ref.watch(profileTabProvider);
     final notifier = ref.read(profileTabProvider.notifier);
-
-    // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
     final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
-    final activeColor = const Color(0xFFFFB901); // VÀNG
+    final activeColor = const Color(0xFFFFB901);
 
     return Stack(
       children: [

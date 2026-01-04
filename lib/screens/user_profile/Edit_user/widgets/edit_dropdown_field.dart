@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,19 +17,28 @@ class EditDropdownField extends StatelessWidget {
     required this.onChanged,
   });
 
-  // Hàm hiển thị Modal Bottom Sheet chứa CupertinoPicker
   void _showItemPicker(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     String selectedItem = value;
+
+    // Màu sắc cho modal bottom sheet
+    final sheetBackground = isDark ? Colors.grey[850]! : Colors.white;
+    final dividerColor = isDark ? Colors.grey[700]! : Colors.grey.shade200;
+    final titleColor = isDark ? Colors.white : Colors.black;
+    final doneColor = Colors.blue;
+    final pickerTextColor = isDark ? Colors.white : Colors.black;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // Để sheet có góc bo tròn nhìn đẹp hơn
+      backgroundColor: Colors.transparent,
       builder: (BuildContext builder) {
         return Container(
           height: 300.h,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: sheetBackground,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20.r),
               topRight: Radius.circular(20.r),
@@ -39,7 +49,7 @@ class EditDropdownField extends StatelessWidget {
               // Thanh tiêu đề và nút Done
               Container(
                 decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+                  border: Border(bottom: BorderSide(color: dividerColor)),
                 ),
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 child: Row(
@@ -48,32 +58,35 @@ class EditDropdownField extends StatelessWidget {
                     Text(
                       label,
                       style: TextStyle(
-                          fontSize: 18.sp, fontWeight: FontWeight.bold),
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: titleColor,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
-                        // Gửi giá trị đã chọn ra ngoài và đóng modal
                         onChanged(selectedItem);
                         Navigator.pop(context);
                       },
                       child: Text(
-                        'Xong',
+                        'Xong'.tr(),
                         style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue),
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                          color: doneColor,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
 
-              // Cupertino Picker (Giao diện giống iOS)
+              // Cupertino Picker
               Expanded(
                 child: CupertinoPicker(
                   magnification: 1.2,
                   squeeze: 1.0,
-                  itemExtent: 40.h, // Chiều cao của mỗi mục
+                  itemExtent: 40.h,
                   scrollController: FixedExtentScrollController(
                     initialItem: items.indexOf(value),
                   ),
@@ -84,7 +97,10 @@ class EditDropdownField extends StatelessWidget {
                     return Center(
                       child: Text(
                         item,
-                        style: TextStyle(fontSize: 20.sp, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          color: pickerTextColor,
+                        ),
                       ),
                     );
                   }).toList(),
@@ -99,39 +115,55 @@ class EditDropdownField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu sắc cho phần hiển thị dropdown
+    final containerBg = isDark ? Colors.grey[800]! : const Color(0xFFEBEBEB);
+    final borderColor = isDark ? Colors.white.withOpacity(0.4) : Colors.grey.shade400;
+    final labelColor = isDark ? Colors.white : Colors.black;
+    final valueTextColor = isDark ? Colors.white : Colors.black;
+    final arrowColor = isDark ? Colors.white70 : Colors.grey.shade600;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.only(left: 17.w, bottom: 8.h),
-          child: Text(label,
-              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500)),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w500,
+              color: labelColor,
+            ),
+          ),
         ),
 
-        // Thay thế DropdownButton bằng GestureDetector để mở Modal
         GestureDetector(
           onTap: () => _showItemPicker(context),
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 10.w),
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: const Color(0xFFEBEBEB),
-              borderRadius: BorderRadius.circular(10.r), // Bo góc mềm mại hơn
-              border: Border.all(color: Colors.grey.shade400, width: 1.w), // Border mỏng và sáng hơn
+              color: containerBg,
+              borderRadius: BorderRadius.circular(10.r),
+              border: Border.all(color: borderColor, width: 1.w),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Giá trị được chọn
                 Text(
                   value,
-                  style: TextStyle(fontSize: 16.sp, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: valueTextColor,
+                  ),
                 ),
-                // Icon mũi tên
                 Icon(
                   Icons.keyboard_arrow_down,
-                  size: 24.sp, // Icon nhỏ hơn, phù hợp hơn
-                  color: Colors.grey.shade600,
+                  size: 24.sp,
+                  color: arrowColor,
                 ),
               ],
             ),

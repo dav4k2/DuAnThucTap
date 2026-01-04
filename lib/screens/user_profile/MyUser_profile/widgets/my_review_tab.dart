@@ -1,4 +1,5 @@
 // lib/widgets/my_review_tab.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -50,7 +51,7 @@ class MyReviewTab extends ConsumerWidget {
             TextSpan(
               children: [
                 TextSpan(
-                  text: 'Đánh giá',
+                  text: 'Đánh giá'.tr(),
                   style: TextStyle(
                     fontSize: 15.sp,
                     color: textColor,
@@ -69,7 +70,7 @@ class MyReviewTab extends ConsumerWidget {
           GestureDetector(
             onTap: () {},
             child: Text(
-              'Viết đánh giá',
+              'Viết đánh giá'.tr(),
               style: TextStyle(
                 fontSize: 15.sp,
                 color: const Color(0xFFFFB901),

@@ -68,7 +68,7 @@ class EditAvatarSection extends ConsumerWidget {
     } else if (state.avatarUrl != null && state.avatarUrl!.startsWith('http')) {
       return NetworkImage(state.avatarUrl!);
     }
-    return const AssetImage("image/avatar.png");
+    return const AssetImage("image/empty_user.jpg");
   }
 
   Widget _buildPickerButton(WidgetRef ref) {

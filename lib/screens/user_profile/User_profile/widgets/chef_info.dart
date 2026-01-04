@@ -14,15 +14,16 @@ class ChefInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // LẤY MÀU TỪ THEME → TỰ ĐỔI THEO DARK MODE
-    final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
-    final secondaryColor = textColor.withOpacity(0.6); // Màu phụ (60%)
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final secondaryColor = isDark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6);
 
     return Stack(
       children: [
         // TÊN ĐẦU BẾP
         Positioned(
-          left: 131.w,
+          left: 161.w,
           top: 280.h,
           child: Text(
             name,
@@ -34,10 +35,9 @@ class ChefInfo extends StatelessWidget {
             ),
           ),
         ),
-
         // CHỨC DANH
         Positioned(
-          left: 117.w,
+          left: 147.w,
           top: 310.h,
           child: Text(
             title,

@@ -12,13 +12,19 @@ import 'logic/recipe_provider.dart';
 
 class RecipeDetailPage extends ConsumerWidget {
   final PublishRecipe recipe;
+
   const RecipeDetailPage({super.key, required this.recipe});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Nền toàn trang theo theme
+    final scaffoldBackgroundColor = isDark ? Colors.grey[900]! : Colors.white;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      // ĐÃ XÓA SafeArea Ở ĐÂY để ảnh tràn lên đầu
+      backgroundColor: scaffoldBackgroundColor,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;

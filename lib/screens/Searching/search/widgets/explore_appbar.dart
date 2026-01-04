@@ -1,4 +1,5 @@
 // lib/screens/search/widgets/explore_appbar.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -45,7 +46,7 @@ class _ExploreAppBarState extends State<ExploreAppBar> {
             children: [
               Expanded(
                 child: Text(
-                  'Khám phá',
+                  'Khám phá'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.sp,
@@ -77,7 +78,7 @@ class _ExploreAppBarState extends State<ExploreAppBar> {
                 fontSize: 14.5.sp,
               ),
               decoration: InputDecoration(
-                hintText: 'Nhập tên món ăn hoặc nguyên liệu...',
+                hintText: 'Nhập tên món ăn hoặc nguyên liệu...'.tr(),
                 hintStyle: TextStyle(
                   color: isDarkMode ? Colors.white70 : Colors.black54,
                   fontSize: 14.5.sp,

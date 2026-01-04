@@ -1,10 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../Crete_recipe/logic/publish_service.dart'; // Đảm bảo đúng đường dẫn
+import 'package:intl/intl.dart'; // Đảm bảo import DateFormat
+import '../../Crete_recipe/logic/publish_service.dart';
 
 class AuthorSection extends StatelessWidget {
   final String authorId;
-  final DateTime? postedDate; // Nên thêm ngày đăng để hiển thị động
+  final DateTime? postedDate;
   final double width;
 
   const AuthorSection({
@@ -18,28 +19,50 @@ class AuthorSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final PublishService _service = PublishService();
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Màu sắc theo theme
+    final containerBackground = isDark ? Colors.grey[850]! : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final secondaryTextColor = isDark ? Colors.grey[400]! : Colors.grey;
+    final followingButtonBg = isDark ? Colors.grey[700]! : Colors.grey[300]!;
+    final followButtonBg = isDark ? Colors.white : Colors.black;
+    final followingButtonTextColor = isDark ? Colors.white : Colors.black;
+    final followButtonTextColor = isDark ? Colors.black : Colors.white;
+
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: containerBackground,
         borderRadius: BorderRadius.circular(30),
+        // Thêm nhẹ shadow để nổi hơn ở dark mode
+        boxShadow: isDark
+            ? [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ]
+            : null,
       ),
       child: FutureBuilder<Map<String, dynamic>?>(
-        future: _service.getUserInfo(authorId), // Lấy thông tin tác giả
+        future: _service.getUserInfo(authorId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
           final userData = snapshot.data;
-          final name = snapshot.data?['display_name'] ?? 'Đầu bếp';
-          final avatar = snapshot.data?['photo_url'] ?? '';
+          final name = userData?['display_name'] ?? 'Đầu bếp'.tr();
+          final avatar = userData?['photo_url'] ?? '';
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Avatar (Sử dụng NetworkImage cho dữ liệu thực)
+              // Avatar
               ClipOval(
                 child: avatar.isNotEmpty
                     ? Image.network(
@@ -48,11 +71,20 @@ class AuthorSection extends StatelessWidget {
                   height: 70,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
-                      Image.asset("image/goldel.png", width: 70, height: 70),
+                      Image.asset(
+                        "image/goldel.png",
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                      ),
                 )
-                    : Image.asset("image/goldel.png", width: 70, height: 70),
+                    : Image.asset(
+                  "image/goldel.png",
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.cover,
+                ),
               ),
-
               const SizedBox(width: 12),
 
               // Thông tin tác giả
@@ -62,55 +94,58 @@ class AuthorSection extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       "Thành viên".tr(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey,
+                        color: secondaryTextColor,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       postedDate != null
                           ? "Đã đăng vào ${DateFormat('dd/MM/yyyy').format(postedDate!)}"
-                          : "Ngày đăng không xác định",
-                      style: const TextStyle(
+                          : "Ngày đăng không xác định".tr(),
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey,
+                        color: secondaryTextColor,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              // Nút Theo dõi với Logic Real-time
+              // Nút Theo dõi/Unfollow
               StreamBuilder<bool>(
-                // Giả định bạn đã thêm hàm isFollowingStream vào PublishService như hướng dẫn trước
                 stream: _service.isFollowingStream(authorId),
                 builder: (context, followSnapshot) {
                   final isFollowing = followSnapshot.data ?? false;
 
                   return GestureDetector(
-                    onTap: () => _service.toggleFollow(authorId), // Xử lý Follow/Unfollow
+                    onTap: () => _service.toggleFollow(authorId),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isFollowing ? Colors.grey[300] : Colors.black,
+                        color: isFollowing ? followingButtonBg : followButtonBg,
                         borderRadius: BorderRadius.circular(30),
+                        border: isFollowing && isDark
+                            ? Border.all(color: Colors.grey[600]!, width: 1)
+                            : null, // viền nhẹ ở dark khi đang follow
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             isFollowing ? "Đang theo dõi".tr() : "Theo dõi".tr(),
                             style: TextStyle(
-                              color: isFollowing ? Colors.black : Colors.white,
+                              color: isFollowing ? followingButtonTextColor : followButtonTextColor,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                             ),
@@ -118,7 +153,7 @@ class AuthorSection extends StatelessWidget {
                           const SizedBox(width: 6),
                           Icon(
                             isFollowing ? Icons.check : Icons.person_add_alt_1,
-                            color: isFollowing ? Colors.black : Colors.white,
+                            color: isFollowing ? followingButtonTextColor : followButtonTextColor,
                             size: 16,
                           ),
                         ],

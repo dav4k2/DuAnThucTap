@@ -1,4 +1,5 @@
 // lib/widgets/my_meal_filter.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,10 +24,10 @@ class MyMealFilter extends ConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _chip(context, 'Tất cả', MealTab.tatCa, cur == MealTab.tatCa, notifier, textColor),
-            _chip(context, 'Bữa sáng', MealTab.buaSang, cur == MealTab.buaSang, notifier, textColor),
-            _chip(context, 'Bữa trưa', MealTab.buaTrua, cur == MealTab.buaTrua, notifier, textColor),
-            _chip(context, 'Ăn vặt', MealTab.anVat, cur == MealTab.anVat, notifier, textColor),
+            _chip(context, 'Tất cả'.tr(), MealTab.tatCa, cur == MealTab.tatCa, notifier, textColor),
+            _chip(context, 'Bữa sáng'.tr(), MealTab.buaSang, cur == MealTab.buaSang, notifier, textColor),
+            _chip(context, 'Bữa trưa'.tr(), MealTab.buaTrua, cur == MealTab.buaTrua, notifier, textColor),
+            _chip(context, 'Ăn vặt'.tr(), MealTab.anVat, cur == MealTab.anVat, notifier, textColor),
           ],
         ),
       ),
