@@ -14,6 +14,7 @@ class DraftRecipe {
   final List<String> steps;
   final List<String?> stepDurations; // [MỚI] Lưu số phút từng bước
   final List<List<String>> stepMedia; // [MỚI] Lưu danh sách ảnh/video từng bước
+  final List<String> tags;
   final DateTime savedAt;
 
   DraftRecipe({
@@ -29,6 +30,7 @@ class DraftRecipe {
     this.steps = const [],
     this.stepDurations = const [],
     this.stepMedia = const [],
+    this.tags = const [],
     DateTime? savedAt,
   })  : id = id ?? const Uuid().v4(),
         savedAt = savedAt ?? DateTime.now();
@@ -55,7 +57,9 @@ class DraftRecipe {
     'ingredients': ingredients,
     'steps': steps,
     'stepDurations': stepDurations,
-    'stepMedia': stepMedia,
+    'tags': tags,
+    // Chuyển List<List<String>> thành Map để tránh lỗi Nested Array
+    'stepMedia': stepMedia.asMap().map((index, list) => MapEntry(index.toString(), list)),
     'savedAt': savedAt.toIso8601String(),
   };
 
@@ -67,6 +71,23 @@ class DraftRecipe {
       date = DateTime.parse(json['savedAt']);
     } else {
       date = DateTime.now();
+    }
+
+    final stepMediaRaw = json['stepMedia'];
+    List<List<String>> parsedStepMedia = [];
+
+    if (stepMediaRaw is Map) {
+      // Nếu dữ liệu là Map (định dạng mới để tránh lỗi Firestore)
+      // Chúng ta lấy các key, sắp xếp theo số thứ tự và chuyển về List<List>
+      final sortedKeys = stepMediaRaw.keys.toList()
+        ..sort((a, b) => int.parse(a).compareTo(int.parse(b)));
+
+      parsedStepMedia = sortedKeys.map((k) {
+        return List<String>.from(stepMediaRaw[k] as List? ?? []);
+      }).toList();
+    } else if (stepMediaRaw is List) {
+      // Nếu dữ liệu vẫn là List (định dạng cũ nếu có)
+      parsedStepMedia = stepMediaRaw.map((e) => List<String>.from(e as List)).toList();
     }
 
     return DraftRecipe(
@@ -82,10 +103,9 @@ class DraftRecipe {
       steps: List<String>.from(json['steps'] ?? []),
       // Parse List<String?> từ Firestore
       stepDurations: List<String?>.from(json['stepDurations'] ?? []),
+      tags: List<String>.from(json['tags'] ?? []),
       // Parse List<List<String>> từ Firestore
-      stepMedia: (json['stepMedia'] as List?)
-          ?.map((e) => List<String>.from(e as List))
-          .toList() ?? [],
+      stepMedia: parsedStepMedia,
       savedAt: date,
     );
   }

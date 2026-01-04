@@ -221,7 +221,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       steps: validSteps.map((s) => s.content).toList(),
       stepDurations: validSteps.map((s) => s.duration).toList(),
       stepMedia: validSteps.map((s) => s.media).toList(),
-      // Lưu ý: Sơn cần thêm trường tags vào DraftRecipe model nếu muốn lưu tags vào bản nháp
+      tags: state.selectedCategories,
     );
 
     try {
@@ -261,6 +261,7 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
       difficulty: draft.difficulty,
       ingredients: draft.ingredients,
       steps: loadedSteps,
+      selectedCategories: draft.tags, // Load lại tags vào UI
       ingredientErrors: List.filled(draft.ingredients.length, null),
       stepErrors: List.filled(draft.steps.length, null),
     );
