@@ -15,8 +15,6 @@ class FollowersListPage extends ConsumerWidget {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
-    // Màu sắc an toàn với fallback (tránh Color? → Color lỗi)
     final backgroundColor = isDark ? Colors.grey[900]! : Colors.white;
     final textColor = isDark ? Colors.white : Colors.black87;
     final secondaryColor = isDark ? Colors.white.withOpacity(0.6) : Colors.grey[600]!;
@@ -27,9 +25,6 @@ class FollowersListPage extends ConsumerWidget {
     final emptyIconColor = isDark ? Colors.grey[500]! : Colors.grey[300]!;
     final emptyTextColor = isDark ? Colors.grey[500]! : Colors.grey[400]!;
 
-    // Màu cho nút "Theo dõi" khi đang follow (dark mode)
-    final followingButtonTextColor = isDark ? const Color(0xFFFFCC33) : const Color(0xFFFFCC33);
-    final unfollowButtonTextColor = isDark ? Colors.white : Colors.black;
 
     return Dialog(
       backgroundColor: Colors.transparent,

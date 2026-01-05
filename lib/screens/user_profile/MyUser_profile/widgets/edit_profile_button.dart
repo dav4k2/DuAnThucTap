@@ -13,11 +13,7 @@ class EditProfileButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(themeProvider);
-
-    // Nền nút: Light mode trắng, Dark mode vàng FFC836
     final bgColor = isDarkMode ? const Color(0xFFFFC836) : Colors.white;
-
-    // Màu chữ, icon, border: Light mode vàng, Dark mode đen tương phản
     final contentColor = isDarkMode ? Colors.black87 : const Color(0xFFFFB901);
 
     return Positioned(

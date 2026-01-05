@@ -8,7 +8,7 @@ class MyChefInfo extends StatelessWidget {
   const MyChefInfo({
     super.key,
     required this.name,
-    required this.title, // Ví dụ: "Đầu bếp tại gia"
+    required this.title,
   });
 
   @override
@@ -21,7 +21,7 @@ class MyChefInfo extends StatelessWidget {
       children: [
         // TÊN ĐẦU BẾP
         Positioned(
-          left: 0, // Chỉnh lại layout: nên để center hoặc full width để tránh bị lệch tên dài
+          left: 0,
           right: 0,
           top: 280.h,
           child: Center(
