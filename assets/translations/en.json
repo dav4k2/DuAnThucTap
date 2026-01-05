@@ -181,6 +181,31 @@
   "Đóng góp công thức nấu ăn của bạn vào cộng đồng Cookhub...": "Share your recipes with the Cookhub community...",
   "Tự tạo": "Create manually",
   "Tạo với AI": "Create with AI",
-  "Nhập thủ công": "Manual entry"
+  "Nhập thủ công": "Manual entry",
+
+  "Bước 1: Thêm ảnh": "Step 1: Add photo",
+  "Thêm ảnh về món ăn của bạn bằng cách nhấn vào ô trống và chọn ảnh từ thư viện": "Add photos of your dish by tapping the empty box and selecting photos from your library",
+
+  "Bước 2: Thêm video": "Step 2: Add video",
+  "Thêm video ngắn giới thiệu về món ăn của bạn": "Add a short video introducing your dish",
+
+  "Bước 3: Thêm tên và mô tả ": "Step 3: Add title and description",
+  "Thêm tên và mô tả về món ăn của bạn, mô tả chi tiết sẽ giúp mọi người hiểu thêm về món ăn của bạn": "Add a name and description for your dish; a detailed description helps people understand your recipe better",
+
+  "Bước 4: Phân loại món ăn": "Step 4: Dish classification",
+  "Phân loại món ăn của bạn, việc phân loại chính xác sẽ giúp mọi người tìm kiếm công thức phù hợp với họ": "Classify your dish; accurate classification helps people find the recipes that suit them",
+
+  "Bước 5: Thêm nguyên liệu": "Step 5: Add ingredients",
+  "Thêm những nguyên liệu cần chuẩn bị để làm món ăn của bạn": "Add the ingredients needed to prepare your dish",
+
+  "Bước 6: Thêm các bước nấu": "Step 6: Add cooking steps",
+  "Thêm từng bước nấu món ăn của bạn, tại mỗi bước bạn có thể chèn ảnh hoặc video hướng dẫn thực hiện": "Add each cooking step; you can insert images or instructional videos for each step",
+
+  "Bước 7: Lưu bản nháp": "Step 7: Save draft",
+  "Nếu bạn không thể hoàn thiện công thức nấu ngay lúc này, hãy lưu lại tiến trình và tiếp tục sau": "If you can't finish the recipe right now, save your progress and continue later",
+
+  "Bước 8: Đăng công thức": "Step 8: Publish recipe",
+  "Nếu bạn đã hoàn thiện công thức ấn nút đăng và chờ công thức được tải lên với mọi người nhé": "If you've finished the recipe, press the publish button and wait for it to be shared with everyone"
+
 
 }

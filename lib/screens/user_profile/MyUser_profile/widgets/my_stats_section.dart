@@ -35,8 +35,16 @@ class MyStatsSection extends ConsumerWidget {
           child: Text('$recipes', style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold, color: textColor)),
         ),
         Positioned(
-          left: 23.w, top: 405.h,
-          child: Text('Số công thức', style: TextStyle(color: secondaryColor, fontSize: 15.sp)).tr(),
+          left: 23.w,
+          top: 405.h,
+          child: SizedBox(
+            width: 100.w,
+            child: Text(
+              'Số công thức'.tr(),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: secondaryColor, fontSize: 15.sp),
+            ),
+          ),
         ),
 
         // MỤC FOLLOWER

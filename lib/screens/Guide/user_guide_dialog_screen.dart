@@ -1,4 +1,5 @@
 // lib/features/user_guide/user_guide_dialog.dart
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -185,7 +186,7 @@ class _UserGuideDialogState extends ConsumerState<UserGuideDialog> {
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                               icon: Icon(Icons.arrow_back_ios_rounded, size: 16.sp),
-                              label: Text("Trước", style: TextStyle(fontSize: 14.sp)),
+                              label: Text("Trước".tr(), style: TextStyle(fontSize: 14.sp)),
                             ),
                           )
                               : const SizedBox.shrink(),

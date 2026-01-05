@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -73,7 +74,7 @@ class _VideoPlaceholder extends StatelessWidget {
             Icon(Icons.movie_creation_outlined,
                 size: 50.sp, color: isDark ? Colors.white24 : Colors.black26),
             SizedBox(height: 8.h),
-            Text("Đang chuẩn bị...",
+            Text("Đang chuẩn bị...".tr(),
                 style: TextStyle(
                     fontSize: 12.sp, color: isDark ? Colors.white24 : Colors.black26))
           ],
@@ -83,7 +84,7 @@ class _VideoPlaceholder extends StatelessWidget {
   }
 }
 
-// --- WIDGET VIDEO PLAYER ĐÃ TỐI ƯU (FIX LỖI BUFFER) ---
+// --- WIDGET VIDEO PLAYER  ---
 class _SingletonVideoPlayer extends StatefulWidget {
   final String videoPath;
   const _SingletonVideoPlayer({required this.videoPath});
@@ -95,14 +96,11 @@ class _SingletonVideoPlayer extends StatefulWidget {
 class _SingletonVideoPlayerState extends State<_SingletonVideoPlayer> {
   VideoPlayerController? _controller;
   bool _isInitialized = false;
-  // Dùng Timer để tạo độ trễ, tránh init liên tục khi lướt nhanh
   Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    // KHÔNG init ngay lập tức. Đợi 300ms để chắc chắn người dùng dừng lại ở trang này
-    // và để video ở trang cũ kịp giải phóng bộ nhớ.
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (mounted) {
         _initializeVideo();
@@ -119,7 +117,7 @@ class _SingletonVideoPlayerState extends State<_SingletonVideoPlayer> {
 
     try {
       await controller.initialize();
-      await controller.setVolume(0.0); // Mặc định tắt tiếng cho User Guide
+      await controller.setVolume(0.0);
       await controller.setLooping(true);
 
       if (mounted) {
@@ -148,7 +146,7 @@ class _SingletonVideoPlayerState extends State<_SingletonVideoPlayer> {
 
     // 2. Dispose controller hiện tại một cách an toàn
     final oldController = _controller;
-    _controller = null; // Ngắt tham chiếu ngay lập tức
+    _controller = null;
     oldController?.dispose();
 
     super.dispose();
@@ -265,7 +263,7 @@ class GuideActionButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            isLastPage ? "Bắt đầu" : "Tiếp theo",
+            isLastPage ? "Bắt đầu".tr() : "Tiếp theo".tr(),
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
