@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../Crete_recipe/logic/publish_recipe.dart';
@@ -15,125 +16,103 @@ class RatingSection extends StatefulWidget {
 
 class _RatingSectionState extends State<RatingSection> {
   int _currentRating = 0;
-  bool _isLoading = true;
+  final user = FirebaseAuth.instance.currentUser; // 👈 Lấy user hiện tại
 
   @override
   void initState() {
     super.initState();
-    _loadUserRating(); // Tải đánh giá cũ của người dùng
+    _loadUserRating();
   }
 
+  // Tải điểm mà người dùng này đã đánh giá trước đó (nếu có)
   Future<void> _loadUserRating() async {
-    int rating = await PublishService().getUserRatingForRecipe(
-      widget.recipe.authorId!,
-      widget.recipe.id,
-    );
-    if (mounted) {
-      setState(() {
-        _currentRating = rating;
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _updateRating(int starValue) async {
-    // Lưu lại điểm cũ để rollback nếu lỗi
-    int oldRating = _currentRating;
-
-    setState(() {
-      _currentRating = starValue;
-    });
-
-    try {
-      await PublishService().submitRating(
+    int score = await PublishService().getUserRatingForRecipe(
         widget.recipe.authorId!,
-        widget.recipe.id,
-        starValue,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(oldRating == 0 ? "Đã gửi đánh giá!" : "Đã cập nhật đánh giá!")),
-        );
-      }
-    } catch (e) {
-      setState(() { _currentRating = oldRating; }); // Rollback nếu lỗi
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Lỗi khi gửi đánh giá. Vui lòng thử lại.")),
-        );
-      }
-    }
+        widget.recipe.id
+    );
+    if (mounted) setState(() => _currentRating = score);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Tính toán tỷ lệ cho các thanh Progress Bar
+    final total = widget.recipe.totalRatings == 0 ? 1 : widget.recipe.totalRatings;
+    final counts = widget.recipe.ratingCount ?? {};
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ---------------- LEFT: SCORE + STARS ----------------
+        // ---------------- LEFT: AVATAR + SCORE + STARS ----------------
         Expanded(
           flex: 4,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Đánh giá".tr(),
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              // 1. Ảnh đại diện người dùng hiện tại
+              FutureBuilder<Map<String, dynamic>?>(
+                future: PublishService().getUserInfo(widget.recipe.authorId ?? ''),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircleAvatar(radius: 30, child: CircularProgressIndicator());
+                  }
+
+                  // Lấy URL ảnh từ Firestore dựa trên key 'avatar_url'
+                  final avatarUrl = snapshot.data?['avatar_url'] ?? '';
+
+                  return CircleAvatar(
+                    radius: 30,
+                    backgroundImage: avatarUrl.isNotEmpty
+                        ? NetworkImage(avatarUrl)
+                        : const AssetImage("image/goldel.png") as ImageProvider,
+                  );
+                },
               ),
               const SizedBox(height: 8),
 
-              // 2. HIỂN THỊ ĐIỂM: Nếu _currentRating = 0 thì hiện 0, ngược lại hiện số sao
+              // 2. Điểm trung bình từ Firebase
               Text(
-                _currentRating == 0 ? "0" : _currentRating.toDouble().toString(),
+                widget.recipe.averageRating?.toStringAsFixed(1) ?? "0.0",
                 style: const TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
               ),
 
-              const SizedBox(height: 4),
-
-              // 3. DANH SÁCH SAO CÓ THỂ TƯƠNG TÁC
+              // 3. Sao tương tác
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(5, (index) {
-                  int starValue = index + 1;
                   return GestureDetector(
-                    onTap: () => _updateRating(starValue),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: Icon(
-                        Icons.star,
-                        // Nếu index nhỏ hơn điểm hiện tại thì tô vàng, ngược lại màu xám
-                        color: index < _currentRating
-                            ? const Color(0xFFFFC107)
-                            : Colors.grey.shade300,
-                        size: 26,
-                      ),
+                    onTap: () async {
+                      int newScore = index + 1;
+                      setState(() => _currentRating = newScore);
+                      await PublishService().submitRating(
+                          widget.recipe.authorId!,
+                          widget.recipe.id,
+                          newScore
+                      );
+                    },
+                    child: Icon(
+                      Icons.star,
+                      color: index < _currentRating ? Colors.amber : Colors.grey.shade300,
+                      size: 24,
                     ),
                   );
                 }),
               ),
-
-              const SizedBox(height: 4),
-
-              Text(
-                "(25 đánh giá)".tr(),
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
-              ),
+              Text("(${widget.recipe.totalRatings} đánh giá)".tr()),
             ],
           ),
         ),
 
         const SizedBox(width: 15),
 
-        // ---------------- RIGHT: PROGRESS BARS (Giữ nguyên) ----------------
+        // ---------------- RIGHT: PROGRESS BARS (Dữ liệu thật) ----------------
         Expanded(
           flex: 5,
           child: Column(
             children: [
-              _buildRatingRow(5, 0.9),
-              _buildRatingRow(4, 0.7),
-              _buildRatingRow(3, 0.5),
-              _buildRatingRow(2, 0.25),
-              _buildRatingRow(1, 0.1),
+              _buildRatingRow(5, (counts["5"] ?? 0) / total),
+              _buildRatingRow(4, (counts["4"] ?? 0) / total),
+              _buildRatingRow(3, (counts["3"] ?? 0) / total),
+              _buildRatingRow(2, (counts["2"] ?? 0) / total),
+              _buildRatingRow(1, (counts["1"] ?? 0) / total),
             ],
           ),
         ),

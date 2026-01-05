@@ -96,7 +96,8 @@ class RecipeInfoSection extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "4,8",
+                        // Hiển thị điểm trung bình thực tế, mặc định 0.0 nếu chưa có
+                        recipe.averageRating?.toStringAsFixed(1) ?? "0.0",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

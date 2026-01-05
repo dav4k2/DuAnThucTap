@@ -190,7 +190,6 @@ class PublishService {
 
     try {
       await _firestore.runTransaction((transaction) async {
-        // 🟢 BƯỚC 1: ĐỌC TẤT CẢ DỮ LIỆU TRƯỚC
         DocumentSnapshot ratingSnapshot = await transaction.get(ratingRef);
         DocumentSnapshot recipeSnapshot = await transaction.get(recipeRef);
 
@@ -198,7 +197,6 @@ class PublishService {
           throw Exception("Công thức không tồn tại!");
         }
 
-        // 🟢 BƯỚC 2: TÍNH TOÁN LOGIC
         Map<String, dynamic> recipeData = recipeSnapshot.data() as Map<String, dynamic>;
         double oldAverage = (recipeData['averageRating'] ?? 0.0).toDouble();
         int oldTotal = recipeData['totalRatings'] ?? 0;
@@ -223,7 +221,6 @@ class PublishService {
           newAverage = ((oldAverage * oldTotal) + rating) / newTotal;
         }
 
-        // 🟢 BƯỚC 3: GHI DỮ LIỆU SAU CÙNG
         transaction.update(recipeRef, {
           'averageRating': newAverage,
           'totalRatings': newTotal,

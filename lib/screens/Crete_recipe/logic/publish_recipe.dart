@@ -20,6 +20,7 @@ class PublishRecipe{
   final DateTime createdAt;
   final double averageRating;
   final int totalRatings;
+  final Map<String, int> ratingCount;
 
   PublishRecipe({
     String? id,
@@ -38,6 +39,7 @@ class PublishRecipe{
     DateTime? createdAt,
     this.averageRating = 0.0,
     this.totalRatings = 0,
+    this.ratingCount = const {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0},
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
@@ -100,6 +102,7 @@ class PublishRecipe{
     'createdAt': FieldValue.serverTimestamp(),
     'averageRating': averageRating,
     'totalRatings': totalRatings,
+    'ratingCount': ratingCount,
   };
 
   factory PublishRecipe.fromFirestore(
@@ -125,6 +128,7 @@ class PublishRecipe{
           DateTime.fromMillisecondsSinceEpoch(0),
       averageRating: (data['averageRating'] ?? 0.0).toDouble(),
       totalRatings: data['totalRatings'] ?? 0,
+      ratingCount: Map<String, int>.from(data['ratingCount'] ?? {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}),
     );
   }
 }

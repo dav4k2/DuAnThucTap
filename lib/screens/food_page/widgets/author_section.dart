@@ -57,7 +57,7 @@ class AuthorSection extends StatelessWidget {
 
           final userData = snapshot.data;
           final name = userData?['display_name'] ?? 'Đầu bếp'.tr();
-          final avatar = userData?['photo_url'] ?? '';
+          final avatar = userData?['avatar_url'] ?? '';
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.center,

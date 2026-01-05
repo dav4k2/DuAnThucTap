@@ -12,10 +12,8 @@ class UserService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // 2. Cấu hình Cloudinary
   final cloudinary = CloudinaryPublic('dzysold5b', 'cookinghub_preset', cache: false);
 
-  // Lấy thông tin User (Giữ nguyên)
   Future<UserModel?> getUserProfile() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -27,7 +25,6 @@ class UserService {
     return null;
   }
 
-  // --- HÀM MỚI: Upload lên Cloudinary ---
   Future<String?> _uploadToCloudinary(File file) async {
     try {
       CloudinaryResponse response = await cloudinary.uploadFile(
@@ -40,7 +37,6 @@ class UserService {
     }
   }
 
-  // 3. Cập nhật Profile (Logic đã sửa để dùng hàm upload mới)
   Future<bool> updateUserProfile({
     required String displayName,
     String? bio,
