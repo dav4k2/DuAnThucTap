@@ -52,22 +52,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.user.name);
-    _bioController = TextEditingController(text: widget.user.bio ?? "");
 
-    selectedLevel = widget.user.cookingTitle ?? 'Đầu bếp tại gia'.tr();
-    selectedCountry = widget.user.country ?? 'Việt Nam'.tr();
+    // Lấy state hiện tại từ Provider (lúc này đã được khởi tạo từ myChefProvider)
+    // Sử dụng ref.read vì đây là initState, chỉ chạy 1 lần
+    final initialState = ref.read(editProfileProvider);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notifier = ref.read(editProfileProvider.notifier);
-      notifier.updateName(_nameController.text);
-      notifier.updateBio(_bioController.text);
-      if (widget.user.avatarUrl != null) notifier.updateAvatarUrl(widget.user.avatarUrl!);
-      if (widget.user.coverUrl != null) notifier.updateCoverUrl(widget.user.coverUrl!);
+    _nameController = TextEditingController(text: initialState.name);
+    _bioController = TextEditingController(text: initialState.bio);
+
+    selectedLevel = initialState.cookingLevel;
+    selectedCountry = initialState.country;
+
+    // Lắng nghe thay đổi từ Controller để cập nhật vào Provider
+    _nameController.addListener(() {
+      ref.read(editProfileProvider.notifier).updateName(_nameController.text);
     });
-
-    _nameController.addListener(() => ref.read(editProfileProvider.notifier).updateName(_nameController.text));
-    _bioController.addListener(() => ref.read(editProfileProvider.notifier).updateBio(_bioController.text));
+    _bioController.addListener(() {
+      ref.read(editProfileProvider.notifier).updateBio(_bioController.text);
+    });
   }
 
   @override

@@ -108,6 +108,10 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
 
   void _navigateToEditProfile() async {
     final chef = ref.read(myChefProvider);
+    if (chef.name.isEmpty) {
+      print("Vui lòng đợi dữ liệu tải xong");
+      return;
+    }
 
     await Navigator.push(
       context,

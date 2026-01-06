@@ -30,7 +30,10 @@ class ResetSuccessScreen extends ConsumerWidget {
                 SizedBox(height: size.height * 0.1),
                 ResetSuccessButton(
                   onPressed: () {
+                    // Reset lại trạng thái thành công về false
                     ref.read(resetSuccessProvider.notifier).state = false;
+
+                    // Xóa toàn bộ stack và quay về màn hình đăng nhập
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       '/sign_in',

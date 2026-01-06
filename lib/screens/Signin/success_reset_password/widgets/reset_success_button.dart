@@ -21,14 +21,7 @@ class ResetSuccessButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
           ),
         ),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const SignInScreen(),
-            ),
-          );
-        },
+        onPressed: onPressed,
         child: const Text(
           'Quay về đăng nhập',
           style: TextStyle(

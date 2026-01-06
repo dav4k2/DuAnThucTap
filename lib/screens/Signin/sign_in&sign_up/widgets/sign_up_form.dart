@@ -100,7 +100,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         SizedBox(height: 10.h),
 
 
-        /// Email hoặc SĐT
+        /// Email
         Center(
           child: InputField(
             hintText: "Email",

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../Remove/enter_verification_code/verify_reset_email_screen.dart';
 import '../../Remove/enter_verification_code/verify_reset_phone_screen.dart';
+import '../sign_in&sign_up/auth/auth_provider.dart';
 import '../sign_in&sign_up/sign_in_screen.dart';
+import '../signup_successfully/logic/success_provider.dart';
+import '../success_reset_password/success_reset_password_screen.dart';
 import 'widgets/reset_header.dart';
 import 'widgets/reset_form.dart';
 import 'widgets/reset_button.dart';
@@ -82,38 +85,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
                   // Nút xác nhận
                   ResetButton(
-                    onPressed: () {
-                      final input = ref.watch(emailProvider);
-                      final isEmail = input.contains('@');
-                      final isPhone =
-                      RegExp(r'^[0-9]{9,11}$').hasMatch(input);
-
-                      // Reset lỗi trước khi validate
-                      setState(() => errorMessage = '');
-
-                      if (isEmail) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const VerifyResetEmailScreen(),
-                          ),
-                        );
-                      } else if (isPhone) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const VerifyResetPhoneScreen(),
-                          ),
-                        );
-                      }
-                      else {
-                        // ❌ Gán thông báo lỗi hiển thị ngay giữa màn hình
-                        setState(() {
-                          errorMessage =
-                          'Vui lòng nhập email hoặc số điện thoại hợp lệ!';
-                        });
-                      }
-                    },
+                    onPressed: _handleResetPassword,
                   ),
                 ],
               ),
@@ -143,6 +115,57 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _handleResetPassword() async {
+    final email = ref.read(emailProvider).trim();
+    final authService = ref.read(authServiceProvider);
+
+    // 1. Validate sơ bộ
+    if (email.isEmpty || !email.contains('@')) {
+      setState(() {
+        errorMessage = 'Vui lòng nhập địa chỉ email hợp lệ!';
+      });
+      return;
+    }
+
+    // 2. Hiện loading (Nếu bạn có widget loading, hãy bật lên ở đây)
+    setState(() => errorMessage = '');
+
+    // 3. Gọi service của Firebase
+    final result = await authService.resetPassword(email: email);
+
+    if (result == null) {
+      // Thành công: Thông báo cho người dùng
+      if (!mounted) return;
+      _showSuccessDialog(context, email);
+    } else {
+      // Thất bại: Hiển thị lỗi từ Firebase (ví dụ: user-not-found)
+      setState(() {
+        errorMessage = result;
+      });
+    }
+  }
+
+  // Hàm hiển thị thông báo thành công
+  void _showSuccessDialog(BuildContext context, String email) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Kiểm tra Email'),
+        content: Text('Một liên kết đặt lại mật khẩu đã được gửi đến $email. Vui lòng kiểm tra hộp thư đến của bạn.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Đóng dialog
+              Navigator.of(context).pop(); // Quay lại màn hình SignIn
+            },
+            child: const Text('Quay lại đăng nhập'),
+          ),
+        ],
       ),
     );
   }

@@ -72,8 +72,6 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
 
                     const SizedBox(height: 10),
 
-                    SizedBox(height: 24.h),
-
                     // 📜 Phần cuộn
                     Expanded(
                       child: SingleChildScrollView(

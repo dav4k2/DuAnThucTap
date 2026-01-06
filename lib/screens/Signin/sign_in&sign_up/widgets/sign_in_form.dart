@@ -77,9 +77,9 @@ class _SignInFormState extends ConsumerState<SignInForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        /// Tài khoản
+        /// Email
         InputField(
-          hintText: 'Tài khoản',
+          hintText: 'Email',
           controller: _emailController,
           width: inputWidth,
           isDarkMode: isDarkMode,

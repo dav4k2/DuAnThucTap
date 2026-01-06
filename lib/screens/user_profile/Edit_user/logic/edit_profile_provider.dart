@@ -90,7 +90,8 @@ class EditProfileNotifier extends StateNotifier<EditProfileState> {
 }
 
 final editProfileProvider =
-StateNotifierProvider<EditProfileNotifier, EditProfileState>((ref) {
-  final myChef = ref.watch(myChefProvider);
+StateNotifierProvider.autoDispose<EditProfileNotifier, EditProfileState>((ref) {
+  // Watch trực tiếp provider gốc để khi dữ liệu gốc thay đổi, editor cũng cập nhật
+  final myChef = ref.read(myChefProvider);
   return EditProfileNotifier(myChef);
 });
