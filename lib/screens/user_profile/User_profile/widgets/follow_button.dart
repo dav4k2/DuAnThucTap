@@ -1,7 +1,10 @@
 // lib/widgets/follow_button.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../Service/user_service.dart';
+import '../../MyUser_profile/logic/follower_provider.dart';
 import '../logic/chef_provider.dart';
 
 class FollowButton extends ConsumerWidget {
@@ -10,7 +13,8 @@ class FollowButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chef = ref.watch(chefProvider);
-    final isFollowing = ref.watch(followStateProvider(chef.id));
+    final followStatusAsync = ref.watch(isFollowingProvider(chef.id));
+    final isFollowing = followStatusAsync.value ?? false;
     final followNotifier = ref.read(followStateProvider(chef.id).notifier);
 
     return Positioned(
@@ -18,25 +22,22 @@ class FollowButton extends ConsumerWidget {
       top: 437.h,
       child: GestureDetector(
         onTap: () async {
+          final userService = UserService();
+
           if (isFollowing) {
-            // ĐÃ FOLLOW → XÁC NHẬN BỎ
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder: (context) => AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-                title: Text('Bỏ theo dõi?', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600)),
-                content: Text('Bạn có chắc muốn bỏ theo dõi ${chef.name}?'),
-                actions: [
-                  TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Hủy', style: TextStyle(color: Colors.grey))),
-                  TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Bỏ theo dõi', style: TextStyle(color: Colors.red))),
-                ],
-              ),
-            );
-            if (confirm == true) followNotifier.state = false;
-          } else {
-            // CHƯA FOLLOW → TỰ ĐỘNG FOLLOW
-            followNotifier.state = true;
+            // Hiển thị Dialog xác nhận bỏ theo dõi (như code cũ của bạn)
+            final confirm = await _showConfirmDialog(context, chef.name);
+            if (confirm != true) return;
           }
+
+          // 2. Gọi logic lưu vào Database
+          await userService.toggleFollowUser(targetUserId: chef.id);
+
+          // 3. LÀM MỚI DỮ LIỆU: Quan trọng nhất
+          // Invalidate để các provider chạy lại và lấy dữ liệu mới nhất từ DB
+          ref.invalidate(isFollowingProvider(chef.id)); // Cập nhật lại trạng thái nút
+          ref.invalidate(chefDataProvider(chef.id));   // Cập nhật lại stats (số người follow) trên Profile
+          ref.invalidate(followingListProvider(FirebaseAuth.instance.currentUser!.uid)); // Cập nhật danh sách nếu đang ở trang list
         },
         child: Container(
           width: 277.w,
@@ -78,6 +79,27 @@ class FollowButton extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<bool?> _showConfirmDialog(BuildContext context, String chefName) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+        title: Text('Bỏ theo dõi?', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600)),
+        content: Text('Bạn có chắc muốn bỏ theo dõi $chefName?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Bỏ theo dõi', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

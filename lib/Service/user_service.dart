@@ -169,4 +169,40 @@ class UserService {
       default: return MealTab.tatCa;
     }
   }
+
+  Future<void> toggleFollowUser({required String targetUserId}) async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) return;
+
+    final currentUserRef = _firestore.collection('users').doc(currentUserId);
+    final targetUserRef = _firestore.collection('users').doc(targetUserId);
+
+    // 1. Kiểm tra trạng thái hiện tại
+    final doc = await currentUserRef.collection('following').doc(targetUserId).get();
+    final isFollowing = doc.exists;
+
+    WriteBatch batch = _firestore.batch();
+
+    if (isFollowing) {
+      // --- LÓGIC UNFOLLOW ---
+      batch.delete(currentUserRef.collection('following').doc(targetUserId));
+      batch.delete(targetUserRef.collection('followers').doc(currentUserId));
+
+      batch.update(currentUserRef, {'following_count': FieldValue.increment(-1)});
+      batch.update(targetUserRef, {'follower_count': FieldValue.increment(-1)});
+    } else {
+      // --- LOGIC FOLLOW ---
+      batch.set(currentUserRef.collection('following').doc(targetUserId), {
+        'followedAt': FieldValue.serverTimestamp(),
+      });
+      batch.set(targetUserRef.collection('followers').doc(currentUserId), {
+        'followedAt': FieldValue.serverTimestamp(),
+      });
+
+      batch.update(currentUserRef, {'following_count': FieldValue.increment(1)});
+      batch.update(targetUserRef, {'follower_count': FieldValue.increment(1)});
+    }
+
+    await batch.commit();
+  }
 }

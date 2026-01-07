@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../Service/user_model.dart';
 
+// Model helper để UI hiển thị
 class Follower {
   final String id;
   final String name;
   final String avatarUrl;
   final int recipeCount;
-  bool isFollowedByMe;
-  bool isFollowingMe;
+  final bool isFollowedByMe;
 
   Follower({
     required this.id,
@@ -14,57 +17,83 @@ class Follower {
     required this.avatarUrl,
     required this.recipeCount,
     this.isFollowedByMe = false,
-    this.isFollowingMe = false,
   });
-
-  // Tạo hàm copyWith để update state đúng chuẩn Riverpod
-  Follower copyWith({bool? isFollowedByMe}) {
-    return Follower(
-      id: id,
-      name: name,
-      avatarUrl: avatarUrl,
-      recipeCount: recipeCount,
-      isFollowedByMe: isFollowedByMe ?? this.isFollowedByMe,
-      isFollowingMe: isFollowingMe,
-    );
-  }
 }
 
-// Tạo Notifier để quản lý logic
-class FollowerNotifier extends Notifier<List<Follower>> {
-  @override
-  List<Follower> build() {
-    return [
-      Follower(id: '1', name: 'Gordon Ramsay', avatarUrl: 'https://bit.ly/3L8ZfXY', recipeCount: 132, isFollowedByMe: true, isFollowingMe: true),
-      Follower(id: '2', name: 'Gordon Kentucky', avatarUrl: '', recipeCount: 12, isFollowedByMe: true, isFollowingMe: false),
-      Follower(id: '3', name: 'Sơn Tùng MTP', avatarUrl: '', recipeCount: 5, isFollowedByMe: false, isFollowingMe: true),
-      Follower(id: '4', name: 'Người Lạ ơi', avatarUrl: '', recipeCount: 0, isFollowedByMe: false, isFollowingMe: true),
-    ];
-  }
+// Helper function để convert từ UserModel sang Follower
+Future<Follower> _mapUserToFollower(UserModel user, String currentUserId) async {
+  final firestore = FirebaseFirestore.instance;
 
-  void toggleFollow(String id) {
-    state = [
-      for (final user in state)
-        if (user.id == id)
-          user.copyWith(isFollowedByMe: !user.isFollowedByMe)
-        else
-          user,
-    ];
-  }
+  // Kiểm tra xem mình có đang follow người này không
+  final followDoc = await firestore
+      .collection('users')
+      .doc(currentUserId)
+      .collection('following')
+      .doc(user.id)
+      .get();
+
+  // Đếm số công thức (nếu bạn không lưu recipe_count trên UserModel)
+  final recipesSpec = await firestore
+      .collection('users')
+      .doc(user.id)
+      .collection('published_recipes')
+      .get();
+
+  return Follower(
+    id: user.id,
+    name: user.displayName ?? "Người dùng CookingHub",
+    avatarUrl: user.avatarUrl ?? "",
+    recipeCount: recipesSpec.docs.length,
+    isFollowedByMe: followDoc.exists,
+  );
 }
 
-// Khai báo Provider toàn cục
-final followerProvider = NotifierProvider<FollowerNotifier, List<Follower>>(() {
-  return FollowerNotifier();
+// Provider lấy danh sách Đang theo dõi (Following)
+final followingListProvider = FutureProvider.family<List<Follower>, String>((ref, userId) async {
+  final firestore = FirebaseFirestore.instance;
+  final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+  final snapshot = await firestore.collection('users').doc(userId).collection('following').get();
+
+  List<Follower> followers = [];
+  for (var doc in snapshot.docs) {
+    final userDoc = await firestore.collection('users').doc(doc.id).get();
+    if (userDoc.exists) {
+      final userModel = UserModel.fromSnapshot(userDoc);
+      followers.add(await _mapUserToFollower(userModel, currentUserId));
+    }
+  }
+  return followers;
 });
 
-// Tạo thêm 2 Provider phụ để lọc danh sách cho tiện
-final followingListProvider = Provider((ref) {
-  final all = ref.watch(followerProvider);
-  return all.where((u) => u.isFollowedByMe).toList();
+// Provider lấy danh sách Người theo dõi (Followers)
+final followersListProvider = FutureProvider.family<List<Follower>, String>((ref, userId) async {
+  final firestore = FirebaseFirestore.instance;
+  final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+  final snapshot = await firestore.collection('users').doc(userId).collection('followers').get();
+
+  List<Follower> followers = [];
+  for (var doc in snapshot.docs) {
+    final userDoc = await firestore.collection('users').doc(doc.id).get();
+    if (userDoc.exists) {
+      final userModel = UserModel.fromSnapshot(userDoc);
+      followers.add(await _mapUserToFollower(userModel, currentUserId));
+    }
+  }
+  return followers;
 });
 
-final followersListProvider = Provider((ref) {
-  final all = ref.watch(followerProvider);
-  return all.where((u) => u.isFollowingMe).toList();
+final isFollowingProvider = FutureProvider.family<bool, String>((ref, targetUserId) async {
+  final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+  if (currentUserId == null) return false;
+
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUserId)
+      .collection('following')
+      .doc(targetUserId)
+      .get();
+
+  return doc.exists;
 });

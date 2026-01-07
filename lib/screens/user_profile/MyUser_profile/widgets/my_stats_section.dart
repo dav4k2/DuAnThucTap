@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,9 +20,27 @@ class MyStatsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Tự động lấy số lượng từ Riverpod để hiển thị
-    final followersCount = ref.watch(followersListProvider).length;
-    final followingCount = ref.watch(followingListProvider).length;
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userId = currentUser?.uid ?? '';
+
+    // 3. Watch provider với tham số userId (FAMILY PROVIDER)
+    // Kết quả trả về là AsyncValue, không phải List ngay lập tức
+    final followersAsync = ref.watch(followersListProvider(userId));
+    final followingAsync = ref.watch(followingListProvider(userId));
+
+    // 4. Xử lý AsyncValue để lấy số lượng an toàn
+    // Nếu đang loading hoặc lỗi, trả về 0
+    final followersCount = followersAsync.maybeWhen(
+      data: (list) => list.length,
+      orElse: () => 0,
+    );
+
+    final followingCount = followingAsync.maybeWhen(
+      data: (list) => list.length,
+      orElse: () => 0,
+    );
 
     final textColor = Theme.of(context).textTheme.bodyMedium!.color!;
     final secondaryColor = textColor.withOpacity(0.6);

@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
@@ -133,7 +134,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
       barrierColor: Colors.black.withOpacity(0.5), // Nền tối hơn giúp Box trắng nổi bật
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4), // Mờ nền phía sau
-        child: FollowersListPage(isFollowingTab: isFollowingTab),
+        child: FollowersListPage(isFollowingTab: isFollowingTab, userId: '',),
       ),
     );
   }
@@ -143,6 +144,9 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
     final chef = ref.watch(myChefProvider);
     final profileTab = ref.watch(myProfileTabProvider);
     final mealTab = ref.watch(myMealTabProvider);
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUserId = currentUser?.uid ?? '';
 
     // Tự động scroll về đầu khi chuyển sang tab Công thức
     if (profileTab == ProfileTab.congThuc) {
@@ -210,11 +214,28 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                         ),
                         MyStatsSection(
                           recipes: chef.recipes,
+                          // 1. Sự kiện bấm vào danh sách FOLLOWER
                           onFollowersTap: () {
-                            _showFollowersDialog(context, false);
+                            if (currentUserId.isEmpty) return;
+                            showDialog(
+                              context: context,
+                              builder: (context) => FollowersListPage(
+                                isFollowingTab: false, // False = Tab người theo dõi
+                                userId: currentUserId, // Truyền ID của mình vào
+                              ),
+                            );
                           },
+
+                          // 2. Sự kiện bấm vào danh sách ĐANG FOLLOW
                           onFollowingTap: () {
-                            _showFollowersDialog(context, true);
+                            if (currentUserId.isEmpty) return;
+                            showDialog(
+                              context: context,
+                              builder: (context) => FollowersListPage(
+                                isFollowingTab: true, // True = Tab đang theo dõi
+                                userId: currentUserId,
+                              ),
+                            );
                           },
                         ),
                         EditProfileButton(onTap: _navigateToEditProfile),     // Nút chỉnh sửa
