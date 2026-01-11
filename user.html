@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý người dùng</title>
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/user.css">
+  <script src="js/navbar.js" defer></script>
+  <script src="js/user.js" defer></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <main class="content">
+    <div class="toolbar">
+      <div class="toolbar_search">
+        <div class="search_box_wrapper">
+          <img src="images/search2.png" class="search_icon_img">
+          <input type="text" id="search_user" placeholder="Tìm kiếm tên hoặc email..." onkeyup="handleSearchAndSort()">
+        </div>
+      </div>
+
+      <div class="toolbar_filters">
+        <div class="filter_item">
+          <label>Sắp xếp theo tên</label>
+          <div class="tag_manager" id="sort_manager" style="width: 180px;">
+              <div class="tag_summary" onclick="toggleSortDropdown()" id="sort_summary_box">
+                  <span id="sort_display_text">Mặc định</span>
+                  <svg class="dropdown_icon" id="sort_dropdown_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="tag_dropdown" id="sort_dropdown_content">
+                  <div class="dropdown_item" onclick="selectSortMode('default', 'Mặc định')">Mặc định</div>
+                  <div class="dropdown_item" onclick="selectSortMode('az', 'A - Z')">A - Z</div>
+                  <div class="dropdown_item" onclick="selectSortMode('za', 'Z - A')">Z - A</div>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar_actions">
+        <button type="button" class="btn_icon_box" onclick="exportToExcel()" title="Xuất Excel">
+            <img src="images/export.png">
+        </button>
+      </div>
+    </div>
+
+    <div class="table_wrapper">
+      <table class="user_table">
+        <thead>
+          <tr>
+            <th>STT</th> <th>Tên người dùng</th> <th>Email</th> <th>ID</th> <th>Trạng thái</th> <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="table_users">
+            <tr><td colspan="7" style="text-align:center">Đang tải dữ liệu...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="pagination" id="pagination_block" style="display: none;">
+      <div class="page_info">
+        Đang hiển thị <span id="current_start">0</span> - <span id="current_end">0</span> 
+        trên tổng số <span id="total_items">0</span>
+      </div>
+      <div class="page_controls" id="pagination_controls">
+        </div>
+    </div>
+    
+    <div class="modal_overlay" id="editModal">
+      <div class="modal_box">
+          <div class="modal_header">
+              <h3>Chỉnh sửa người dùng</h3>
+              <span class="close_btn" onclick="closeAllModals()">&times;</span>
+          </div>
+          <div class="modal_body">
+              <div class="user_quick_info">
+                  <img src="images/avatar.png" class="modal_avatar" id="edit_avatar">
+                  <div class="info_text">
+                      <h4 id="edit_name_label">Tên</h4>
+                      <p id="edit_uid">ID</p>
+                  </div>
+              </div>
+              <form id="editForm">
+                  <div class="form_group">
+                      <label>Tên hiển thị</label>
+                      <input type="text" id="edit_name">
+                  </div>
+                  <div class="form_group">
+                    <label>Email</label>
+                    <input type="email" id="edit_email" readonly style="background-color: #e9ecef; cursor: not-allowed; color: #6c757d;">
+                  </div>
+                  
+                  <div class="form_row">
+                      <div class="form_group">
+                          <label>Trạng thái</label>
+                          <div class="tag_manager" id="status_manager">
+                              <div class="tag_summary" onclick="toggleStatusDropdown()" id="status_summary_box">
+                                  <span id="status_display_text">Hoạt động</span>
+                                  <svg class="dropdown_icon" id="status_dropdown_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                              </div>
+                              <div class="tag_dropdown" id="status_dropdown_content">
+                                  <div class="dropdown_item" onclick="selectStatus('false', 'Hoạt động')">
+                                      <span class="status_dot_inside green"></span> Hoạt động
+                                  </div>
+                                  <div class="dropdown_item" onclick="selectStatus('true', 'Khóa tài khoản')">
+                                      <span class="status_dot_inside red"></span> Khóa tài khoản
+                                  </div>
+                              </div>
+                              <input type="hidden" id="edit_status_value" value="false">
+                          </div>
+                      </div>
+
+                      <div class="form_group">
+                          <label>Thời hạn khóa</label>
+                          <div class="tag_manager" id="duration_manager">
+                              <div class="tag_summary disabled" onclick="toggleDurationDropdown()" id="duration_summary_box">
+                                  <span id="duration_display_text">Vĩnh viễn</span>
+                                  <svg class="dropdown_icon" id="duration_dropdown_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                              </div>
+                              <div class="tag_dropdown" id="duration_dropdown_content">
+                                  <div class="dropdown_item" onclick="selectDuration('1', '1 ngày')">1 ngày</div>
+                                  <div class="dropdown_item" onclick="selectDuration('3', '3 ngày')">3 ngày</div>
+                                  <div class="dropdown_item" onclick="selectDuration('7', '7 ngày')">7 ngày</div>
+                                  <div class="dropdown_item" onclick="selectDuration('permanent', 'Vĩnh viễn')">Vĩnh viễn</div>
+                              </div>
+                              <input type="hidden" id="edit_ban_duration" value="permanent">
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+          <div class="modal_footer">
+              <button class="btn_cancel" onclick="closeAllModals()">Hủy bỏ</button>
+              <button class="btn_save_changes" onclick="handleSave()">Lưu thay đổi</button>
+          </div>
+      </div>
+    </div>
+
+    <div class="modal_overlay" id="successModal">
+      <div class="modal_box modal_center_content">
+          <div class="icon_circle green_circle"><img src="images/check.png" class="modal_main_icon"></div>
+          <h3>Thành công!</h3>
+          <button class="btn_save_changes full_width" onclick="closeAllModals()">Hoàn tất</button>
+      </div>
+    </div>
+    
+    <div class="modal_overlay" id="deleteModal">
+      <div class="modal_box modal_center_content">
+          <div class="icon_circle red_circle"><img src="images/warning.png" class="modal_main_icon"></div>
+          <h3>Xóa người dùng?</h3>
+          <p class="modal_desc">Hành động này không thể hoàn tác.</p>
+          <div class="modal_footer_center">
+              <button class="btn_cancel" onclick="closeAllModals()">Hủy bỏ</button>
+              <button class="btn_danger" onclick="confirmDeleteAction()">Xóa vĩnh viễn</button>
+          </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

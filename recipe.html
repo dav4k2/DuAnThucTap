@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý công thức</title>
+  <link rel="stylesheet" href="css/navbar.css"> 
+  <link rel="stylesheet" href="css/recipe.css">
+  <script src="js/navbar.js" defer></script>
+  <script src="js/recipe.js" defer></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <div id="navbar-placeholder"></div>
+
+  <main class="content">
+    <div class="toolbar">
+      <div class="toolbar_search">
+        <div class="search_box_wrapper">
+          <img src="images/search2.png" class="search_icon_img">
+          <input type="text" id="search-input" placeholder="Tìm kiếm món ăn..." onkeyup="handleSearchAndSort()">
+        </div>
+      </div>
+
+      <div class="toolbar_filters">
+        <div class="filter_item">
+          <label>Sắp xếp tên</label>
+          <div class="tag_manager" id="sort_manager" style="width: 180px;">
+              <div class="tag_summary" onclick="toggleSortDropdown()" id="sort_summary_box">
+                  <span id="sort_display_text">Mặc định</span>
+                  <svg class="dropdown_icon" id="sort_dropdown_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              
+              <div class="tag_dropdown" id="sort_dropdown_content">
+                  <div class="dropdown_item" onclick="selectSortMode('default', 'Mặc định')">Mặc định</div>
+                  <div class="dropdown_item" onclick="selectSortMode('az', 'A - Z')">A - Z</div>
+                  <div class="dropdown_item" onclick="selectSortMode('za', 'Z - A')">Z - A</div>
+              </div>
+          </div>
+        </div>
+
+        <div class="filter_item">
+          <label>Thời gian</label>
+          <div class="input_wrapper">
+            <input type="date" id="filter_date" class="custom_date padding_left_icon" onchange="handleSearchAndSort()">
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar_actions">
+        <button type="button" class="btn_icon_box" onclick="exportToExcel()" title="Xuất Excel">
+          <img src="images/export.png">
+        </button>
+      </div>
+    </div>
+
+    <div class="table_wrapper">
+      <table class="user_table">
+        <thead>
+          <tr>
+            <th>ID</th> <th>Ảnh</th> 
+            <th>Tên công thức</th> <th>Tác giả</th>
+            <th>Độ khó</th> <th>Ngày đăng</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="table-recipes">
+          <tr><td colspan="7" style="text-align:center">Đang tải dữ liệu...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="pagination" id="pagination_block" style="display: none;">
+      <div class="page_info">
+        Đang hiển thị <span id="current_start">0</span> - <span id="current_end">0</span> 
+        trên tổng số <span id="total_items">0</span>
+      </div>
+      <div class="page_controls" id="pagination_controls">
+        </div>
+    </div>
+  </main>
+
+  <div class="modal_overlay" id="editModal">
+    <div class="modal_box modal_large"> 
+        <div class="modal_header">
+            <h3>Chi tiết công thức</h3>
+            <span class="close_btn" onclick="closeAllModals()">&times;</span>
+        </div>
+
+        <div class="modal_body recipe_body_grid">
+            <div class="col_left">
+                <div class="form_group">
+                    <label>Ảnh bìa món ăn</label>
+                    <div class="recipe_cover_upload readonly_cover">
+                        <img id="m_image" src="" alt="Cover" style="display:none;">
+                    </div>
+                </div>
+                <div class="form_group">
+                    <label>Tên món ăn</label>
+                    <input type="text" id="m_name" class="input_readonly">
+                </div>
+                <div class="form_group">
+                    <label>Mô tả ngắn</label>
+                    <textarea id="m_desc" rows="4" class="input_readonly"></textarea>
+                </div>
+                <div class="form_row_3">
+                    <div class="form_group">
+                        <label>Thời gian</label>
+                        <input type="text" id="m_time" class="input_readonly">
+                    </div>
+                    <div class="form_group">
+                        <label>Khẩu phần</label>
+                        <input type="text" id="m_servings" class="input_readonly">
+                    </div>
+                    <div class="form_group">
+                        <label>Độ khó</label>
+                        <input type="text" id="m_difficulty" class="input_readonly">
+                    </div>
+                </div>
+                <div class="form_group">
+                  <label>Danh mục</label>
+                  <div class="tag_manager" id="tag_manager_block">
+                      <div class="tag_summary" onclick="toggleTagDropdown()" id="tag_summary_box">
+                          <span class="placeholder_text">Chọn danh mục...</span>
+                          <svg class="dropdown_icon" id="tag_dropdown_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                      <div class="tag_dropdown" id="tag_dropdown_content">
+                          <div class="tag_search_box">
+                              <input type="text" id="tag_search_input" placeholder="Nhập từ khóa..." oninput="filterTags()">
+                          </div>
+                          <div class="tag_list_container" id="tag_checklist_container"></div>
+                      </div>
+                  </div>
+              </div>
+            </div> 
+
+            <div class="col_right">
+                <div class="section_title">Nguyên liệu</div>
+                <div class="ingredient_list" id="m_ingredients_list"></div>
+
+                <div class="section_title">Các bước thực hiện</div>
+                <div class="steps_list" id="m_steps_list"></div>
+
+                <div class="form_row" style="margin-top: 20px;">
+                    <div class="form_group" style="width: 100%;">
+                        <label>Tác giả</label>
+                        <div class="author_info">
+                            <img src="images/avatar.png" id="m_author_img">
+                            <span id="m_author_name">...</span>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div> <div class="modal_footer">
+            <button type="button" class="btn_soft_delete" onclick="openDeleteModal(currentDeleteId)" title="Xóa công thức này">
+                <img src="images/delete.png"> 
+            </button>
+            <div class="footer_right_group">
+                <button class="btn_cancel" onclick="closeAllModals()">Đóng</button>
+                <button class="btn_save_changes" onclick="handleSave()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="modal_overlay" id="successModal">
+    <div class="modal_box modal_center_content">
+        <div class="icon_circle green_circle"><img src="images/check.png" class="modal_main_icon"></div>
+        <h3>Thành công!</h3>
+        <button class="btn_save_changes full_width" onclick="closeAllModals()">Hoàn tất</button>
+    </div>
+  </div>
+
+  <div class="modal_overlay" id="deleteModal">
+    <div class="modal_box modal_center_content">
+        <div class="icon_circle red_circle"><img src="images/warning.png" class="modal_main_icon"></div>
+        <h3>Xóa công thức này?</h3>
+        <p class="modal_desc">
+            Hành động này sẽ xóa vĩnh viễn công thức khỏi Database<br>
+            và không thể hoàn tác.
+        </p>
+        <div class="modal_footer_center">
+            <button class="btn_cancel" onclick="closeAllModals()">Hủy bỏ</button>
+            <button class="btn_danger" onclick="confirmDeleteAction()">Xóa vĩnh viễn</button>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

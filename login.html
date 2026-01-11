@@ -5,107 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CookHub - Đăng nhập</title>
   <link rel="stylesheet" href="css/login.css">
+  
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  
+  <script src="js/login.js" defer></script>
+  <script src="js/config.js"></script>
 </head>
 
 <body>
 
-<!--Ảnh nền trang-->
     <div class="background">
-        <img src="images/login.jpg" alt="Ảnh nền mờ" class="bg_img">
+        <img src="images/login.jpg" class="bg_img">
     </div>
 
     <div class="back_btn">
-        <img src="images/back.png" alt="Quay lại" id="back_btn">
+        <a href="index.html"><img src="images/back.png" id="back_btn"></a>
     </div>
 
-<div class="login_container">
-<!--Form đăng nhập-->
-    <div class="login_form">
-        <div class="logo_title">
-            <img src="images/logo.png" alt="Logo" class="logo">
-            <h1>Đăng nhập</h1>
-        </div>
+    <div class="login_container">
+        <div class="login_form">
+            <div class="logo_title">
+                <img src="images/logo.png" alt="Logo" class="logo">
+                <h1>Đăng nhập</h1>
+            </div>
 
-        <label>Email</label>
-        <input type="email" placeholder="username@gmail.com">
+            <label>Email</label>
+            <input type="text" id="email" placeholder="Email" spellcheck="false"">
 
-        <label>Mật khẩu</label>
-        <div class="password_field">
-            <input type="password" placeholder="Password">
-        </div>
+            <label>Mật khẩu</label>
+            <div class="password_field">
+                <input type="password" id="password" placeholder="Password">
+                <img src="images/show.png" id="showPassword" class="show_password">
+            </div>
 
-        <a href="#" class="forgot_password">
-            Quên mật khẩu?
-        </a>
-
-        <button class="login_btn">
-            Đăng nhập
-        </button>
-
-        <p class="divider">
-            Hoặc đăng nhập bằng
-        </p>
-
-<!--Options đăng nhập khác-->
-        <div class="social_login">
-            <button class="google_btn">
-                <img src="images/google.png" alt="Google">
-                <span>Google</span>
-            </button>
-            <button class="facebook_btn">
-                <img src="images/facebook.png" alt="Facebook">
-                <span>Facebook</span>
+            <button class="login_btn" type="button" onclick="handleLogin()">
+                Đăng nhập
             </button>
         </div>
-
-        <p class="signup_text">
-            Chưa có tài khoản?
-            <a href="signup.html">
-            Đăng ký ngay
-            </a>
-        </p>
     </div>
-</div>
 
-<!--Chuyển về trang chủ-->
-<!--Đoạn script cũ không áp dụng effect khi ấn vào chữ "Đăng ký ngay" và "Đăng nhập ngay" nên phải làm lại script mới có sử dụng chatgpt-->
-<!--Script cũ đang  áp dụng cho trang index.html-->
-<script>
-    //Load hiệu ứng transition
-    window.addEventListener("load", () => 
-    {
-        document.body.classList.add("loaded");
-    });
-
-    //Hàm chuyển trang
-    function fadeTo(url) 
-    {
-        document.body.classList.remove("loaded");
-        setTimeout(() => (window.location.href = url), 600); //Set thời gian effect hiện đang là 600ms
-    }
-
-    // Gắn sự kiện cho các nút/link cần chuyển
-    document.addEventListener("click", (e) => 
-    {
-        //Kiểm tra xem click vào phần tử gì (đoạn này chatgpt)
-        const target = e.target.closest("a, button, img");
-        if (!target) return;
-        //Ưu tiên href của <a>, nếu là button thì mặc định về index.html (chatgpt)
-        const href =
-            target.getAttribute("href") ||
-            target.dataset.href ||
-            (target.id === "back_btn" ? "index.html" : null);
-        //Nếu href chuyển đến html thì chặn lại gọi effect fadeTo xong mới chuyển (trick lỏ)
-        if (href && href.endsWith(".html")) 
-        {
-            e.preventDefault();
-            fadeTo(href);
-        }
-    });
-</script>
-
-
-
-
+    <script>
+        window.addEventListener("load", () => {
+            document.body.classList.add("loaded");
+        });
+    </script>
 </body>
 </html>

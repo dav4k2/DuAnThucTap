@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt hệ thống</title>
+    
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/setting.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/setting.js" defer></script>
+</head>
+<body>
+    
+    <div id="navbar-placeholder"></div>
+
+    <main class="content">
+        <div class="page_header">
+            <h2>Cài đặt</h2>
+        </div>
+
+        <div class="settings_grid">
+            
+            <div class="card app_info_card">
+                <div class="form_row">
+                    <div class="form_group">
+                        <label>Tên ứng dụng</label>
+                        <input type="text" value="CookApp - Mạng xã hội nấu ăn" readonly>
+                    </div>
+                    <div class="form_group">
+                        <label>Email hỗ trợ</label>
+                        <input type="email" value="support@cookapp.com" readonly>
+                    </div>
+                </div>
+                <div class="form_group full_width">
+                    <label>Phiên bản hiện tại</label>
+                    <input type="text" value="v2.4.1 (Build 20241229)" readonly style="color: #666;">
+                </div>
+            </div>
+
+            <div class="card admin_card">
+                <h3>Tài khoản quản trị</h3>
+                <div class="admin_profile_row">
+                    <div class="admin_avatar"></div> 
+                    <div class="admin_details">
+                        <strong id="admin_name">Đang tải...</strong>
+                        <p id="admin_email">...</p>
+                    </div>
+                </div>
+                <button class="btn_outline" onclick="openPasswordModal()">Đổi mật khẩu</button>
+            </div>
+        </div>
+
+        <div class="modal_overlay" id="passwordModal">
+            <div class="modal_box">
+                <div class="modal_header">
+                    <h3>Đổi mật khẩu mới</h3>
+                    <span class="close_btn" onclick="closePasswordModal()">&times;</span>
+                </div>
+                <div class="modal_body">
+                    <div class="form_group">
+                        <label>Mật khẩu mới</label>
+                        <input type="password" id="new_password" placeholder="Tối thiểu 6 ký tự">
+                    </div>
+                    <div class="form_group">
+                        <label>Xác nhận mật khẩu</label>
+                        <input type="password" id="confirm_password" placeholder="Nhập lại mật khẩu mới">
+                    </div>
+                    <p id="pwd_error" class="error_msg"></p>
+                </div>
+                <div class="modal_footer">
+                    <button class="btn_cancel" onclick="closePasswordModal()">Hủy bỏ</button>
+                    <button class="btn_save" onclick="handleChangePassword()">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</body>
+</html>

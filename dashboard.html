@@ -3,411 +3,121 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Nhúng chart.js -->
   <title>Tổng quan</title>
+  
+  <link rel="stylesheet" href="css/navbar.css">
   <link rel="stylesheet" href="css/dashboard.css">
+  <script src="js/config.js"></script> <script src="js/navbar.js" defer></script> 
+  <script src="js/dashboard.js" defer></script>  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
 </head>
 <body>
 
-  <!-- navbar -->
-  <nav class="navbar">
-  
-  <!-- tên + welcome -->
-  <div class="profile">
-    <img src="images/avatar.png" alt="avatar" class="profile_avatar">
+  <div id="navbar-placeholder"></div>
 
-    <div class="profile_text">
-      <h4>Chào mừng quay lại</h4>
-      <h5>Admin</h5>
-    </div>
-  </div>
-    <!-- danh sách tab của navbar -->
-    <ul class="nav_main">
-      <li class="active"> <!-- mặc định là chọn trang tổng quát -->
-        <img src="images/search.png" alt="tongquat">
-        <span class="nav_text">Tổng quan</span>
-      </li>
-      <li>
-        <img src="images/qlnd.png" alt="qlnd">
-        <span class="nav_text">Quản lý người dùng</span>
-      </li>
-      <li>
-        <img src="images/qlct.png" alt="qlct">
-        <span class="nav_text">Quản lý công thức</span>
-      </li>
-      <li>
-        <img src="images/report.png" alt="report">
-        <span class="nav_text">Báo cáo & Phản hồi</span>
-        <span class="noti_nav_text">11</span> </li>
-      <li>
-        <img src="images/analysis.png" alt="analysis">
-        <span class="nav_text">Phân tích</span>
-      </li>
-    </ul>
-
-    <!-- phần tab phụ navbar -->
-    <ul class="nav_bottom">
-      <li>
-        <img src="images/bug.png" alt="bug">
-      </li>
-      <li>
-        <img src="images/setting.png" alt="setting">
-      </li>
-      <li>
-        <img src="images/exit.png" alt="exit">
-      </li>
-    </ul>
-  </nav>
-
-  <!-- phần thông tin và biểu đồ -->
   <main class="content">
-    <div class="content_wrapper"> <!-- nhóm toàn bộ nội dung -->
+    <div class="content-wrapper">
       
-      <!-- phần thông tin -->
       <section class="cards">
         <div class="card">
           <img src="images/user.png" alt="user">
-          <div class="card_text">
+          <div class="card-text">
             <p>Tổng số người dùng</p>
-            <strong>1,234</strong>
+            <strong id="total-users">Đang tải...</strong>
           </div>
         </div>
         <div class="card">
           <img src="images/recipe.png" alt="recipe">
-          <div class="card_text">
+          <div class="card-text">
             <p>Tổng số công thức</p>
-            <strong>567</strong>
-          </div>
-        </div>
-        <div class="card">
-          <img src="images/fav.png" alt="fav">
-          <div class="card_text">
-            <p>Tổng số lượt thích</p>
-            <strong>3,240</strong>
-          </div>
-        </div>
-        <div class="card">
-          <img src="images/report_2.png" alt="report_2">
-          <div class="card_text">
-            <p>Tổng số báo cáo</p>
-            <strong>12</strong>
+            <strong id="total-recipes">Đang tải...</strong>
           </div>
         </div>
       </section>
 
-      <!-- phần biểu đồ -->
       <section class="charts">
-          <div class="chart_container"> <!-- biểu đồ tròn -->
+          <div class="chart-container">
             <h4>Phân loại công thức</h4>
-            <canvas id="pieChart"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="pieChart"></canvas>
+            </div>
           </div>
-          <div class="chart_container"> <!-- biểu đồ cột ngang -->
-            <h4>Công thức hàng đầu</h4>
-            <canvas id="barChart"></canvas>
+          <div class="chart-container">
+            <h4>Công thức nổi bật</h4>
+            <div class="chart-wrapper">
+                <canvas id="barChart"></canvas>
+            </div>
           </div>
-          <div class="chart_container"> <!-- biểu đồ đường -->
-            <h4>Người dùng mới trong tháng</h4>
-            <canvas id="lineChart"></canvas>
+          <div class="chart-container">
+            <h4>Số người dùng theo tháng</h4>
+            <div class="chart-wrapper">
+                <canvas id="lineChart"></canvas>
+            </div>
           </div>
-        </section>
+      </section>
 
-      <!-- phần bảng và thống kê -->
-      <section class="bottom_row"> <!-- chia phần bảng và thống kê -->
+<section class="bottom-row">
         
-        <!-- phần bảng user -->
-        <div class="main_tables">
-          <div class="table_container">
-            <div class="table_header">
-              <h4>Người dùng</h4> <hr> <div class="search_box">
-                <div class="input_group">
-                  <label for="search_user">Tên hoặc ID</label>
-                  <input type="text" id="search_user">
-                </div>
-                <button>Lọc</button>
-              </div>
+        <div class="main-tables">
+          
+          <div class="table-container">
+            <div class="table-header"><h4>Người dùng mới trong tháng</h4></div>
+            <div class="table-scroll"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Tên</th>
+                      <th>Email</th>
+                      <th>Ngày tham gia</th>
+                    </tr>
+                  </thead>
+                  <tbody id="new-users-table">
+                    <tr><td colspan="4" style="text-align:center">Đang tải...</td></tr>
+                  </tbody>
+                </table>
             </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Tên người dùng</th>
-                  <th>Email</th>
-                  <th>Trạng thái</th>
-                  <th>Ngày tham gia</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>John Doe</td>
-                  <td>john@email.com</td>
-                  <td><span class="status_active">Đang hoạt động</span></td>
-                  <td>26/05/2025</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jane Smith</td>
-                  <td>jane@email.com</td>
-                  <td><span class="status_active">Đang hoạt động</span></td>
-                  <td>29/05/2025</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Kong Fuong</td>
-                  <td>kongfuong@email.com</td>
-                  <td><span class="status_active">Đang hoạt động</span></td>
-                  <td>11/07/2025</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>Gordon Jamsay</td>
-                  <td>gordonramsay@email.com</td>
-                  <td><span class="status_active">Đang hoạt động</span></td>
-                  <td>23/09/2025</td>
-                </tr>
-                <tr>
-                  <td>5</td>
-                  <td>Cr7Liem</td>
-                  <td>cr7liem@email.com</td>
-                  <td><span class="status_banned">Bị cấm</span></td>
-                  <td>22/09/2025</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
 
-          <!-- phần bảng food -->
-          <div class="table_container">
-            <div class="table_header">
-              <h4>Công thức</h4> <hr> <div class="search_box">
-                <div class="input_group">
-                  <label for="search_recipe">Tên hoặc ID</label>
-                  <input type="text" id="search_recipe">
-                </div>
-                <button>Lọc</button>
-              </div>
+          <div class="table-container">
+            <div class="table-header"><h4>Công thức mới trong tháng</h4></div>
+            <div class="table-scroll"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Tên công thức</th>
+                      <th>Tác giả</th>
+                      <th>Ngày đăng</th>
+                    </tr>
+                  </thead>
+                  <tbody id="new-recipes-table">
+                    <tr><td colspan="4" style="text-align:center">Đang tải...</td></tr>
+                  </tbody>
+                </table>
             </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Tên công thức</th>
-                  <th>Tác giả</th>
-                  <th>Trạng thái</th>
-                  <th>Ngày đăng</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Phở tái</td>
-                  <td>Gordon Ramsay</td>
-                  <td><span class="status_active">Đã đăng</span></td>
-                  <td>26/09/2025</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Mỳ Ý sốt Bolognes</td>
-                  <td>Jane Smith</td>
-                  <td><span class="status_active">Đã đăng</span></td>
-                  <td>29/05/2025</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Gà rán KFC</td>
-                  <td>Kong Fuong</td>
-                  <td><span class="status_active">Đã đăng</span></td>
-                  <td>12/07/2025</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>Pizza Phô</td>
-                  <td>Gordon Ramsay</td>
-                  <td><span class="status_banned">Bị xóa</span></td>
-                  <td>24/09/2025</td>
-                </tr>
-                <tr>
-                  <td>5</td>
-                  <td>Rau muống luộc</td>
-                  <td>John Doe</td>
-                  <td><span class="status_pending">Chờ duyệt</span></td>
-                  <td>23/09/2025</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
 
-        <!-- phần thống kê -->
         <aside class="info">
-          <h4>Thông tin tổng quát</h4>
+          <h4>Tăng trưởng tháng này</h4>
           <ul>
             <li>
-              <span>Số người đăng ký trong tháng</span>
-              <strong class="positive">+100</strong>
+              <div class="info-item">
+                  <span class="label">Người dùng mới</span>
+                  <strong class="positive" id="new-users-month">...</strong>
+              </div>
             </li>
             <li>
-              <span>Đang truy cập</span>
-              <strong>245</strong>
-            </li>
-            <li>
-              <span>Công thức chờ duyệt</span>
-              <strong>36</strong>
-            </li>
-            <li>
-              <span>Tổng số báo cáo trong tháng</span>
-              <strong>3</strong>
-            </li>
-            <li>
-              <span>Tổng số bug trong tháng</span>
-              <strong>2</strong>
-            </li>
-            <li>
-              <span>Tổng lượt truy cập</span>
-              <strong>315.245</strong>
-            </li>
-            <li>
-              <span>Tổng lượt truy cập trong tháng</span>
-              <strong class="negative">50.023</strong>
-            </li>
-            <li>
-              <span>Tổng lượt truy cập tháng trước</span>
-              <strong>52.023</strong>
+              <div class="info-item">
+                  <span class="label">Công thức mới</span>
+                  <strong class="positive" id="new-recipes-month">...</strong>
+              </div>
             </li>
           </ul>
         </aside>
       </section>
   </div>
   </main>
-  
-<script> // script chart.js
-
-    window.addEventListener('load', () => {
-
-      // biểu đồ tròn
-      const pieCtx = document.getElementById('pieChart').getContext('2d');
-      new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-          labels: ['Món mặn', 'Món chay', 'Khác'],
-          datasets: [{
-            data: [55, 30, 15], 
-            backgroundColor: [
-              '#2a7be2',
-              '#43a047', 
-              '#fdd835'
-            ],
-            borderWidth: 0,
-            hoverOffset: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom', 
-              labels: {
-                usePointStyle: true,
-                padding: 20
-              }
-            }
-          }
-        }
-      });
-
-      // biểu đồ cột ngang
-      const barCtx = document.getElementById('barChart').getContext('2d');
-      new Chart(barCtx, {
-        type: 'bar',
-        data: {
-          labels: ['Phở tái', 'Pizza dứa', 'Mỳ Ý sốt...','Sườn xà...', 'Khoai tây...', 'Ức gà c...', 'Bánh mỳ...','Bò xào h...', 'Gà rán K...', 'Cơm rang...'],
-          datasets: [{
-            data: [150, 145, 144, 120, 100, 80, 70, 50, 40, 20],
-            backgroundColor: '#2a7be2', 
-            borderRadius: 4,
-          }]
-        },
-        options: {
-          aspectRatio: 1,
-          indexAxis: 'y', 
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            x: {
-              beginAtZero: true,
-              max: 150
-            }
-          }
-        }
-      });
-
-      // biểu đồ đường
-      const lineCtx = document.getElementById('lineChart').getContext('2d');
-      new Chart(lineCtx, {
-        type: 'line',
-        data: {
-          labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
-          datasets: [{
-            data: [60, 82, 85, 91, 88, 98],
-            borderColor: '#ef5350',
-            fill: false, 
-            tension: 0.1,
-            pointRadius: 5, 
-            pointBackgroundColor: '#ef5350',
-            pointBorderColor: '#fff', 
-            pointBorderWidth: 2,
-            pointHoverRadius: 7
-          }]
-        },
-        options: {
-          aspectRatio: 1,
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 100,
-              title: {
-                display: true,
-                text: 'Người'
-              }
-            }
-          }
-        }
-      });
-      
-      // script chọn tab trong navbar
-      const menuItems = document.querySelectorAll('.nav_main li');
-
-      // sự kiện click vào từng tab trong navbar
-      menuItems.forEach(item => {
-        item.addEventListener('click', function() {
-          
-          // tìm mục đang active
-          const currentActive = document.querySelector('.nav_main li.active');
-          
-          // xóa class hiện tại đang active
-          if (currentActive) {
-            currentActive.classList.remove('active');
-          }
-
-          // đánh dấu active vào tab mới vừa click
-          this.classList.add('active');
-        });
-      });
-
-    });
-
-
-  </script>
-
-  </body>
+</body>
 </html>
