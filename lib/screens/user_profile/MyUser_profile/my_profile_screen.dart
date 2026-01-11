@@ -160,7 +160,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
-            expandedHeight: 480.h,
+            expandedHeight: 500.h,
             floating: false,
             pinned: true,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,

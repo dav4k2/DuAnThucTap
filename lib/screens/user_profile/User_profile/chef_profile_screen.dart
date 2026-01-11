@@ -127,7 +127,7 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
                         ),
                         recipesAsync.when(
                           data: (recipes) => StatsSection(
-                            userId: user.id,          // Truyền ID của User B
+                            userId: user.id,
                           ),
                           loading: () => StatsSection(userId: user.id),
                           error: (_, __) => StatsSection(userId: user.id),
