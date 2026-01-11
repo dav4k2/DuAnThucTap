@@ -47,7 +47,11 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
     if (error == null) {
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/authgate', (route) => false);
+        // SỬA: Dùng MaterialPageRoute thay vì pushNamed để tránh lỗi route
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const AuthGate()),
+              (route) => false,
+        );
       }
     } else {
       ref.read(authProvider.notifier).setError(error);
