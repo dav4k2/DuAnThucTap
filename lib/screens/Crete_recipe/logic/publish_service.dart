@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../notification/logic/notification_service.dart';
 import 'publish_recipe.dart';
 import '../../../Service/recipe_service.dart';
 
@@ -7,6 +8,8 @@ class PublishService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final RecipeService _recipeService = RecipeService();
+
+  final NotificationService _notificationService = NotificationService();
 
   Stream<List<PublishRecipe>> getRecipesByUser(String userId) {
     return _firestore
@@ -44,6 +47,13 @@ class PublishService {
           .collection('published_recipes')
           .doc(recipe.id)
           .set(data);
+
+      _notificationService.sendRecipeNotification(
+        recipeId: recipe.id,
+        recipeTitle: recipe.title,
+      ).then((_) {
+        print("Tiến trình gửi thông báo hoàn tất");
+      });
 
       return true;
     } catch (e) {
@@ -236,6 +246,50 @@ class PublishService {
     } catch (e) {
       print("Transaction error: $e");
       rethrow; // Đẩy lỗi ra ngoài để UI nhận diện và hiện SnackBar
+    }
+
+    await _updateChefOverallRating(authorId);
+  }
+
+  Future<void> _updateChefOverallRating(String authorId) async {
+    try {
+      // 1. Lấy tất cả công thức của tác giả này
+      QuerySnapshot recipeSnapshot = await _firestore
+          .collection('recipes') // Hoặc collection chứa bài đăng của bạn
+          .where('authorId', isEqualTo: authorId)
+          .get();
+
+      if (recipeSnapshot.docs.isEmpty) return;
+
+      double totalRatingSum = 0.0;
+      int count = 0;
+
+      // 2. Tính tổng điểm trung bình của tất cả các công thức
+      for (var doc in recipeSnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        // Lấy averageRating của từng công thức
+        double rRating = (data['averageRating'] ?? 0.0).toDouble();
+
+        // Chỉ tính các công thức đã có đánh giá
+        if (rRating > 0) {
+          totalRatingSum += rRating;
+          count++;
+        }
+      }
+
+      // 3. Tính điểm trung bình mới cho Chef
+      double newChefRating = count > 0 ? totalRatingSum / count : 0.0;
+
+      // 4. Cập nhật vào User Document
+      await _firestore.collection('users').doc(authorId).update({
+        'average_rating': newChefRating,
+        'total_recipes': recipeSnapshot.docs.length, // Cập nhật số lượng bài nếu cần
+      });
+
+      print("Đã cập nhật điểm Chef: $newChefRating");
+
+    } catch (e) {
+      print("Lỗi khi cập nhật điểm Chef: $e");
     }
   }
 

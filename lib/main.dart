@@ -1,5 +1,11 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,21 +28,29 @@ import 'package:fontend/theme/theme_provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  // Đảm bảo Flutter binding đã sẵn sàng
+  //Đảm bảo Flutter binding đã sẵn sàng
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 1. Khởi tạo Ngôn ngữ (Easy Localization)
+  //Khởi tạo Ngôn ngữ (Easy Localization)
   await EasyLocalization.ensureInitialized();
 
-  // 2. Khởi tạo Firebase
+  //Khởi tạo Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 3. Khởi tạo Biến môi trường (.env)
+  //Khởi tạo Biến môi trường (.env)
   await dotenv.load(fileName: ".env");
 
-  // 4. Khởi tạo Cooking Timer Service (Tính năng đếm ngược chạy ngầm)
+  //Khởi tạo Cooking Timer Service (Tính năng đếm ngược chạy ngầm)
   final timerService = CookingTimerService();
   await timerService.initialize();
+
+  // if (kDebugMode) {
+  //   String host = Platform.isAndroid ? '10.0.2.2' : 'localhost';
+  //   await FirebaseAuth.instance.useAuthEmulator(host, 9099);
+  //   FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
+  //   FirebaseDatabase.instance.useDatabaseEmulator(host, 9000);
+  //   print('--- Đã kết nối với Firebase Emulator Suite ---');
+  // }
 
   runApp(
     EasyLocalization(

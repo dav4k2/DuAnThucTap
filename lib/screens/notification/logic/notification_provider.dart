@@ -1,114 +1,113 @@
+// file: lib/screens/notification/logic/notification_provider.dart
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// --- ENUM ---
+enum IconType { recipe, follow, comment, achievement }
+
+// --- MODEL ---
 class NotificationModel {
+  final String id;
   final String message;
-  final String time;
+  final DateTime createdAt;
   final bool isRead;
   final IconType iconType;
+  final String? recipeId; // Thêm trường này để biết navigate đi đâu
 
   NotificationModel({
+    required this.id,
     required this.message,
-    required this.time,
+    required this.createdAt,
     required this.iconType,
-    this.isRead = false, // Mặc định là chưa đọc
+    required this.isRead,
+    this.recipeId,
   });
 
-  NotificationModel copyWith({
-    String? message,
-    String? time,
-    bool? isRead,
-    IconType? iconType,
-  }) {
+  // Hàm helper để convert thời gian sang String "1h", "30m"
+  String get timeDisplay {
+    final diff = DateTime.now().difference(createdAt);
+    if (diff.inDays > 0) return "${diff.inDays}d";
+    if (diff.inHours > 0) return "${diff.inHours}h";
+    if (diff.inMinutes > 0) return "${diff.inMinutes}m";
+    return "Vừa xong";
+  }
+
+  factory NotificationModel.fromSnapshot(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    // Mapping string type từ DB sang Enum
+    IconType type = IconType.achievement;
+    if (data['type'] == 'recipe') type = IconType.recipe;
+    if (data['type'] == 'follow') type = IconType.follow;
+    if (data['type'] == 'comment') type = IconType.comment;
+
+    Timestamp timestamp = data['createdAt'] ?? Timestamp.now();
+
     return NotificationModel(
-      message: message ?? this.message,
-      time: time ?? this.time,
-      iconType: iconType ?? this.iconType,
-      isRead: isRead ?? this.isRead,
+      id: doc.id,
+      message: data['message'] ?? '',
+      createdAt: timestamp.toDate(),
+      isRead: data['isRead'] ?? false,
+      iconType: type,
+      recipeId: data['recipeId'],
     );
   }
 }
 
-enum IconType {
-  recipe,
-  follow,
-  comment,
-  achievement,
-}
+// --- PROVIDER (Stream) ---
+// Provider này sẽ tự động lắng nghe real-time từ Firestore
 
-final notificationProvider =
-StateNotifierProvider<NotificationController, List<NotificationModel>>((ref) {
-  return NotificationController();
+final notificationStreamProvider = StreamProvider.autoDispose<List<NotificationModel>>((ref) {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return Stream.value([]);
+
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .collection('notifications')
+      .orderBy('createdAt', descending: true) // Mới nhất lên đầu
+      .snapshots()
+      .map((snapshot) {
+    return snapshot.docs.map((doc) => NotificationModel.fromSnapshot(doc)).toList();
+  });
 });
 
-class NotificationController extends StateNotifier<List<NotificationModel>> {
-  NotificationController()
-      : super([
-    NotificationModel(
-      message: "Mr.Dean đã thêm công thức mới",
-      time: "1h",
-      iconType: IconType.recipe,
-      isRead: true, // Đã đọc - nền trắng
-    ),
-    NotificationModel(
-      message: "Soobin đã theo dõi bạn",
-      time: "30m",
-      iconType: IconType.follow,
-      isRead: false, // Chưa đọc - nền xám
-    ),
-  ]);
+// Logic đánh dấu đã đọc
+class NotificationController {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void markAllRead() {
-    state = [
-      for (final n in state) n.copyWith(isRead: true)
-    ];
+  Future<void> markAsRead(String notificationId) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('notifications')
+        .doc(notificationId)
+        .update({'isRead': true});
   }
 
-  void markAsRead(int index) {
-    state = [
-      for (var i = 0; i < state.length; i++)
-        if (i == index) state[i].copyWith(isRead: true) else state[i]
-    ];
-  }
-}
+  Future<void> markAllAsRead() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
 
-final notificationProviderYesterday =
-StateNotifierProvider<NotificationControllerYesterday, List<NotificationModel>>((ref) {
-  return NotificationControllerYesterday();
-});
+    // Lưu ý: Batch update nếu số lượng lớn, demo thì loop đơn giản
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('notifications')
+        .where('isRead', isEqualTo: false)
+        .get();
 
-class NotificationControllerYesterday extends StateNotifier<List<NotificationModel>> {
-  NotificationControllerYesterday()
-      : super([
-    NotificationModel(
-      message: "Mr.Dean đã thêm công thức mới",
-      time: "1d",
-      iconType: IconType.recipe,
-      isRead: true, // Đã đọc
-    ),
-    NotificationModel(
-      message: "Gordon Ramsay đã nhắc đến bạn trong một bình luận",
-      time: "1d",
-      iconType: IconType.comment,
-      isRead: true, // Đã đọc
-    ),
-    NotificationModel(
-      message: "Công thức của bạn đã lọt vào top 10 công thức nổi bật nhất",
-      time: "1d",
-      iconType: IconType.achievement,
-      isRead: true, // Đã đọc
-    ),
-  ]);
-
-  void markAllRead() {
-    state = [
-      for (final n in state) n.copyWith(isRead: true)
-    ];
-  }
-
-  void markAsRead(int index) {
-    state = [
-      for (var i = 0; i < state.length; i++)
-        if (i == index) state[i].copyWith(isRead: true) else state[i]
-    ];
+    WriteBatch batch = _firestore.batch();
+    for (var doc in snapshot.docs) {
+      batch.update(doc.reference, {'isRead': true});
+    }
+    await batch.commit();
   }
 }
+
+final notificationControllerProvider = Provider((ref) => NotificationController());

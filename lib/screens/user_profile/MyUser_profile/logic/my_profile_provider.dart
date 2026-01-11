@@ -1,6 +1,9 @@
 // lib/providers/my_chef_provider.dart
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../Crete_recipe/logic/publish_service.dart';
 import '../../../survey/logic/survey_provider.dart'; // sửa lại đúng đường dẫn nếu khác
 
 // ====================== ENUM & MODEL (GIỮ NGUYÊN) ======================
@@ -9,6 +12,8 @@ enum MealTab { tatCa, buaSang, buaTrua, anVat }
 enum ReviewFilter { newest, oldest, all }
 
 class Recipe {
+  final String? id;
+  final String? authorId;
   final String title;
   final String time;
   final String difficulty;
@@ -19,6 +24,8 @@ class Recipe {
   final String imageAsset;
 
   Recipe({
+    this.id,
+    this.authorId,
     required this.title,
     required this.time,
     required this.difficulty,
@@ -28,6 +35,37 @@ class Recipe {
     required this.meal,
     required this.imageAsset,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'authorId': authorId,
+      'title': title,
+      'time': time,
+      'difficulty': difficulty,
+      'author': author,
+      'rating': rating,
+      'reviews': reviews,
+      'meal': meal.index, // Lưu dạng số nguyên
+      'imageAsset': imageAsset,
+      'savedAt': FieldValue.serverTimestamp(),
+    };
+  }
+
+  factory Recipe.fromFirestore(Map<String, dynamic> data) {
+    return Recipe(
+      id: data['id'],
+      authorId: data['authorId'],
+      title: data['title'] ?? '',
+      time: data['time'] ?? '',
+      difficulty: data['difficulty'] ?? '',
+      author: data['author'] ?? '',
+      rating: (data['rating'] ?? 0.0).toDouble(),
+      reviews: data['reviews'] ?? 0,
+      meal: MealTab.values[data['meal'] ?? 0],
+      imageAsset: data['imageAsset'] ?? '',
+    );
+  }
 }
 
 class Review {
@@ -85,6 +123,8 @@ class MyChef {
     required this.headerImage,
   });
 }
+
+
 
 // ====================== PROVIDERS ======================
 final myProfileTabProvider = StateProvider<ProfileTab>((_) => ProfileTab.congThuc);
@@ -200,4 +240,96 @@ final myPendingRecipesProvider = Provider<List<Recipe>>((ref) {
 
   // Hiện tại dùng dữ liệu mẫu
   return pendingRecipesSample;
+});
+
+// ====================== LOGIC LƯU CÔNG THỨC (MỚI) ======================
+
+class SavedRecipesNotifier extends StateNotifier<List<Recipe>> {
+  SavedRecipesNotifier() : super([]) {
+    _loadFromFirestore(); // Tự động tải khi khởi tạo
+  }
+
+  // 1. Hàm tải dữ liệu từ Firestore khi mở App
+  Future<void> _loadFromFirestore() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('saved_recipes')
+          .orderBy('savedAt', descending: true) // Sắp xếp mới nhất
+          .get();
+
+      final recipes = snapshot.docs.map((doc) {
+        return Recipe.fromFirestore(doc.data());
+      }).toList();
+
+      state = recipes;
+    } catch (e) {
+      print("Lỗi tải danh sách đã lưu: $e");
+    }
+  }
+
+  // 2. Hàm Lưu / Bỏ lưu
+  Future<void> toggleSave(Recipe recipe) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // Nếu recipe chưa có ID (trường hợp lỗi), dùng title làm ID tạm hoặc return
+    final recipeId = recipe.id ?? recipe.title;
+
+    final isExist = state.any((element) => element.id == recipeId || element.title == recipe.title);
+    final collectionRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('saved_recipes');
+
+    if (isExist) {
+      // --- XÓA KHỎI LIST VÀ FIRESTORE ---
+      // Cập nhật UI ngay lập tức (Optimistic UI)
+      state = state.where((element) => element.id != recipeId && element.title != recipe.title).toList();
+
+      // Xóa trong DB
+      try {
+        // Tìm doc có id trùng (để chắc chắn)
+        final query = await collectionRef.where('title', isEqualTo: recipe.title).get();
+        for (var doc in query.docs) {
+          await doc.reference.delete();
+        }
+      } catch (e) {
+        print("Lỗi xóa: $e");
+        _loadFromFirestore(); // Revert nếu lỗi
+      }
+
+    } else {
+      // --- THÊM VÀO LIST VÀ FIRESTORE ---
+      state = [recipe, ...state];
+
+      try {
+        // Lưu vào DB (Lấy ID của recipe làm ID của document luôn cho dễ quản lý)
+        if (recipe.id != null && recipe.id!.isNotEmpty) {
+          await collectionRef.doc(recipe.id).set(recipe.toMap());
+        } else {
+          await collectionRef.add(recipe.toMap());
+        }
+      } catch (e) {
+        print("Lỗi lưu: $e");
+        _loadFromFirestore(); // Revert nếu lỗi
+      }
+    }
+  }
+}
+
+//Đếm số công thức
+final recipeCountProvider = StreamProvider.family<int, String>((ref, userId) {
+  final publishService = PublishService();
+
+  return publishService.getRecipesByUser(userId).map((recipes) => recipes.length);
+});
+
+// Provider cung cấp danh sách đã lưu
+final savedRecipesProvider = StateNotifierProvider<SavedRecipesNotifier, List<Recipe>>((ref) {
+  return SavedRecipesNotifier();
 });

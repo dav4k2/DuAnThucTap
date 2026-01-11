@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 class NotificationHeader extends StatelessWidget {
+  final int unreadCount;
+
   const NotificationHeader({
     super.key,
-    required this.onMarkRead,
+    required this.onMarkRead, required this.unreadCount,
   });
 
   final VoidCallback onMarkRead;
@@ -66,7 +68,7 @@ class NotificationHeader extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: Text(
-                      'Mới 1',
+                      'Mới $unreadCount',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: textAndIconColor,

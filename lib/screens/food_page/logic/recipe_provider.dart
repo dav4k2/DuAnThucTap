@@ -12,8 +12,5 @@ final featuredRecipesProvider = StreamProvider<List<PublishRecipe>>((ref) {
   final service = PublishService();
   final favoriteTags = ref.watch(surveyProvider).favoriteCategories;
 
-  return service.getRecipesByTags(favoriteTags).handleError((error) {
-    // In lỗi chi tiết ra console
-    print("❌ Lỗi Firestore (featuredRecipesProvider): $error");
-  });
+  return service.getRecipesByTags(favoriteTags).handleError((error) {});
 });

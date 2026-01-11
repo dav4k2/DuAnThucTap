@@ -28,8 +28,7 @@ class _MyProfileTabsState extends ConsumerState<MyProfileTabs> {
   final List<_TabItem> _tabs = [
     _TabItem(ProfileTab.congThuc, 'Công thức'.tr()),
     _TabItem(ProfileTab.tieuSu, 'Tiểu sử'.tr()),
-    _TabItem(ProfileTab.anh, 'Chờ duyệt'.tr()),
-    _TabItem(ProfileTab.danhGia, 'Đánh giá'.tr()),
+    _TabItem(ProfileTab.anh, 'Yêu thích'.tr()),
   ];
 
   @override

@@ -1,18 +1,23 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // 1. Import Riverpod
 import '../../Crete_recipe/logic/publish_recipe.dart';
+import '../../user_profile/MyUser_profile/logic/my_profile_provider.dart';
+// 2. Import file chứa provider và Recipe model
 
-class HeaderSection extends StatefulWidget {
+class HeaderSection extends ConsumerStatefulWidget {
   final PublishRecipe recipe;
   const HeaderSection({super.key, required this.recipe});
 
   @override
-  State<HeaderSection> createState() => _HeaderSectionState();
+  ConsumerState<HeaderSection> createState() => _HeaderSectionState();
 }
 
-class _HeaderSectionState extends State<HeaderSection> {
-  bool isFavorite = false;
+class _HeaderSectionState extends ConsumerState<HeaderSection> {
+  // bool isFavorite = false; -> Bỏ biến cục bộ này đi
   bool showMenu = false;
 
   @override
@@ -20,15 +25,21 @@ class _HeaderSectionState extends State<HeaderSection> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    // 4. Lấy trạng thái từ Provider: Kiểm tra món này đã được tim chưa?
+    final savedListNotifier = ref.read(savedRecipesProvider.notifier);
+    final savedList = ref.watch(savedRecipesProvider);
+
+    // Kiểm tra dựa trên title (hoặc ID nếu có)
+    bool isFavorite = savedList.any((r) => r.title == widget.recipe.title);
+
     const double headerHeight = 400;
 
-    // Màu sắc theo theme (chỉ thay đổi phần dark mode, giữ nguyên logic)
+    // ... (Giữ nguyên phần khai báo màu sắc)
     final overlayBgColor = isDark ? Colors.black.withOpacity(0.4) : Colors.black.withOpacity(0.25);
     final menuBackgroundColor = isDark ? Colors.grey[850]! : Colors.white;
     final menuTextColor = isDark ? Colors.white : Colors.black87;
     final menuDeleteColor = Colors.red;
     final bottomCurveColor = isDark ? Colors.grey[900]! : Colors.white;
-
 
     return SizedBox(
       height: headerHeight,
@@ -36,7 +47,7 @@ class _HeaderSectionState extends State<HeaderSection> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 1. Ảnh nền
+          // 1. Ảnh nền (Giữ nguyên)
           Positioned.fill(
             child: Image.network(
               widget.recipe.images.isNotEmpty ? widget.recipe.images.first : '',
@@ -46,28 +57,20 @@ class _HeaderSectionState extends State<HeaderSection> {
             ),
           ),
 
-          // 2. Lớp màu trắng tạo độ bo góc ở đáy ảnh → chuyển theo theme
+          // 2. Lớp bo góc (Giữ nguyên)
           Positioned(
-            left: 0,
-            right: 0,
-            bottom: -1,
-            height: 40,
+            left: 0, right: 0, bottom: -1, height: 40,
             child: Container(
               decoration: BoxDecoration(
                 color: bottomCurveColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(35),
-                  topRight: Radius.circular(35),
-                ),
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(35), topRight: Radius.circular(35)),
               ),
             ),
           ),
 
           // 3. Thanh điều hướng
           Positioned(
-            top: 50,
-            left: 16,
-            right: 16,
+            top: 50, left: 16, right: 16,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -79,11 +82,61 @@ class _HeaderSectionState extends State<HeaderSection> {
                 ),
                 Row(
                   children: [
+                    // --- NÚT TIM (ĐÃ SỬA) ---
                     _iconButton(
                       icon: isFavorite ? Icons.favorite : Icons.favorite_border,
                       backgroundColor: isFavorite ? Colors.red : overlayBgColor,
                       iconColor: Colors.white,
-                      onTap: () => setState(() => isFavorite = !isFavorite),
+                      onTap: () async { // 1. Thêm từ khóa async
+                        String authorName = "Đầu bếp ẩn danh"; // Tên mặc định
+                        final authorId = widget.recipe.authorId;
+                        final currentUser = FirebaseAuth.instance.currentUser;
+
+                        // 2. Logic xác định tên tác giả
+                        if (authorId != null) {
+                          if (currentUser != null && authorId == currentUser.uid) {
+                            // Nếu tác giả là chính mình
+                            authorName = currentUser.displayName ?? "Tôi";
+                          } else {
+                            // Nếu là người khác -> Lấy từ Firestore
+                            try {
+                              final doc = await FirebaseFirestore.instance
+                                  .collection('users') // Đảm bảo collection user của bạn tên là 'users'
+                                  .doc(authorId)
+                                  .get();
+
+                              if (doc.exists) {
+                                // Lấy trường tên hiển thị (thường là displayName, name hoặc fullName)
+                                authorName = doc.data()?['displayName'] ?? "Người dùng";
+                              }
+                            } catch (e) {
+                              print("Lỗi lấy tên tác giả: $e");
+                            }
+                          }
+                        }
+
+                        // 3. Tạo object Recipe với tên tác giả vừa lấy được
+                        final recipeToSave = Recipe(
+                          id: widget.recipe.id,
+                          title: widget.recipe.title,
+                          time: widget.recipe.cookingTime ?? "30 phút",
+                          difficulty: widget.recipe.difficulty ?? "Dễ",
+
+                          author: authorName, // <-- ĐÃ CẬP NHẬT TÊN TÁC GIẢ Ở ĐÂY
+
+                          rating: widget.recipe.averageRating,
+                          reviews: widget.recipe.totalRatings,
+                          meal: MealTab.tatCa,
+                          imageAsset: widget.recipe.images.isNotEmpty
+                              ? widget.recipe.images.first
+                              : "image/placeholder.png",
+                        );
+
+                        // 4. Lưu vào Provider
+                        if (mounted) { // Kiểm tra mounted vì hàm là async
+                          ref.read(savedRecipesProvider.notifier).toggleSave(recipeToSave);
+                        }
+                      },
                     ),
                     const SizedBox(width: 12),
                     _iconButton(
@@ -98,7 +151,7 @@ class _HeaderSectionState extends State<HeaderSection> {
             ),
           ),
 
-          // 4. Overlay tắt menu khi bấm ngoài
+          // ... (Giữ nguyên phần Menu Dropdown và Overlay)
           if (showMenu)
             Positioned.fill(
               child: GestureDetector(
@@ -107,7 +160,6 @@ class _HeaderSectionState extends State<HeaderSection> {
               ),
             ),
 
-          // 5. Menu dropdown
           if (showMenu)
             Positioned(
               top: 100,

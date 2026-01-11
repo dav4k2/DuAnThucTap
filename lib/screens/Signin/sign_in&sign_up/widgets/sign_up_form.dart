@@ -35,7 +35,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
 
     // 1. Validate dữ liệu nhập
     final validationError = notifier.validateSignup(
-      _usernameController.text,
+      "Người dùng mới",
       _emailController.text,
       _passwordController.text,
       _confirmController.text,
@@ -53,7 +53,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     final result = await service.signUp(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
-      fullName: _usernameController.text.trim(),
+      fullName: "",
     );
 
     setState(() => _isLoading = false);
@@ -103,6 +103,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         /// Email
         Center(
           child: InputField(
+            key: const Key('field_email'),
             hintText: "Email",
             controller: _emailController,
             width: inputWidth,
@@ -116,6 +117,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         /// Mật khẩu
         Center(
           child: InputField(
+            key: const Key('field_password'),
             hintText: "Mật khẩu",
             controller: _passwordController,
             obscure: !state.showPassword,
@@ -138,6 +140,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         /// Nhập lại mật khẩu
         Center(
           child: InputField(
+            key: const Key('field_confirm'),
             hintText: "Nhập lại mật khẩu",
             controller: _confirmController,
             obscure: !state.showConfirmPassword,
@@ -161,6 +164,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         Padding(
           padding: EdgeInsets.only(left: 0.01.sw),
           child: TermsCheckbox(
+            key: const Key('checkbox_terms'),
             isChecked: state.agreeTerms,
             onChanged: (_) => ref.read(authProvider.notifier).toggleTerms(),
             textColor: textColor,
@@ -184,6 +188,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         /// Nút đăng ký
         Center(
           child: GestureDetector(
+            key: const Key('btn_register'),
             onTap: _isLoading ? null : _signUp,
             child: PrimaryButton(
               text: _isLoading ? "Đang xử lý..." : "Đăng ký",

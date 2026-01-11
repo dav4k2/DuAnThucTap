@@ -12,6 +12,8 @@ class UserModel {
   final List<String> interestedCategories;
   final bool isProfileCompleted;
   final DateTime? createdAt;
+  final double averageRating;
+  final int totalRecipes;
 
   UserModel({
     required this.id,
@@ -25,6 +27,8 @@ class UserModel {
     this.interestedCategories = const [],
     required this.isProfileCompleted,
     this.createdAt,
+    this.averageRating = 0.0,
+    this.totalRecipes = 0,
   });
 
   // Chuyển từ Firestore Document -> Object Dart
@@ -42,6 +46,8 @@ class UserModel {
       interestedCategories: List<String>.from(data['interested_categories'] ?? []),
       isProfileCompleted: data['is_profile_completed'] ?? false,
       createdAt: (data['created_at'] as Timestamp?)?.toDate(),
+      averageRating: (data['average_rating'] ?? 0.0).toDouble(), // Map từ Firestore
+      totalRecipes: data['total_recipes'] ?? 0,
     );
   }
 
@@ -57,6 +63,8 @@ class UserModel {
       'cover_url': coverUrl,
       'interested_categories': interestedCategories,
       'is_profile_completed': isProfileCompleted,
+      'average_rating': averageRating,
+      'total_recipes': totalRecipes,
     };
   }
 }

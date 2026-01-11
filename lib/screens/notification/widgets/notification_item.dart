@@ -138,7 +138,7 @@ class NotificationItem extends StatelessWidget {
               const SizedBox(width: 12),
               // Thời gian
               Text(
-                data.time,
+                data.timeDisplay,
                 style: TextStyle(
                   fontSize: 12,
                   color: secondaryTextColor,

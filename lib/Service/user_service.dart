@@ -87,44 +87,19 @@ class UserService {
     }
   }
 
-  Future<List<UserModel>> getPopularChefsByRatings({int limit = 5}) async {
+  Future<List<UserModel>> getPopularChefsByRatings() async {
     try {
-      // 1. Lấy tất cả công thức từ tất cả người dùng có averageRating >= 4.0
-      // Lưu ý: Cần tạo Index cho averageRating trong Firebase Console nếu chưa có
-      QuerySnapshot recipeSnapshot = await _firestore
-          .collectionGroup('published_recipes')
-          .where('averageRating', isGreaterThanOrEqualTo: 4.0)
+      // Query: Lấy user có average_rating >= 4.0 và sắp xếp giảm dần
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .where('average_rating', isGreaterThanOrEqualTo: 4.0)
+          .orderBy('average_rating', descending: true)
+          .limit(10) // Chỉ lấy top 10 người
           .get();
 
-      // 2. Thống kê số lượng công thức đạt chuẩn của mỗi Author
-      Map<String, int> authorCount = {};
-      for (var doc in recipeSnapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
-        final authorId = data['authorId'] as String?;
-
-        if (authorId != null) {
-          authorCount[authorId] = (authorCount[authorId] ?? 0) + 1;
-        }
-      }
-
-      // 3. Sắp xếp AuthorId theo số lượng công thức giảm dần
-      var sortedAuthorIds = authorCount.keys.toList()
-        ..sort((a, b) => authorCount[b]!.compareTo(authorCount[a]!));
-
-      // 4. Lấy thông tin chi tiết UserModel từ danh sách AuthorId
-      List<UserModel> popularChefs = [];
-      final topIds = sortedAuthorIds.take(limit).toList();
-
-      for (String uid in topIds) {
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(uid).get();
-        if (userDoc.exists) {
-          popularChefs.add(UserModel.fromSnapshot(userDoc));
-        }
-      }
-
-      return popularChefs;
+      return snapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList();
     } catch (e) {
-      print("Lỗi khi lấy người dùng phổ biến: $e");
+      print("Error fetching popular chefs: $e");
       return [];
     }
   }

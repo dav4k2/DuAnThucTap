@@ -129,7 +129,7 @@ class AuthService {
       case 'wrong-password': return 'Sai mật khẩu.';
       case 'weak-password': return 'Mật khẩu quá yếu.';
       case 'credential-already-in-use': return 'Email này đã liên kết với tài khoản khác.';
-      default: return 'Vui lòng nhập tài khoản mật khẩu';
+      default: return 'Lỗi hệ thống: ${e.code} - ${e.message}';
     }
   }
 }

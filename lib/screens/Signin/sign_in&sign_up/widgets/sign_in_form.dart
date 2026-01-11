@@ -79,6 +79,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       children: [
         /// Email
         InputField(
+          key: const Key('field_email'),
           hintText: 'Email',
           controller: _emailController,
           width: inputWidth,
@@ -88,6 +89,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
         /// Mật khẩu
         InputField(
+          key: const Key('field_password'),
           hintText: 'Mật khẩu',
           controller: _passwordController,
           width: inputWidth,
@@ -122,6 +124,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
         /// Đăng nhập
         GestureDetector(
+          key: const Key('btn_login'),
           onTap: _isLoading ? null : _signIn,
           child: PrimaryButton(
             text: _isLoading ? 'Đang xử lý...' : 'Đăng nhập',

@@ -1,33 +1,32 @@
 // lib/screens/my_profile_screen.dart
 import 'dart:ui';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:fontend/screens/user_profile/MyUser_profile/widgets/follower.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+// Các import widgets của bạn giữ nguyên
+import 'package:fontend/screens/user_profile/MyUser_profile/widgets/follower.dart';
+import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_save_recipe_list.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/edit_profile_button.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_bio_tab.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_chef_info.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_header_image.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_meal_filter.dart';
-import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_photo_grid.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_profile_avatar.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_profile_tabs.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_recipe_list.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_review_filter_header.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_review_tab.dart';
 import 'package:fontend/screens/user_profile/MyUser_profile/widgets/my_stats_section.dart';
+
 import '../../../Service/user_model.dart';
 import '../../../Service/user_service.dart';
 import '../../survey/logic/survey_provider.dart';
 import '../Edit_user/edit_profile_screen.dart';
 import 'logic/my_profile_provider.dart';
-
 
 class MyProfileScreen extends ConsumerStatefulWidget {
   const MyProfileScreen({super.key});
@@ -43,8 +42,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
   late final ScrollController _recipeScrollController = ScrollController();
 
   double _titleOpacity = 0.0;
-  // Biến lưu data user
-  Future<UserModel?>? _userFuture;
+  bool _isLoading = true; // Thay thế FutureBuilder bằng biến trạng thái này
 
   void _updateTitleOpacity() {
     const double headerHeight = 550.0;
@@ -74,51 +72,56 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
   @override
   void initState() {
     super.initState();
-    _userFuture = UserService().getUserProfile();
+    // Gọi hàm load dữ liệu ngay khi màn hình khởi tạo
+    _loadUserProfile();
   }
 
-  Future<void> _refreshData() async {
-    final user = await UserService().getUserProfile();
+  // Hàm load dữ liệu và đồng bộ vào Provider ngay lập tức
+  Future<void> _loadUserProfile() async {
+    try {
+      final user = await UserService().getUserProfile();
 
-    if (user != null && mounted) {
-      setState(() {
-        _userFuture = Future.value(user);
-      });
+      if (user != null && mounted) {
+        String joinedStr = "Vừa tham gia";
+        if (user.createdAt != null) {
+          joinedStr = DateFormat('dd/MM/yyyy').format(user.createdAt!);
+        }
 
-      String joinedStr = "Vừa tham gia";
-      if (user.createdAt != null) {
-        joinedStr = DateFormat('dd/MM/yyyy').format(user.createdAt!);
+        // QUAN TRỌNG: Cập nhật dữ liệu vào SurveyProvider (nguồn của MyChefProvider)
+        ref.read(surveyProvider.notifier).updateUserData(
+          displayName: user.displayName,
+          bio: user.bio,
+          cookingTitle: user.cookingLevel,
+          country: user.country,
+          email: user.email,
+          joinedDated: joinedStr,
+          avatarUrl: user.avatarUrl,
+          coverUrl: user.coverUrl,
+        );
+
+        // Refresh lại myChefProvider để đảm bảo UI nhận data mới
+        ref.invalidate(myChefProvider);
       }
-
-      // Đồng bộ Email và các thông tin khác vào Provider
-      ref.read(surveyProvider.notifier).updateUserData(
-        displayName: user.displayName,
-        bio: user.bio,
-        cookingTitle: user.cookingLevel,
-        country: user.country,
-        email: user.email,
-        joinedDated: joinedStr,
-        avatarUrl: user.avatarUrl,
-        coverUrl: user.coverUrl,
-      );
-
-      // 3. Làm mới Provider
-      ref.invalidate(myChefProvider);
+    } catch (e) {
+      print("Lỗi tải profile: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   void _navigateToEditProfile() async {
     final chef = ref.read(myChefProvider);
-    if (chef.name.isEmpty) {
-      print("Vui lòng đợi dữ liệu tải xong");
-      return;
-    }
-
+    // Vì đã load xong ở initState nên chef lúc này chắc chắn là data thật
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EditProfileScreen(user: chef)),
     );
-    _refreshData();
+    // Sau khi edit xong quay về thì reload lại data
+    _loadUserProfile();
   }
 
   @override
@@ -128,175 +131,150 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
     super.dispose();
   }
 
-  void _showFollowersDialog(BuildContext context, bool isFollowingTab) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.5), // Nền tối hơn giúp Box trắng nổi bật
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4), // Mờ nền phía sau
-        child: FollowersListPage(isFollowingTab: isFollowingTab, userId: '',),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Lấy dữ liệu từ Provider (lúc này đã được sync với API)
     final chef = ref.watch(myChefProvider);
     final profileTab = ref.watch(myProfileTabProvider);
-    final mealTab = ref.watch(myMealTabProvider);
 
     final currentUser = FirebaseAuth.instance.currentUser;
     final currentUserId = currentUser?.uid ?? '';
 
-    // Tự động scroll về đầu khi chuyển sang tab Công thức
     if (profileTab == ProfileTab.congThuc) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToTop());
     }
 
+    // Hiển thị loading nếu đang tải lần đầu
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // Nếu không có user (chưa login hoặc lỗi)
+    if (currentUser == null) {
+      return Scaffold(body: Center(child: Text("Vui lòng đăng nhập".tr())));
+    }
+
     return Scaffold(
-      body: FutureBuilder<UserModel?>(
-          future: _userFuture,
-          builder: (context, snapshot){
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-              return Center(child: Text("Hãy đăng nhập để sử duụng tính năng này".tr()));
-            }
-
-            final user = snapshot.data!;
-
-            return CustomScrollView(
-              controller: _mainScrollController,
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 480.h,
-                  floating: false,
-                  pinned: true,
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  elevation: 0.5,
-                  automaticallyImplyLeading: false,
-                  title: Opacity(
-                    opacity: _titleOpacity,
-                    child: Text(
-                      chef.name,
-                      style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  centerTitle: true,
-                  flexibleSpace: FlexibleSpaceBar(
-                    collapseMode: CollapseMode.parallax,
-                    background: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Positioned(
-                          top: 195.h,
-                          left: 0,
-                          right: 0,
-                          child: Container(
-                            decoration: ShapeDecoration(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20.r)),
-                              ),
-                            ),
-                          ),
+      body: CustomScrollView(
+        controller: _mainScrollController,
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 480.h,
+            floating: false,
+            pinned: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0.5,
+            automaticallyImplyLeading: false,
+            title: Opacity(
+              opacity: _titleOpacity,
+              child: Text(
+                chef.name,
+                style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w600),
+              ),
+            ),
+            centerTitle: true,
+            flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.parallax,
+              background: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    top: 195.h,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      decoration: ShapeDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20.r)),
                         ),
+                      ),
+                    ),
+                  ),
 
-                        MyHeaderImage(imageUrl: user.coverUrl),
-                        MyProfileAvatar(imageUrl: user.avatarUrl),
-                        MyChefInfo(
-                            name: user.displayName ?? "Người dùng mới",
-                            title: user.cookingLevel ?? "Yêu thích nấu ăn"
+                  // Dùng dữ liệu từ chef (Provider) thay vì user (FutureBuilder cũ)
+                  MyHeaderImage(imageUrl: chef.coverUrl),
+                  MyProfileAvatar(imageUrl: chef.avatarUrl),
+                  MyChefInfo(
+                      name: chef.name,
+                      title: chef.title
+                  ),
+                  MyStatsSection(
+                    recipes: chef.recipes,
+                    onFollowersTap: () {
+                      if (currentUserId.isEmpty) return;
+                      showDialog(
+                        context: context,
+                        builder: (context) => FollowersListPage(
+                          isFollowingTab: false,
+                          userId: currentUserId,
                         ),
-                        MyStatsSection(
-                          recipes: chef.recipes,
-                          // 1. Sự kiện bấm vào danh sách FOLLOWER
-                          onFollowersTap: () {
-                            if (currentUserId.isEmpty) return;
-                            showDialog(
-                              context: context,
-                              builder: (context) => FollowersListPage(
-                                isFollowingTab: false, // False = Tab người theo dõi
-                                userId: currentUserId, // Truyền ID của mình vào
-                              ),
-                            );
-                          },
-
-                          // 2. Sự kiện bấm vào danh sách ĐANG FOLLOW
-                          onFollowingTap: () {
-                            if (currentUserId.isEmpty) return;
-                            showDialog(
-                              context: context,
-                              builder: (context) => FollowersListPage(
-                                isFollowingTab: true, // True = Tab đang theo dõi
-                                userId: currentUserId,
-                              ),
-                            );
-                          },
+                      );
+                    },
+                    onFollowingTap: () {
+                      if (currentUserId.isEmpty) return;
+                      showDialog(
+                        context: context,
+                        builder: (context) => FollowersListPage(
+                          isFollowingTab: true,
+                          userId: currentUserId,
                         ),
-                        EditProfileButton(onTap: _navigateToEditProfile),     // Nút chỉnh sửa
-                        const MyProfileTabs(),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                ),
+                  EditProfileButton(onTap: _navigateToEditProfile),
+                  const MyProfileTabs(),
+                ],
+              ),
+            ),
+          ),
 
+          if (profileTab == ProfileTab.congThuc)
+            const KeepAliveWrapper(
+              child: SliverPersistentHeader(
+                pinned: true,
+                delegate: _MyMealFilterDelegate(),
+              ),
+            ),
 
-                if (profileTab == ProfileTab.congThuc)
-                  const KeepAliveWrapper(
-                    child: SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _MyMealFilterDelegate(),
-                    ),
-                  ),
+          if (profileTab == ProfileTab.congThuc)
+            KeepAliveWrapper(
+              child: MyRecipeList(userId: currentUserId), // Sửa thành currentUserId
+            ),
 
-                // === TAB CÔNG THỨC ===
-                if (profileTab == ProfileTab.congThuc)
-                  KeepAliveWrapper(
-                    child: MyRecipeList(userId: user.id),
-                  ),
+          if (profileTab == ProfileTab.danhGia)
+            const KeepAliveWrapper(
+              child: SliverPersistentHeader(
+                pinned: true,
+                delegate: _MyReviewFilterDelegate(),
+              ),
+            ),
 
-                // === TAB ĐÁNH GIÁ ===
-                if (profileTab == ProfileTab.danhGia)
-                  const KeepAliveWrapper(
-                    child: SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _MyReviewFilterDelegate(),
-                    ),
-                  ),
+          if (profileTab == ProfileTab.danhGia)
+            const KeepAliveWrapper(child: MyReviewTab()),
 
-                if (profileTab == ProfileTab.danhGia)
-                  const KeepAliveWrapper(child: MyReviewTab()),
+          if (profileTab == ProfileTab.tieuSu)
+            KeepAliveWrapper(
+              child: SliverToBoxAdapter(child: MyBioTab()),
+            ),
 
-                // === TAB TIỂU SỬ ===
-                if (profileTab == ProfileTab.tieuSu)
-                  KeepAliveWrapper(
-                    child: SliverToBoxAdapter(child: MyBioTab()),
-                  ),
+          if (profileTab == ProfileTab.anh)
+            KeepAliveWrapper(
+              child: SliverToBoxAdapter(
+                child: const MySavedRecipesList(),
+              ),
+            ),
 
-                // === TAB ẢNH ===
-                if (profileTab == ProfileTab.anh)
-                  const KeepAliveWrapper(
-                    child: SliverToBoxAdapter(child: MyPendingRecipesList()),
-                  ),
-
-                // Khoảng trống cuối
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
-              ],
-            );
-          }
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
       ),
     );
   }
 }
 
-
-
-// ==================== KEEP ALIVE ====================
+// ... Giữ nguyên các class KeepAliveWrapper và Delegate ở dưới ...
 class KeepAliveWrapper extends StatefulWidget {
   final Widget child;
   const KeepAliveWrapper({super.key, required this.child});
@@ -317,7 +295,6 @@ class _KeepAliveWrapperState extends State<KeepAliveWrapper>
   }
 }
 
-// ==================== DELEGATES ====================
 class _MyMealFilterDelegate extends SliverPersistentHeaderDelegate {
   const _MyMealFilterDelegate();
 

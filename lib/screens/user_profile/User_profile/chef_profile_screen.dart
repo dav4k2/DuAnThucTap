@@ -127,14 +127,15 @@ class _ChefProfileScreenState extends ConsumerState<ChefProfileScreen>
                         ),
                         recipesAsync.when(
                           data: (recipes) => StatsSection(
-                            recipes: recipes.length,
-                            followers: "0", // Sau này lấy từ user model
-                            following: 0,
+                            userId: user.id,          // Truyền ID của User B
                           ),
-                          loading: () => const StatsSection(recipes: 0, followers: "0", following: 0),
-                          error: (_, __) => const StatsSection(recipes: 0, followers: "0", following: 0),
+                          loading: () => StatsSection(userId: user.id),
+                          error: (_, __) => StatsSection(userId: user.id),
                         ),
-                        const FollowButton(),
+                        FollowButton(
+                          targetUserId: user.id,      // Truyền ID của User B
+                          targetUserName: user.displayName ?? "Người dùng",
+                        ),
                         const ProfileTabs(),
                       ],
                     ),
