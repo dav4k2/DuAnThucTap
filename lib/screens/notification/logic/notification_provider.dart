@@ -111,3 +111,16 @@ class NotificationController {
 }
 
 final notificationControllerProvider = Provider((ref) => NotificationController());
+
+final unreadNotificationCountProvider = StreamProvider<int>((ref) {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return Stream.value(0);
+
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .collection('notifications')
+      .where('isRead', isEqualTo: false) // Chỉ lấy tin chưa đọc
+      .snapshots()
+      .map((snapshot) => snapshot.docs.length); // Đếm số lượng
+});

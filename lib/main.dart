@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -39,6 +40,8 @@ Future<void> main() async {
 
   //Khởi tạo Biến môi trường (.env)
   await dotenv.load(fileName: ".env");
+
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   //Khởi tạo Cooking Timer Service (Tính năng đếm ngược chạy ngầm)
   final timerService = CookingTimerService();

@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../Service/user_service.dart';
+import '../../../notification/logic/notification_service.dart';
 import '../../MyUser_profile/logic/follower_provider.dart';
 
 class FollowButton extends ConsumerWidget {
-  final String targetUserId; // ID của người dùng B (người đang xem hồ sơ)
+  final String targetUserId;
   final String targetUserName;
 
   const FollowButton({
@@ -20,10 +21,8 @@ class FollowButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
-    // Nếu tự xem hồ sơ mình thì ẩn nút follow
     if (currentUserId == targetUserId) return const SizedBox.shrink();
 
-    // Lắng nghe trạng thái follow từ Database
     final isFollowingAsync = ref.watch(isFollowingProvider(targetUserId));
 
     return Positioned(
@@ -35,27 +34,32 @@ class FollowButton extends ConsumerWidget {
         data: (isFollowing) {
           return GestureDetector(
             onTap: () async {
-              if (currentUserId == null) return; // Chưa đăng nhập
+              if (currentUserId == null) return;
 
               final userService = UserService();
+              final notificationService = NotificationService(); // Khởi tạo service
 
-              // 1. Nếu đang follow -> hỏi xác nhận hủy
+              // LOGIC BỎ THEO DÕI
               if (isFollowing) {
                 final confirm = await _showConfirmDialog(context, targetUserName);
                 if (confirm != true) return;
+
+                // Hủy follow
+                await userService.toggleFollowUser(targetUserId: targetUserId);
+              }
+              // LOGIC THEO DÕI (MỚI)
+              else {
+                // 1. Thực hiện follow trong DB
+                await userService.toggleFollowUser(targetUserId: targetUserId);
+
+                // 2. Gửi thông báo cho người được follow
+                // (Không cần await để tránh làm chậm UI)
+                notificationService.sendFollowNotification(targetUserId: targetUserId);
               }
 
-              // 2. Gọi API Service (Thêm/Xóa trong Firestore)
-              await userService.toggleFollowUser(targetUserId: targetUserId);
-
-              // 3. LÀM MỚI DỮ LIỆU (QUAN TRỌNG NHẤT)
-              // Refresh nút bấm để đổi trạng thái ngay lập tức
+              // Refresh UI như cũ
               ref.invalidate(isFollowingProvider(targetUserId));
-
-              // Refresh danh sách Follower của User B (để số lượng tăng/giảm trên UI User B)
               ref.invalidate(followersListProvider(targetUserId));
-
-              // Refresh danh sách Following của User A (để khi về trang cá nhân A, số liệu đúng)
               ref.invalidate(followingListProvider(currentUserId));
             },
             child: _buildButtonUI(isFollowing: isFollowing),
@@ -65,6 +69,7 @@ class FollowButton extends ConsumerWidget {
     );
   }
 
+  // ... (Phần UI _buildButtonUI và _showConfirmDialog giữ nguyên như code trước)
   Widget _buildButtonUI({bool isFollowing = false, bool isLoading = false}) {
     if (isLoading) {
       return Container(

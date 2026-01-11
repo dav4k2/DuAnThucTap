@@ -72,14 +72,14 @@ class AuthorSection extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
                       Image.asset(
-                        "image/goldel.png",
+                        "image/empty_user.jpg",
                         width: 70,
                         height: 70,
                         fit: BoxFit.cover,
                       ),
                 )
                     : Image.asset(
-                  "image/goldel.png",
+                  "image/empty_user.jpg",
                   width: 70,
                   height: 70,
                   fit: BoxFit.cover,

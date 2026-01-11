@@ -1,4 +1,5 @@
 // lib/screens/search/widgets/search_results_tabs.dart
+import 'package:cloud_firestore/cloud_firestore.dart'; // [CẦN THÊM]
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
@@ -10,7 +11,7 @@ import 'chef_card.dart';
 
 class SearchResultsTabs extends StatelessWidget {
   final TabController tabController;
-  final String query; // Thêm biến query
+  final String query;
 
   const SearchResultsTabs({
     super.key,
@@ -26,7 +27,7 @@ class SearchResultsTabs extends StatelessWidget {
     return TabBarView(
       controller: tabController,
       children: [
-        // ================= TAB CÔNG THỨC =================
+        // ================= TAB CÔNG THỨC (GIỮ NGUYÊN) =================
         StreamBuilder<List<PublishRecipe>>(
           stream: service.getAllRecipesRealtime(),
           builder: (context, snapshot) {
@@ -34,7 +35,6 @@ class SearchResultsTabs extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // Lọc công thức theo tên hoặc nguyên liệu
             final recipes = snapshot.data?.where((r) =>
             r.title.toLowerCase().contains(lowercaseQuery) ||
                 r.ingredients.any((i) => i.toLowerCase().contains(lowercaseQuery))
@@ -57,17 +57,17 @@ class SearchResultsTabs extends StatelessWidget {
                       time: recipe.cookingTime ?? '30 phút',
                       level: recipe.difficulty ?? 'Dễ',
                       author: authorName,
-                      rating: '4.5', // Có thể bổ sung field này vào model sau
+                      rating: '4.5',
                       imagePath: recipe.images.isNotEmpty ? recipe.images.first : '',
-                      isNetworkImage: true, // Cần cập nhật RecipeCard để hỗ trợ NetworkImage
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => RecipeDetailPage(recipe: recipe),
-                            ),
-                          );
-                        },
+                      isNetworkImage: true,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => RecipeDetailPage(recipe: recipe),
+                          ),
+                        );
+                      },
                     );
                   },
                 );
@@ -76,54 +76,52 @@ class SearchResultsTabs extends StatelessWidget {
           },
         ),
 
-        // ================= TAB ĐẦU BẾP =================
-        // Logic tìm kiếm đầu bếp dựa trên những người đã từng đăng bài
-        StreamBuilder<List<PublishRecipe>>(
-          stream: service.getAllRecipesRealtime(),
+        // ================= TAB ĐẦU BẾP (ĐÃ SỬA LẠI) =================
+        // FIX: Truy vấn trực tiếp vào collection 'users' thay vì lấy từ 'recipes'
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('users').snapshots(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-            final authorIds = snapshot.data!
-                .map((r) => r.authorId)
-                .whereType<String>()
-                .toSet()
-                .toList();
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return _buildEmptyState("Không tìm thấy đầu bếp nào");
+            }
 
-            return ListView.builder(
+            // Lọc danh sách user theo tên
+            final users = snapshot.data!.docs.where((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              // Kiểm tra tất cả các trường có thể chứa tên
+              final String name = data['display_name'] ?? data['name'] ?? data['fullname'] ?? '';
+              return name.toLowerCase().contains(lowercaseQuery);
+            }).toList();
+
+            if (users.isEmpty) return _buildEmptyState("Không tìm thấy người dùng '$query'");
+
+            return ListView.separated(
               padding: EdgeInsets.all(20.w),
-              itemCount: authorIds.length,
+              itemCount: users.length,
+              separatorBuilder: (_, __) => SizedBox(height: 15.h), // Khoảng cách giữa các item
               itemBuilder: (context, index) {
-                final authorId = authorIds[index];
+                final userDoc = users[index];
+                final userData = userDoc.data() as Map<String, dynamic>;
+                final String userId = userDoc.id;
 
-                return FutureBuilder<Map<String, dynamic>?>(
-                  future: service.getUserInfo(authorId),
-                  builder: (context, userSnap) {
-                    if (userSnap.connectionState == ConnectionState.waiting) return const SizedBox();
-                    if (!userSnap.hasData) return const SizedBox();
+                // Lấy thông tin hiển thị
+                final String authorName = userData['display_name'] ?? userData['name'] ?? userData['fullname'] ?? 'Người dùng';
+                final String avatarUrl = userData['avatar_url'] ?? userData['photo_url'] ?? userData['image'] ?? '';
 
-                    final userData = userSnap.data!;
-                    final String authorName = userData['display_name'] ?? 'Người dùng';
-
-                    // FIX 1: Lấy đúng key 'avatar_url' từ Cloudinary/Firestore
-                    final String avatarUrl = userData['avatar_url'] ?? userData['photo_url'] ?? '';
-
-                    // Lọc theo query
-                    if (!authorName.toLowerCase().contains(lowercaseQuery)) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return FutureBuilder<int>(
-                      future: service.getRecipeCount(authorId),
-                      builder: (context, countSnapshot) {
-                        return ChefCard(
-                          chefId: authorId,
-                          name: authorName,
-                          recipeCount: "${countSnapshot.data ?? 0} công thức",
-                          // FIX 2: Sử dụng biến avatarUrl đã định nghĩa ở trên, bỏ 'chef.'
-                          avatarPath: avatarUrl,
-                          isNetworkImage: true,
-                        );
-                      },
+                return FutureBuilder<int>(
+                  // Vẫn dùng hàm này để lấy số lượng công thức nếu cần
+                  future: service.getRecipeCount(userId),
+                  builder: (context, countSnapshot) {
+                    return ChefCard(
+                      chefId: userId,
+                      name: authorName,
+                      recipeCount: "${countSnapshot.data ?? 0} công thức",
+                      avatarPath: avatarUrl,
+                      isNetworkImage: true,
                     );
                   },
                 );
@@ -135,5 +133,10 @@ class SearchResultsTabs extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(String msg) => Center(child: Text(msg));
+  Widget _buildEmptyState(String msg) => Center(
+      child: Text(
+        msg,
+        style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+      )
+  );
 }

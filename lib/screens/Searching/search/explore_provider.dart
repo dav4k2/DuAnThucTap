@@ -1,8 +1,29 @@
-// lib/providers/search_notifier.dart
+// lib/providers/explore_provider.dart (hoặc search_notifier.dart)
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// --- MODEL APP USER ---
+class AppUser {
+  final String id;
+  final String name;
+  final String avatarUrl;
+
+  const AppUser({required this.id, required this.name, this.avatarUrl = ''});
+
+  factory AppUser.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return AppUser(
+      id: doc.id,
+      // Đảm bảo tên trường khớp với code Đăng ký (Register) của bạn
+      name: data['name'] ?? data['fullname'] ?? 'Người dùng',
+      avatarUrl: data['avatarUrl'] ?? data['image'] ?? '',
+    );
+  }
+}
+
+// --- MODEL RECIPE ---
 class Recipe {
   final String id;
   final String name;
@@ -10,18 +31,17 @@ class Recipe {
   const Recipe({required this.id, required this.name, required this.ingredient});
 }
 
-class AppUser {
-  final String id;
-  final String name;
-  final String avatarUrl;
-  const AppUser({required this.id, required this.name, this.avatarUrl = ''});
-}
-
+// --- SEARCH STATE ---
 class SearchState {
   final String query;
   final List<dynamic> suggestions;
   final bool showSuggestions;
-  const SearchState({this.query = '', this.suggestions = const [], this.showSuggestions = false});
+
+  const SearchState({
+    this.query = '',
+    this.suggestions = const [],
+    this.showSuggestions = false
+  });
 
   SearchState copyWith({String? query, List<dynamic>? suggestions, bool? showSuggestions}) {
     return SearchState(
@@ -32,11 +52,15 @@ class SearchState {
   }
 }
 
+// --- SEARCH NOTIFIER ---
 class SearchNotifier extends StateNotifier<SearchState> {
-  SearchNotifier() : super(const SearchState());
-  final TextEditingController controller = TextEditingController();
-  Timer? _debounce;
+  // Biến quản lý việc lắng nghe dữ liệu
+  StreamSubscription? _userSubscription;
 
+  // Danh sách user cục bộ luôn được cập nhật mới nhất
+  List<AppUser> _firebaseUsers = [];
+
+  // Danh sách món ăn cứng (hoặc bạn có thể làm Stream tương tự cho món ăn)
   static const List<Recipe> _allRecipes = [
     Recipe(id: '1', name: 'Bò xào hành tây', ingredient: 'thịt bò'),
     Recipe(id: '2', name: 'Bò lúc lắc', ingredient: 'thịt bò'),
@@ -46,11 +70,58 @@ class SearchNotifier extends StateNotifier<SearchState> {
     Recipe(id: '6', name: 'Cá kho tộ', ingredient: 'cá'),
   ];
 
-  static const List<AppUser> _allUsers = [
-    AppUser(id: 'u1', name: 'Nguyễn Văn A', avatarUrl: ''),
-    AppUser(id: 'u2', name: 'Trần Thị B', avatarUrl: ''),
-    AppUser(id: 'u3', name: 'Lê Văn C', avatarUrl: ''),
-  ];
+  final TextEditingController controller = TextEditingController();
+  Timer? _debounce;
+
+  SearchNotifier() : super(const SearchState()) {
+    _subscribeToUsers(); // Bắt đầu lắng nghe ngay khi khởi tạo
+  }
+
+  // --- [QUAN TRỌNG] HÀM LẮNG NGHE REAL-TIME ---
+  void _subscribeToUsers() {
+    // Hủy đăng ký cũ nếu có để tránh memory leak
+    _userSubscription?.cancel();
+
+    // Lắng nghe collection 'users'. Bất cứ khi nào có thay đổi (thêm/sửa/xóa), hàm này sẽ chạy lại.
+    _userSubscription = FirebaseFirestore.instance
+        .collection('users')
+        .snapshots() // Dùng snapshots thay vì get
+        .listen((snapshot) {
+
+      _firebaseUsers = snapshot.docs.map((doc) {
+        return AppUser.fromFirestore(doc);
+      }).toList();
+
+      debugPrint("♻️ Đã cập nhật danh sách user: ${_firebaseUsers.length} người.");
+
+      // Nếu đang có từ khóa tìm kiếm, hãy cập nhật lại kết quả hiển thị ngay lập tức
+      if (state.query.isNotEmpty) {
+        // Gọi updateQuery nhưng không cần debounce (cập nhật giao diện ngay)
+        _performSearch(state.query);
+      }
+    }, onError: (e) {
+      debugPrint("❌ Lỗi lắng nghe user: $e");
+    });
+  }
+
+  // Hàm tìm kiếm nội bộ (tách ra để tái sử dụng)
+  void _performSearch(String query) {
+    final lower = query.toLowerCase();
+
+    final recipeResults = _allRecipes
+        .where((r) => r.name.toLowerCase().contains(lower) || r.ingredient.toLowerCase().contains(lower))
+        .toList();
+
+    final userResults = _firebaseUsers
+        .where((u) => u.name.toLowerCase().contains(lower))
+        .toList();
+
+    state = state.copyWith(
+      query: query,
+      suggestions: [...recipeResults, ...userResults],
+      showSuggestions: true,
+    );
+  }
 
   void updateQuery(String value) {
     controller.text = value;
@@ -62,42 +133,28 @@ class SearchNotifier extends StateNotifier<SearchState> {
         state = state.copyWith(suggestions: const [], showSuggestions: false);
         return;
       }
-
-      final lower = trimmed.toLowerCase();
-      final recipeResults = _allRecipes
-          .where((r) => r.name.toLowerCase().contains(lower) || r.ingredient.toLowerCase().contains(lower))
-          .toList();
-      final userResults = _allUsers.where((u) => u.name.toLowerCase().contains(lower)).toList();
-
-      state = state.copyWith(
-        query: trimmed,
-        suggestions: [...recipeResults, ...userResults],
-        showSuggestions: true,
-      );
+      _performSearch(trimmed);
     });
   }
 
-  // ĐÃ SỬA: GIỮ LẠI GỢI Ý KHI CLICK VÀO GỢI Ý
   void selectSuggestion(dynamic item) {
     final String selectedText = item is Recipe ? item.name : item.name;
     controller.text = selectedText;
 
-    state = state.copyWith(
-      query: selectedText,
-      suggestions: _getCurrentSuggestions(selectedText),
-      showSuggestions: true, // QUAN TRỌNG: GIỮ HIỆN GỢI Ý
-    );
-
-    // Không gọi performSearch() ở đây → tránh reset state
-  }
-
-  List<dynamic> _getCurrentSuggestions(String query) {
-    final lower = query.toLowerCase();
+    // Khi chọn, ta lọc lại chính xác theo từ đã chọn
+    final lower = selectedText.toLowerCase();
     final recipeResults = _allRecipes
         .where((r) => r.name.toLowerCase().contains(lower) || r.ingredient.toLowerCase().contains(lower))
         .toList();
-    final userResults = _allUsers.where((u) => u.name.toLowerCase().contains(lower)).toList();
-    return [...recipeResults, ...userResults];
+    final userResults = _firebaseUsers
+        .where((u) => u.name.toLowerCase().contains(lower))
+        .toList();
+
+    state = state.copyWith(
+      query: selectedText,
+      suggestions: [...recipeResults, ...userResults],
+      showSuggestions: true,
+    );
   }
 
   void clear() {
@@ -108,6 +165,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
 
   @override
   void dispose() {
+    _userSubscription?.cancel(); // Rất quan trọng: Hủy lắng nghe khi thoát
     _debounce?.cancel();
     controller.dispose();
     super.dispose();
