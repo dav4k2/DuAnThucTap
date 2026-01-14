@@ -127,7 +127,10 @@ class _SurveyStep3ScreenState extends ConsumerState<Survey3> {
           Positioned(
             top: 658.h,
             left: 25.w,
-            child: SurveyCountryDropdown(onChanged: (v) => ref.read(surveyProvider.notifier).setCountry(v)),
+            child: SurveyCountryDropdown(
+              selectedCountry: survey.country,
+              onChanged: (v) => ref.read(surveyProvider.notifier).setCountry(v),
+            ),
           ),
 
           // NÚT ĐỔI ẢNH BÌA

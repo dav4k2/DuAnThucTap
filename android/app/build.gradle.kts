@@ -25,15 +25,13 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.datt.cooking" // Giữ Application ID gốc của bạn
+        applicationId = "com.datt.cooking"
 
-        // [MỚI] Đảm bảo minSdk ít nhất là 21 để hỗ trợ tốt các thư viện hiện đại
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        // [MỚI] Bật MultiDex để tránh lỗi giới hạn 64k phương thức (thường gặp khi dùng Firebase)
         multiDexEnabled = true
     }
 

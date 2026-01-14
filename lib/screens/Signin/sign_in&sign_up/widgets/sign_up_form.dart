@@ -164,7 +164,6 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         Padding(
           padding: EdgeInsets.only(left: 0.01.sw),
           child: TermsCheckbox(
-            key: const Key('checkbox_terms'),
             isChecked: state.agreeTerms,
             onChanged: (_) => ref.read(authProvider.notifier).toggleTerms(),
             textColor: textColor,
@@ -284,24 +283,32 @@ class TermsCheckbox extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
-          width: 22.w,
-          height: 22.h,
-          child: Checkbox(
-            value: isChecked,
-            onChanged: (val) => onChanged(val ?? false),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6.r),
-            ),
-            side: BorderSide(color: textColor.withOpacity(0.6)),
-            activeColor: Colors.amber,
-          ),
-        ),
-        SizedBox(width: 10.w),
-        Expanded(
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
+        // --- PHẦN 1: VÙNG AN TOÀN (Gắn Key vào đây) ---
+        // Chỉ bao gồm Checkbox + Text "Tôi đồng ý với "
+        GestureDetector(
+          key: const Key('checkbox_terms'), // 👈 Key chỉ nằm ở cụm này
+          onTap: () => onChanged(!isChecked),
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              // Checkbox hiển thị (dùng IgnorePointer để tap xuyên qua xuống GestureDetector)
+              IgnorePointer(
+                child: SizedBox(
+                  width: 30.w,
+                  height: 30.h,
+                  child: Checkbox(
+                    value: isChecked,
+                    onChanged: (val) {},
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.r)),
+                    side: BorderSide(color: textColor.withOpacity(0.6)),
+                    activeColor: Colors.amber,
+                  ),
+                ),
+              ),
+              SizedBox(width: 5.w),
               Text(
                 "Tôi đồng ý với ",
                 style: TextStyle(
@@ -311,20 +318,25 @@ class TermsCheckbox extends StatelessWidget {
                   color: textColor,
                 ),
               ),
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/terms'),
-                child: Text(
-                  "điều khoản và điều kiện",
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontFamily: "SF Pro Rounded",
-                    fontWeight: FontWeight.w700,
-                    color: Colors.blueAccent,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
             ],
+          ),
+        ),
+
+        // --- PHẦN 2: LINK ĐIỀU KHOẢN (Nằm NGOÀI Key) ---
+        // Maestro tap vào Key ở trên sẽ không bao giờ chạm trúng phần này
+        Flexible(
+          child: GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/terms'),
+            child: Text(
+              "điều khoản và điều kiện",
+              style: TextStyle(
+                fontSize: 15.sp,
+                fontFamily: "SF Pro Rounded",
+                fontWeight: FontWeight.w700,
+                color: Colors.blueAccent,
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ),
         ),
       ],
