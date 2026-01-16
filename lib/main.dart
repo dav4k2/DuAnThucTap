@@ -15,6 +15,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // Import services và layout
 import 'package:fontend/Main_layout/main_layout.dart';
 import 'package:fontend/screens/Cooking_step/cooking_timer_service.dart';
+import 'package:fontend/screens/Home_page/mainpage_user/mainpage_user_screen.dart';
 
 // Import các màn hình
 import 'package:fontend/screens/Remove/enter_new_password/reset_password_screen.dart';
@@ -125,6 +126,7 @@ class MyApp extends ConsumerWidget {
 
           // --- HỆ THỐNG ROUTES ---
           routes: {
+            '/home': (context) => HomeUserScreen(),
             '/welcome': (context) => const WelcomeScreen(),
             '/signin': (context) => const SignInScreen(),
             '/explore': (context) => const ExploreScreen(),

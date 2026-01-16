@@ -38,21 +38,27 @@ class PopularUsersSection extends StatelessWidget {
           ),
           SizedBox(height: 20.h),
           FutureBuilder<List<UserModel>>(
-            future: _userService.getPopularChefsByRatings(),
+            future: _userService.getPopularChefsByRatings(), // Gọi hàm mới viết
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-
+              // Nếu không có data hoặc data rỗng (không ai trên 3 sao)
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Text("Không có người dùng phổ biến nào.").tr();
+                return const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text("Chưa có đầu bếp nổi bật nào."),
+                );
               }
 
               final users = snapshot.data!;
 
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: users.map((user) => _userItem(context, user, isDark)).toList(),
+              // Hiển thị list
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: users.map((user) => _userItem(context, user, isDark)).toList(),
+                ),
               );
             },
           ),
@@ -73,25 +79,36 @@ class PopularUsersSection extends StatelessWidget {
           ),
         );
       },
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 40.r,
-            backgroundImage: user.avatarUrl != null
-                ? NetworkImage(user.avatarUrl!)
-                : const AssetImage('image/default_avatar.png') as ImageProvider,
-            backgroundColor: Colors.grey[200],
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            user.displayName ?? 'Ẩn danh',
-            style: TextStyle(
-              fontSize: 14.5.sp,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : Colors.black87,
+      child: Container(
+        margin: EdgeInsets.only(right: 15.w), // Khoảng cách giữa các item
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 40.r,
+              backgroundImage: user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                  ? NetworkImage(user.avatarUrl!)
+                  : const AssetImage('image/default_avatar.png') as ImageProvider,
             ),
-          ),
-        ],
+            SizedBox(height: 10.h),
+            Text(
+              user.displayName ?? 'Ẩn danh',
+              style: TextStyle(/*...*/),
+            ),
+            // Hiển thị số sao
+            if (user.averageRating > 0)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.star, color: Colors.amber, size: 14.sp),
+                  SizedBox(width: 4.w),
+                  Text(
+                    user.averageRating.toStringAsFixed(1),
+                    style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                  )
+                ],
+              )
+          ],
+        ),
       ),
     );
   }

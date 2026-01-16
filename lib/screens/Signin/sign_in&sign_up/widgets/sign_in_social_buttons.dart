@@ -13,14 +13,20 @@ class SignInSocialButtons extends ConsumerWidget {
 
     try {
       authNotifier.setError(null);
-      // Gọi hàm Google Sign In mới thêm
+
       final userCredential = await authService.signInWithGoogle();
 
-      if (userCredential != null) {
-        // Thành công -> Vào Explore hoặc Home
-        Navigator.pushNamedAndRemoveUntil(context, '/survey', (route) => false);
+      if (userCredential != null && userCredential.user != null) {
+        final isCompleted = await authService.checkProfileCompletion(userCredential.user!.uid);
+
+        if (context.mounted) {
+          if (isCompleted) {
+            Navigator.pushNamedAndRemoveUntil(context, '/authgate', (route) => false);
+          } else {
+            Navigator.pushNamedAndRemoveUntil(context, '/survey', (route) => false);
+          }
+        }
       } else {
-        // Người dùng tắt popup Google
         print("Đăng nhập Google bị hủy");
       }
     } catch (e) {

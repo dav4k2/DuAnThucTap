@@ -133,23 +133,30 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Lấy dữ liệu từ Provider (lúc này đã được sync với API)
+    // 1. Lấy dữ liệu Chef tĩnh (để hiển thị tên, avatar...)
     final chef = ref.watch(myChefProvider);
     final profileTab = ref.watch(myProfileTabProvider);
 
     final currentUser = FirebaseAuth.instance.currentUser;
     final currentUserId = currentUser?.uid ?? '';
 
+    // 🔥 2. Lắng nghe số lượng công thức REAL-TIME từ Firestore
+    final recipeCountAsync = ref.watch(recipeCountProvider(currentUserId));
+
+    // 🔥 3. Xử lý trạng thái AsyncValue để lấy ra con số (mặc định là 0 nếu đang load/lỗi)
+    final realTimeRecipeCount = recipeCountAsync.maybeWhen(
+      data: (count) => count,
+      orElse: () => 0,
+    );
+
     if (profileTab == ProfileTab.congThuc) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToTop());
     }
 
-    // Hiển thị loading nếu đang tải lần đầu
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    // Nếu không có user (chưa login hoặc lỗi)
     if (currentUser == null) {
       return Scaffold(body: Center(child: Text("Vui lòng đăng nhập".tr())));
     }
@@ -202,7 +209,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen>
                       title: chef.title
                   ),
                   MyStatsSection(
-                    recipes: chef.recipes,
+                    recipes: realTimeRecipeCount, // Dùng biến real-time thay vì chef.recipes
                     onFollowersTap: () {
                       if (currentUserId.isEmpty) return;
                       showDialog(

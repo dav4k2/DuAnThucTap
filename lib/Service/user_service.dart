@@ -89,17 +89,17 @@ class UserService {
 
   Future<List<UserModel>> getPopularChefsByRatings() async {
     try {
-      // Query: Lấy user có average_rating >= 4.0 và sắp xếp giảm dần
-      QuerySnapshot snapshot = await _firestore
+      final snapshot = await _firestore
           .collection('users')
-          .where('average_rating', isGreaterThanOrEqualTo: 4.0)
-          .orderBy('average_rating', descending: true)
-          .limit(10) // Chỉ lấy top 10 người
+          .where('average_rating', isGreaterThan: 3.0) // Chỉ lấy trên 3 sao
+          .orderBy('average_rating', descending: true) // Sắp xếp điểm cao nhất lên đầu
+          .limit(10) // Lấy top 10
           .get();
 
+      // Map từ DocumentSnapshot sang UserModel dùng hàm fromSnapshot bạn đã viết
       return snapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList();
     } catch (e) {
-      print("Error fetching popular chefs: $e");
+      print("Lỗi lấy Popular Chefs: $e");
       return [];
     }
   }

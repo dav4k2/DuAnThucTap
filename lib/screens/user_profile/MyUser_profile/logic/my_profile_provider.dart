@@ -322,11 +322,27 @@ class SavedRecipesNotifier extends StateNotifier<List<Recipe>> {
   }
 }
 
-//Đếm số công thức
-final recipeCountProvider = StreamProvider.family<int, String>((ref, userId) {
+// 1. Provider lấy số lượng công thức của MỘT user cụ thể (dùng cho cả mình và người khác)
+final recipeCountProvider = StreamProvider.family.autoDispose<int, String>((ref, userId) {
+  // Nếu userId rỗng thì trả về 0 luôn
+  if (userId.isEmpty) return Stream.value(0);
+
   final publishService = PublishService();
 
+  // Gọi hàm getRecipesByUser từ Service để lấy danh sách theo ID
+  // Sau đó map ra độ dài (length) để lấy số lượng
   return publishService.getRecipesByUser(userId).map((recipes) => recipes.length);
+});
+
+// 2. Provider tiện ích để lấy số lượng công thức của USER HIỆN TẠI (Current User)
+final myRecipeCountProvider = StreamProvider<int>((ref) {
+  final user = FirebaseAuth.instance.currentUser;
+
+  // Nếu chưa đăng nhập thì trả về 0
+  if (user == null) return Stream.value(0);
+
+  // Gọi lại provider ở trên với uid của mình
+  return ref.watch(recipeCountProvider(user.uid).stream);
 });
 
 // Provider cung cấp danh sách đã lưu

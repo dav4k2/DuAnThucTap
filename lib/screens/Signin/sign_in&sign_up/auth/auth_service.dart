@@ -107,6 +107,20 @@ class AuthService {
     await _auth.signOut();
   }
 
+  Future<bool> checkProfileCompletion(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (!doc.exists) return false;
+
+      final data = doc.data();
+      // Trả về true nếu field is_profile_completed là true
+      return data?['is_profile_completed'] == true;
+    } catch (e) {
+      print("Lỗi kiểm tra profile: $e");
+      return false; // Mặc định là chưa hoàn thành nếu lỗi
+    }
+  }
+
   // --- HÀM PHỤ: LƯU USER VÀO FIRESTORE ---
   Future<void> _saveUserToFirestore(User user, String fullName) async {
     await _firestore.collection('users').doc(user.uid).set({

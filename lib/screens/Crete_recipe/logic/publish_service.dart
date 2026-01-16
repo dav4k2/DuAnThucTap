@@ -253,16 +253,17 @@ class PublishService {
 
   Future<void> _updateChefOverallRating(String authorId) async {
     try {
-      // 1. Lấy tất cả công thức của tác giả này
+      // 1. SỬA LẠI ĐƯỜNG DẪN: Lấy công thức từ sub-collection của user
       QuerySnapshot recipeSnapshot = await _firestore
-          .collection('recipes') // Hoặc collection chứa bài đăng của bạn
-          .where('authorId', isEqualTo: authorId)
+          .collection('users')
+          .doc(authorId)
+          .collection('published_recipes')
           .get();
 
       if (recipeSnapshot.docs.isEmpty) return;
 
       double totalRatingSum = 0.0;
-      int count = 0;
+      int ratedRecipeCount = 0; // Chỉ đếm những bài đã có đánh giá
 
       // 2. Tính tổng điểm trung bình của tất cả các công thức
       for (var doc in recipeSnapshot.docs) {
@@ -270,26 +271,32 @@ class PublishService {
         // Lấy averageRating của từng công thức
         double rRating = (data['averageRating'] ?? 0.0).toDouble();
 
-        // Chỉ tính các công thức đã có đánh giá
+        // Chỉ tính các công thức đã có đánh giá (rating > 0)
+        // Hoặc bạn có thể tính cả bài chưa đánh giá là 0 tùy logic,
+        // nhưng thường chỉ tính trên bài đã có người chấm.
         if (rRating > 0) {
           totalRatingSum += rRating;
-          count++;
+          ratedRecipeCount++;
         }
       }
 
       // 3. Tính điểm trung bình mới cho Chef
-      double newChefRating = count > 0 ? totalRatingSum / count : 0.0;
+      // Nếu chưa có bài nào được đánh giá thì điểm chef vẫn là 0 hoặc giữ nguyên
+      double newChefRating = ratedRecipeCount > 0
+          ? totalRatingSum / ratedRecipeCount
+          : 0.0;
 
       // 4. Cập nhật vào User Document
+      // Lưu ý: Trường này nằm ở collection 'users' -> doc(authorId)
       await _firestore.collection('users').doc(authorId).update({
         'average_rating': newChefRating,
-        'total_recipes': recipeSnapshot.docs.length, // Cập nhật số lượng bài nếu cần
+        'total_recipes': recipeSnapshot.docs.length,
       });
 
-      print("Đã cập nhật điểm Chef: $newChefRating");
+      print("✅ Đã cập nhật điểm Chef: $newChefRating (trên $ratedRecipeCount bài có đánh giá)");
 
     } catch (e) {
-      print("Lỗi khi cập nhật điểm Chef: $e");
+      print("❌ Lỗi khi cập nhật điểm Chef: $e");
     }
   }
 
