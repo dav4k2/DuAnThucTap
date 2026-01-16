@@ -16,6 +16,7 @@ class PublishRecipe{
   final List<String> ingredients;
   final List<String> steps;
   final List<String> durations;
+  final List<String> stepImages;
   final List<String> tags;
   final DateTime createdAt;
   final double averageRating;
@@ -35,6 +36,7 @@ class PublishRecipe{
     this.ingredients = const [],
     this.steps = const [],
     this.durations = const [],
+    this.stepImages = const [],
     this.tags = const [],
     DateTime? createdAt,
     this.averageRating = 0.0,
@@ -65,6 +67,7 @@ class PublishRecipe{
     List<String>? ingredients,
     List<String>? steps,
     List<String>? durations,
+    List<String>? stepImages,
     List<String>? tags,
   }) {
     return PublishRecipe(
@@ -80,6 +83,7 @@ class PublishRecipe{
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
       durations: durations ?? this.durations,
+      stepImages: stepImages ?? this.stepImages,
       tags: tags ?? this.tags,
       createdAt: DateTime.now(),
     );
@@ -98,6 +102,7 @@ class PublishRecipe{
     'ingredients': ingredients,
     'steps': steps,
     'durations': durations,
+    'stepImages': stepImages,
     'tags': tags,
     'createdAt': FieldValue.serverTimestamp(),
     'averageRating': averageRating,
@@ -123,6 +128,7 @@ class PublishRecipe{
       ingredients: List<String>.from(data['ingredients'] ?? []),
       steps: List<String>.from(data['steps'] ?? []),
       durations: List<String>.from(data['durations'] ?? []),
+      stepImages: List<String>.from(data['stepImages'] ?? []),
       tags: List<String>.from(data['tags'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ??
           DateTime.fromMillisecondsSinceEpoch(0),

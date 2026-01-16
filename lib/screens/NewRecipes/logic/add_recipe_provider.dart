@@ -360,6 +360,12 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
     showDialog(context: context, barrierDismissible: false, builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFFFFB901))));
 
     try {
+      // Tách lấy ảnh đại diện cho từng bước (lấy ảnh đầu tiên trong mảng media của bước đó)
+      // Nếu bước đó không có ảnh, gán chuỗi rỗng ''
+      List<String> extractedStepImages = state.steps.map((s) {
+        return s.media.isNotEmpty ? s.media.first : '';
+      }).toList();
+
       final publishData = PublishRecipe(
         title: state.title,
         description: state.description,
@@ -370,6 +376,9 @@ class AddRecipeNotifier extends StateNotifier<AddRecipeState> {
         ingredients: state.ingredients,
         steps: state.steps.map((s) => s.content).toList(),
         durations: state.steps.map((s) => s.duration ?? '0 phút').toList(),
+
+        stepImages: extractedStepImages, // <--- TRUYỀN DỮ LIỆU ẢNH BƯỚC VÀO ĐÂY
+
         tags: state.selectedCategories,
       );
 

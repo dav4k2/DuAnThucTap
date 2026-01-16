@@ -78,33 +78,42 @@ class StepsSection extends ConsumerWidget {
         Center(
           child: GestureDetector(
             onTap: () {
-              // 1. Logic ánh xạ dữ liệu (giữ nguyên 100%)
+              // 1. Logic ánh xạ dữ liệu
               final List<run_model.RecipeStep> mappedSteps = recipe.steps.asMap().entries.map((entry) {
                 int index = entry.key;
+                String content = entry.value;
 
                 String durationStr = (recipe.durations.length > index)
                     ? recipe.durations[index]
                     : "0 phút";
 
-                print("Step $index duration: $durationStr");
-
                 int minutes = int.tryParse(durationStr.split(' ')[0]) ?? 0;
                 int cookSeconds = minutes * 60;
 
+                String stepImage = "image/p1.png"; // Ảnh mặc định
+
+                // Kiểm tra xem mảng stepImages có dữ liệu tại index này không
+                if (recipe.stepImages.isNotEmpty &&
+                    index < recipe.stepImages.length &&
+                    recipe.stepImages[index].isNotEmpty) {
+                  stepImage = recipe.stepImages[index]; // Lấy URL ảnh thật
+                }
+                // ------------------------------------------
+
                 return run_model.RecipeStep(
                   title: "Bước ${index + 1}",
-                  description: entry.value,
-                  imagePath: (recipe.images.isNotEmpty) ? recipe.images[0] : "image/p1.png",
+                  description: content,
+                  imagePath: stepImage, // Truyền ảnh thật vào đây
                   prepTime: 5,
                   cookingTime: cookSeconds,
                 );
               }).toList();
 
-              // 2. Cập nhật provider
+              // 2. Cập nhật provider (Giữ nguyên)
               ref.read(recipeStepsProvider.notifier).state = mappedSteps;
               ref.read(currentStepIndexProvider.notifier).state = 0;
 
-              // 3. Điều hướng
+              // 3. Điều hướng (Giữ nguyên)
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const RecipeRunScreen()),

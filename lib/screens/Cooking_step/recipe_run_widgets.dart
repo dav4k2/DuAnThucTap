@@ -48,6 +48,7 @@ class RecipeRunDescription extends StatelessWidget {
 class RecipeRunImage extends StatelessWidget {
   final String imagePath;
   const RecipeRunImage({super.key, required this.imagePath});
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -56,10 +57,60 @@ class RecipeRunImage extends StatelessWidget {
         height: 200,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(image: AssetImage(imagePath), fit: BoxFit.cover, onError: (e, s) => const AssetImage("image/p3.png")),
+          color: Colors.grey[200], // Màu nền nhẹ khi ảnh đang load
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            )
+          ],
+        ),
+        // Dùng ClipRRect để bo góc cho ảnh con bên trong
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: _buildImage(),
         ),
       ),
     );
+  }
+
+  Widget _buildImage() {
+    // 1. Nếu là ảnh mạng (URL từ Cloudinary)
+    if (imagePath.startsWith('http')) {
+      return Image.network(
+        imagePath,
+        fit: BoxFit.cover,
+        // Hiển thị loading khi đang tải ảnh
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Color(0xFFFFB901),
+            ),
+          );
+        },
+        // Hiển thị ảnh mặc định nếu link lỗi
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            "image/p1.png", // Đảm bảo bạn có ảnh này hoặc đổi thành p3.png
+            fit: BoxFit.cover,
+          );
+        },
+      );
+    }
+
+    // 2. Nếu là ảnh Asset (Local) hoặc đường dẫn file
+    else {
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback cuối cùng
+          return Image.asset("image/p1.png", fit: BoxFit.cover);
+        },
+      );
+    }
   }
 }
 

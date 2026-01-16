@@ -32,10 +32,37 @@ class PublishService {
       final userDoc = await getUserInfo(user.uid);
       final authorName = userDoc?['display_name'] ?? 'Người dùng';
 
-      List<String> uploadedUrls = await _recipeService.uploadImages(recipe.images);
+      // 1. Upload ảnh bìa chính (Code cũ - Giữ nguyên)
+      List<String> uploadedMainUrls = await _recipeService.uploadImages(recipe.images);
+
+      // 2. --- LOGIC MỚI: Upload ảnh từng bước lên Cloudinary ---
+      // Duyệt qua danh sách đường dẫn ảnh local của các bước
+      List<String> uploadedStepUrls = [];
+
+      for (String path in recipe.stepImages) {
+        if (path.isEmpty) {
+          // Nếu bước này không có ảnh, lưu chuỗi rỗng để giữ đúng thứ tự index
+          uploadedStepUrls.add("");
+        } else {
+          // Nếu có ảnh, thực hiện upload
+          // Lưu ý: Hàm uploadImages nhận vào List và trả về List
+          List<String> result = await _recipeService.uploadImages([path]);
+
+          if (result.isNotEmpty) {
+            uploadedStepUrls.add(result.first); // Lấy URL Cloudinary trả về
+          } else {
+            uploadedStepUrls.add(""); // Nếu lỗi upload thì để rỗng
+          }
+        }
+      }
+      // ---------------------------------------------------------
 
       final data = recipe.toFirestore();
-      data['images'] = uploadedUrls;
+
+      // Cập nhật lại các trường URL đã upload vào data trước khi lưu
+      data['images'] = uploadedMainUrls;       // URL ảnh bìa
+      data['stepImages'] = uploadedStepUrls;   // URL ảnh các bước (MỚI)
+
       data['authorId'] = user.uid;
       data['authorName'] = authorName;
       data['createdAt'] = FieldValue.serverTimestamp();
@@ -64,12 +91,19 @@ class PublishService {
 
   Future<bool> deletePublishedRecipe(String userId, PublishRecipe recipe) async {
     try {
-      // 1. Xóa ảnh trên Cloudinary trước để tránh rác dữ liệu
+      // 1. Xóa ảnh bìa trên Cloudinary
       if (recipe.images.isNotEmpty) {
         await _recipeService.deleteImages(recipe.images);
       }
 
-      // 2. Xóa document trong sub-collection của user
+      // 2. Xóa ảnh các bước trên Cloudinary (Nên thêm đoạn này để dọn rác sạch sẽ)
+      // Lọc ra các url không rỗng để xóa
+      final stepImagesToDelete = recipe.stepImages.where((url) => url.isNotEmpty).toList();
+      if (stepImagesToDelete.isNotEmpty) {
+        await _recipeService.deleteImages(stepImagesToDelete);
+      }
+
+      // 3. Xóa document trong sub-collection của user
       await _firestore
           .collection('users')
           .doc(userId)

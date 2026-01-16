@@ -54,17 +54,17 @@ class MySavedRecipesList extends ConsumerWidget {
   }
 
   Widget _buildSavedRecipeCard(Recipe recipe, BuildContext context) {
-    return GestureDetector( // Bọc Container bằng GestureDetector
+    return GestureDetector(
       onTap: () async {
-        // Kiểm tra nếu ID bị null hoặc rỗng
+        // Kiểm tra ID
         if (recipe.id == null || recipe.id!.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Không tìm thấy ID bài viết")),
+            const SnackBar(content: Text("Lỗi dữ liệu: ID bài viết bị rỗng")),
           );
           return;
         }
 
-        // 1. Hiển thị Loading trong lúc tải dữ liệu
+        // Hiển thị loading
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -72,43 +72,77 @@ class MySavedRecipesList extends ConsumerWidget {
         );
 
         try {
-          // 2. Lấy dữ liệu đầy đủ từ collection 'recipes' (hoặc tên collection bạn dùng để chứa bài đăng)
-          final docSnapshot = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(recipe.authorId)
-              .collection('published_recipes') // Đảm bảo tên collection này đúng với Database của bạn
-              .doc(recipe.id)
-              .get();
+          DocumentSnapshot? docSnapshot;
 
-          // Tắt loading
-          if (context.mounted) Navigator.pop(context);
+          // --- CÁCH 1: Tìm trực tiếp (Ưu tiên) ---
+          if (recipe.authorId != null && recipe.authorId!.isNotEmpty) {
+            try {
+              final directSnapshot = await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(recipe.authorId)
+                  .collection('published_recipes')
+                  .doc(recipe.id)
+                  .get();
 
-          if (docSnapshot.exists) {
-            // 3. Convert sang PublishRecipe
-            final fullRecipe = PublishRecipe.fromFirestore(docSnapshot);
+              if (directSnapshot.exists) {
+                docSnapshot = directSnapshot;
+              }
+            } catch (e) {
+              print("Tìm trực tiếp không thấy hoặc lỗi: $e");
+            }
+          }
 
-            // 4. Chuyển trang
-            if (context.mounted) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RecipeDetailPage(recipe: fullRecipe),
-                ),
-              );
+          // --- CÁCH 2: Tìm dự phòng bằng collectionGroup (ĐÃ SỬA LỖI) ---
+          if (docSnapshot == null || !docSnapshot.exists) {
+            print("Đang tìm dự phòng cho ID: ${recipe.id}");
+
+            final querySnapshot = await FirebaseFirestore.instance
+                .collectionGroup('published_recipes')
+                .where('id', isEqualTo: recipe.id) // <--- SỬA TẠI ĐÂY: Dùng field 'id' thay vì FieldPath.documentId
+                .limit(1)
+                .get();
+
+            if (querySnapshot.docs.isNotEmpty) {
+              docSnapshot = querySnapshot.docs.first;
+            }
+          }
+
+          // --- XỬ LÝ KẾT QUẢ ---
+          if (context.mounted) Navigator.pop(context); // Tắt loading
+
+          if (docSnapshot != null && docSnapshot.exists) {
+            // Convert và chuyển trang
+            // Lưu ý: docSnapshot.data() trả về Object?, cần ép kiểu
+            final data = docSnapshot.data() as Map<String, dynamic>;
+            // Đảm bảo document có đủ dữ liệu để tránh crash
+            if (data.isNotEmpty) {
+              final fullRecipe = PublishRecipe.fromFirestore(docSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RecipeDetailPage(recipe: fullRecipe),
+                  ),
+                );
+              }
             }
           } else {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Bài viết này không còn tồn tại")),
+                const SnackBar(content: Text("Bài viết này không còn tồn tại.")),
               );
-              // Tùy chọn: Xóa khỏi danh sách đã lưu nếu bài gốc đã mất
-              // ref.read(savedRecipesProvider.notifier).toggleSave(recipe);
             }
           }
+
         } catch (e) {
-          // Tắt loading nếu lỗi
-          if (context.mounted) Navigator.pop(context);
-          print("Lỗi mở chi tiết: $e");
+          if (context.mounted) Navigator.pop(context); // Tắt loading nếu lỗi
+          print("Lỗi chi tiết: $e");
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Đã xảy ra lỗi: $e")),
+            );
+          }
         }
       },
       child: Container(
@@ -121,7 +155,6 @@ class MySavedRecipesList extends ConsumerWidget {
             fit: BoxFit.cover,
           ),
         ),
-        // ... (Phần UI bên trong Container giữ nguyên như cũ)
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
