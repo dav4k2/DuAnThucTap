@@ -1,10 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Thêm Riverpod
 import 'package:fontend/screens/food_page/logic/recipe_provider.dart'; // Import provider của bạn
 import 'package:fontend/screens/food_page/recipe_detail_page_screen.dart';
 
-import '../../../Crete_recipe/logic/publish_recipe.dart'; // Import trang chi tiết
+import '../../../Crete_recipe/logic/publish_recipe.dart';
+import '../../../food_page2/recipe_detail_page_screen2.dart';
+import '../logic/mainpage_user_provider.dart'; // Import trang chi tiết
 
 // 1. Chuyển thành ConsumerWidget để dùng được ref.read
 class FeaturedRecipes extends ConsumerWidget {
@@ -47,12 +50,7 @@ class FeaturedRecipes extends ConsumerWidget {
 
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RecipeDetailPage(recipe: recipe),
-                        ),
-                      );
+                      navigateBasedOnAuthor(context, recipe);
                     },
                     child: Container(
                       width: 150,

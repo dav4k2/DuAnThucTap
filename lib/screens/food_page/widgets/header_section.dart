@@ -10,7 +10,8 @@ import '../../user_profile/MyUser_profile/logic/my_profile_provider.dart';
 
 class HeaderSection extends ConsumerStatefulWidget {
   final PublishRecipe recipe;
-  const HeaderSection({super.key, required this.recipe});
+  final VoidCallback? onRefresh;
+  const HeaderSection({super.key, required this.recipe, this.onRefresh,});
 
   @override
   ConsumerState<HeaderSection> createState() => _HeaderSectionState();

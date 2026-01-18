@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fontend/screens/EditRecipes/edit_recipe_screen.dart';
+import 'package:fontend/screens/NewRecipes/add_recipe_screen.dart';
 import '../../../Crete_recipe/logic/publish_recipe.dart';
 import '../../../Crete_recipe/logic/publish_service.dart';
+import '../../../Home_page/mainpage_user/logic/mainpage_user_provider.dart';
 
 class MyRecipeCard extends StatelessWidget {
   final PublishRecipe recipe;
@@ -78,7 +81,7 @@ class MyRecipeCard extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                Navigator.pop(dialogContext); // Đóng dialog
+                Navigator.pop(dialogContext);
 
                 // Thực hiện xóa thông qua
                 final success = await PublishService().deletePublishedRecipe(
@@ -100,7 +103,9 @@ class MyRecipeCard extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        navigateBasedOnAuthor(context, recipe);
+      },
       child: Stack(
         children: [
           // --- ẢNH MÓN ĂN ---
@@ -232,16 +237,41 @@ class MyRecipeCard extends StatelessWidget {
                 onSelected: (value) {
                   if (value == 'delete') {
                     _showDeleteDialog(context);
+                  }else if(value == 'edit'){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        // Giả sử AddRecipeScreen có tham số nhận vào recipe để edit
+                        builder: (context) => EditAddRecipeScreen(originalRecipe: recipe),
+                      ),
+                    );
                   }
                 },
                 itemBuilder: (context) => [
-                   PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
                     child: Row(
                       children: [
                         Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                        SizedBox(width: 8),
-                        Text('Xóa bài đăng'.tr(), style: TextStyle(color: Colors.red)),
+                        SizedBox(width: 10),
+                        Text(
+                          'Xóa bài đăng'.tr(),
+                          style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_outlined, color: Colors.red, size: 20),
+                        SizedBox(width: 10),
+                        Text(
+                          'Chỉnh sửa bài đăng'.tr(),
+                          style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                        ),
                       ],
                     ),
                   ),

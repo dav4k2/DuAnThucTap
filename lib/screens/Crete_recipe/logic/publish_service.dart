@@ -89,6 +89,72 @@ class PublishService {
     }
   }
 
+  Future<bool> updatePublishRecipe(PublishRecipe recipe) async {
+    try{
+      final user = _auth.currentUser;
+      if(user == null) return false;
+
+      List<String> finalMainImages = [];
+      List<String> newMainImagesToUpload = [];
+
+      // Duyệt qua danh sách ảnh hiện tại trong UI
+      for (String img in recipe.images) {
+        if(img.startsWith('http') || img.startsWith('https')){
+          // Ảnh cũ đã có trên Cloudinary giữ nguyên
+          finalMainImages.add(img);
+        }else {
+          newMainImagesToUpload.add(img);
+        }
+      }
+
+      if (newMainImagesToUpload.isNotEmpty) {
+        List<String> uploadedUrls = await _recipeService.uploadImages(newMainImagesToUpload);
+        finalMainImages.addAll(uploadedUrls);
+      }
+
+      //Xử lý ảnh
+      List<String> finalStepImages = [];
+
+      for (String path in recipe.stepImages){
+        if(path.isEmpty){
+          finalStepImages.add("");
+        }else if(path.startsWith('http') || path.startsWith('https')){
+          finalStepImages.add(path);
+        }else{
+          List<String> result = await _recipeService.uploadImages([path]);
+          if(result.isNotEmpty){
+            finalStepImages.add(result.first);
+          }else{
+            finalStepImages.add("");
+          }
+        }
+      }
+
+      //Data update
+      final data = recipe.toFirestore();
+
+      data['images'] = finalMainImages;
+      data['stepImages'] = finalStepImages;
+      data['name_lowercase'] = recipe.title.toLowerCase();
+      //Remove để tránh không bị ghi đè
+      data.remove('createdAt');
+      data['updatedAt'] = FieldValue.serverTimestamp();
+
+      //Update
+      await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('published_recipes')
+            .doc(recipe.id)
+            .update(data);
+
+      return true;
+    } catch (e) {
+      print('Lỗi update recipe: $e');
+      return false;
+    }
+  }
+
   Future<bool> deletePublishedRecipe(String userId, PublishRecipe recipe) async {
     try {
       // 1. Xóa ảnh bìa trên Cloudinary

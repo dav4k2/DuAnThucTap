@@ -7,6 +7,13 @@ import 'package:fontend/screens/food_page/widgets/ingredients_section.dart';
 import 'package:fontend/screens/food_page/widgets/rating_section.dart';
 import 'package:fontend/screens/food_page/widgets/recipe_info_section.dart';
 import 'package:fontend/screens/food_page/widgets/steps_section.dart';
+import 'package:fontend/screens/food_page2/widgets/author_section2.dart';
+import 'package:fontend/screens/food_page2/widgets/description_section2.dart';
+import 'package:fontend/screens/food_page2/widgets/header_section2.dart';
+import 'package:fontend/screens/food_page2/widgets/ingredients_section2.dart';
+import 'package:fontend/screens/food_page2/widgets/rating_section2.dart';
+import 'package:fontend/screens/food_page2/widgets/recipe_info_section2.dart';
+import 'package:fontend/screens/food_page2/widgets/steps_section2.dart';
 import '../Crete_recipe/logic/publish_recipe.dart';
 import 'logic/recipe_provider2.dart';
 
@@ -34,13 +41,13 @@ class RecipeDetailPageScreen2 extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HeaderSection(recipe: recipe),
-                RecipeInfoSection(width: width, recipe: recipe),
-                DescriptionSection(width: width, recipe: recipe),
-                IngredientsSection(width: width, recipe: recipe),
-                StepsSection(width: width, recipe: recipe),
-                RatingSection(width: width, recipe: recipe),
-                AuthorSection(width: width, authorId: recipe.authorId ?? ''),
+                HeaderSection2(recipe: recipe),
+                RecipeInfoSection2(width: width, recipe: recipe),
+                DescriptionSection2(width: width, recipe: recipe),
+                IngredientsSection2(width: width, recipe: recipe),
+                StepsSection2(width: width, recipe: recipe),
+                RatingSection2(width: width, recipe: recipe),
+                AuthorSection2(width: width, authorId: recipe.authorId ?? ''),
                 const SizedBox(height: 40),
               ],
             ),

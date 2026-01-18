@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fontend/Service/recipe_model.dart';
 
-import '../../../Crete_recipe/logic/publish_recipe.dart'; //
+import '../../../Crete_recipe/logic/publish_recipe.dart';
+import '../../../Home_page/mainpage_user/logic/mainpage_user_provider.dart'; //
 
 class RecipeCard extends StatelessWidget {
   final PublishRecipe recipe; // Đổi từ Recipe sang RecipeModel
@@ -60,7 +61,9 @@ class RecipeCard extends StatelessWidget {
         : 'https://via.placeholder.com/360x178';
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        navigateBasedOnAuthor(context, recipe);
+      },
       child: Stack(
         children: [
           // === ẢNH MÓN ĂN (Sử dụng Image.network thay vì AssetImage) ===
