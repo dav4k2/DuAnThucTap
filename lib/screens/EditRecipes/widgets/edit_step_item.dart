@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../NewRecipes/logic/add_recipe_provider.dart';
+import '../logic/edit_recipe_provider.dart';
 
 class EditStepItem extends ConsumerStatefulWidget {
   final int index;
@@ -78,7 +79,7 @@ class _EditStepItemState extends ConsumerState<EditStepItem> {
                   Navigator.pop(ctx);
                   final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (pickedFile != null) {
-                    ref.read(addRecipeProvider.notifier).addStepMedia(widget.index, pickedFile.path);
+                    ref.read(editRecipeProvider.notifier).addStepMedia(widget.index, pickedFile.path);
                   }
                 },
               ),
@@ -89,7 +90,7 @@ class _EditStepItemState extends ConsumerState<EditStepItem> {
                   Navigator.pop(ctx);
                   final pickedFile = await ImagePicker().pickVideo(source: ImageSource.gallery, maxDuration: const Duration(minutes: 5));
                   if (pickedFile != null) {
-                    ref.read(addRecipeProvider.notifier).addStepMedia(widget.index, pickedFile.path);
+                    ref.read(editRecipeProvider.notifier).addStepMedia(widget.index, pickedFile.path);
                   }
                 },
               ),
@@ -103,7 +104,7 @@ class _EditStepItemState extends ConsumerState<EditStepItem> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final errorText = ref.watch(addRecipeProvider.select(
+    final errorText = ref.watch(editRecipeProvider.select(
             (s) => (s.stepErrors.length > widget.index) ? s.stepErrors[widget.index] : null
     ));
     final fieldBgColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFEBEBEB);
@@ -112,7 +113,6 @@ class _EditStepItemState extends ConsumerState<EditStepItem> {
 
     final List<String> minuteOptions = List.generate(60, (i) => '${i + 1} phút');
 
-    // --- FIX LỖI DROPDOWN VALUE ---
     // Kiểm tra xem giá trị hiện tại (widget.duration) có nằm trong danh sách minuteOptions không.
     // Nếu không khớp (do định dạng cũ, hoặc null), gán về null để hiển thị Hint "Phút"
     String? safeDuration;
@@ -181,7 +181,7 @@ class _EditStepItemState extends ConsumerState<EditStepItem> {
                                 child: Text(value, style: TextStyle(fontSize: 13.sp, color: fieldTextColor)),
                               );
                             }).toList(),
-                            onChanged: (val) => ref.read(addRecipeProvider.notifier).updateStepDuration(widget.index, val),
+                            onChanged: (val) => ref.read(editRecipeProvider.notifier).updateStepDuration(widget.index, val),
                           ),
                         ),
                       ),
@@ -228,7 +228,7 @@ class _EditStepItemState extends ConsumerState<EditStepItem> {
                                 top: 2,
                                 right: 2,
                                 child: GestureDetector(
-                                  onTap: () => ref.read(addRecipeProvider.notifier).removeStepMedia(widget.index, mediaIdx),
+                                  onTap: () => ref.read(editRecipeProvider.notifier).removeStepMedia(widget.index, mediaIdx),
                                   child: Container(
                                     decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
                                     child: Icon(Icons.close, size: 14.sp, color: Colors.white),

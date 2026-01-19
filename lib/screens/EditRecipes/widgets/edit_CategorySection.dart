@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../NewRecipes/logic/add_recipe_provider.dart';
+import '../logic/edit_recipe_provider.dart';
 
 
 class EditCategorySection extends ConsumerStatefulWidget {
@@ -17,8 +18,8 @@ class _EditCategorySectionState extends ConsumerState<EditCategorySection> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(addRecipeProvider);
-    final notifier = ref.read(addRecipeProvider.notifier);
+    final state = ref.watch(editRecipeProvider);
+    final notifier = ref.read(editRecipeProvider.notifier);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Lọc danh sách tag theo từ khóa tìm kiếm

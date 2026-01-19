@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../NewRecipes/logic/add_recipe_provider.dart';
+import '../logic/edit_recipe_provider.dart';
 
 class EditVideoUpload extends ConsumerWidget {
   const EditVideoUpload({Key? key}) : super(key: key);
@@ -38,7 +39,7 @@ class EditVideoUpload extends ConsumerWidget {
       return;
     }
 
-    ref.read(addRecipeProvider.notifier).updateVideo(pickedFile.path);
+    ref.read(editRecipeProvider.notifier).updateVideo(pickedFile.path);
   }
 
   @override
@@ -46,7 +47,7 @@ class EditVideoUpload extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final videoPath = ref.watch(addRecipeProvider.select((s) => s.video));
+    final videoPath = ref.watch(editRecipeProvider.select((s) => s.video));
     final hasVideo = videoPath != null && videoPath.isNotEmpty;
 
     final placeholderTextColor = isDark ? Colors.grey[400]! : Colors.grey.shade700;
@@ -103,7 +104,7 @@ class EditVideoUpload extends ConsumerWidget {
                       top: 8.h,
                       right: 8.w,
                       child: GestureDetector(
-                        onTap: () => ref.read(addRecipeProvider.notifier).clearVideo(),
+                        onTap: () => ref.read(editRecipeProvider.notifier).clearVideo(),
                         child: Container(
                           padding: EdgeInsets.all(6.w),
                           decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
