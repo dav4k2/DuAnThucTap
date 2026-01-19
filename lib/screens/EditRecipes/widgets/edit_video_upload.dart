@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../NewRecipes/logic/add_recipe_provider.dart';
 import '../logic/edit_recipe_provider.dart';
 
 class EditVideoUpload extends ConsumerWidget {
@@ -13,13 +12,13 @@ class EditVideoUpload extends ConsumerWidget {
 
   Future<void> _pickVideo(BuildContext context, WidgetRef ref) async {
     final picker = ImagePicker();
-
-    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    // Chọn video từ thư viện
+    final pickedFile = await picker.pickVideo(
+        source: ImageSource.gallery,
+        maxDuration: const Duration(minutes: 5) // Giới hạn thời lượng nếu muốn
+    );
 
     if (pickedFile == null) return;
-
-    final file = File(pickedFile.path);
-    final sizeInMB = file.lengthSync() / (1024 * 1024);
 
     if (!pickedFile.path.toLowerCase().endsWith('.mp4')) {
       if (context.mounted) {
@@ -30,15 +29,20 @@ class EditVideoUpload extends ConsumerWidget {
       return;
     }
 
-    if (sizeInMB > 100) {
+    // Kiểm tra dung lượng (Ví dụ 100MB)
+    final file = File(pickedFile.path);
+    int sizeInBytes = file.lengthSync();
+    double sizeInMb = sizeInBytes / (1024 * 1024);
+    if (sizeInMb > 100) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Video phải dưới 100MB'), backgroundColor: Colors.red),
+          const SnackBar(content: Text('Video quá lớn (>100MB)'), backgroundColor: Colors.red),
         );
       }
       return;
     }
 
+    // Cập nhật vào Provider
     ref.read(editRecipeProvider.notifier).updateVideo(pickedFile.path);
   }
 
@@ -47,16 +51,19 @@ class EditVideoUpload extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    // Lấy đường dẫn video từ state
     final videoPath = ref.watch(editRecipeProvider.select((s) => s.video));
     final hasVideo = videoPath != null && videoPath.isNotEmpty;
 
-    final placeholderTextColor = isDark ? Colors.grey[400]! : Colors.grey.shade700;
-    final dottedBgColor = isDark ? Color(0x33D4D4D4) : const Color(0x51D4D4D4);
+    // Kiểm tra xem video là link Online hay File Offline
+    final isNetworkVideo = hasVideo && (videoPath!.startsWith('http') || videoPath.startsWith('https'));
+
+    final dottedBgColor = isDark ? const Color(0x33D4D4D4) : const Color(0x51D4D4D4);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 18.h),
+        // ... (Giữ nguyên phần UI bao quanh nếu muốn)
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 25.w),
           child: GestureDetector(
@@ -78,28 +85,46 @@ class EditVideoUpload extends ConsumerWidget {
                     ? Stack(
                   fit: StackFit.expand,
                   children: [
+                    // 1. Nền: Vì không render được MP4 bằng Image Widget,
+                    // ta dùng Container màu đen hoặc Icon để biểu thị
                     ClipRRect(
                       borderRadius: BorderRadius.circular(24.r),
-                      child: Image.file(
-                        File(videoPath!),
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: Colors.black,
-                          child: const Icon(Icons.video_file, size: 60, color: Colors.white70),
+                      child: Container(
+                        color: Colors.black87,
+                        child: Center(
+                          child: Icon(
+                              Icons.videocam,
+                              color: Colors.white24,
+                              size: 80.sp
+                          ),
                         ),
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          colors: [Colors.black.withOpacity(0.8), Colors.transparent],
-                        ),
-                      ),
-                    ),
+
+                    // 2. Icon Play ở giữa
                     Center(
-                      child: Icon(Icons.play_circle_fill, size: 80.sp, color: Colors.white),
+                      child: Icon(Icons.play_circle_fill, size: 60.sp, color: const Color(0xFFFFB901)),
                     ),
+
+                    // 3. Hiển thị tên file hoặc trạng thái
+                    Positioned(
+                      bottom: 12.h,
+                      left: 16.w,
+                      right: 16.w,
+                      child: Text(
+                        isNetworkVideo ? "Video đã lưu trên Server" : "Video mới: ${videoPath!.split('/').last}",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.bold,
+                          shadows: const [Shadow(blurRadius: 4, color: Colors.black)],
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    // 4. Nút Xóa
                     Positioned(
                       top: 8.h,
                       right: 8.w,
@@ -112,38 +137,24 @@ class EditVideoUpload extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    Positioned(
-                      bottom: 12.h,
-                      left: 16.w,
-                      right: 16.w,
-                      child: Text(
-                        videoPath.split('/').last,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13.sp,
-                          shadows: const [Shadow(blurRadius: 10, color: Colors.black)],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
                   ],
                 )
                     : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'image/video.png',
+                      'image/video.png', // Đảm bảo bạn có ảnh này
                       width: 64.sp,
                       height: 64.sp,
                       color: const Color(0xFFFFB901),
+                      errorBuilder: (c,e,s) => Icon(Icons.video_library, size: 64.sp, color: const Color(0xFFFFB901)),
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      'file .mp4 dung lượng dưới 100MB',
+                      'Thêm Video (MP4 < 100MB)',
                       style: TextStyle(
                         fontSize: 14.sp,
-                        color: placeholderTextColor,
+                        color: isDark ? Colors.grey[400] : Colors.grey.shade700,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

@@ -90,63 +90,73 @@ class PublishService {
   }
 
   Future<bool> updatePublishRecipe(PublishRecipe recipe) async {
-    try{
+    try {
       final user = _auth.currentUser;
-      if(user == null) return false;
+      if (user == null) return false;
 
+      // 1. Xử lý Ảnh bìa (Giữ nguyên code cũ của bạn)
       List<String> finalMainImages = [];
       List<String> newMainImagesToUpload = [];
-
-      // Duyệt qua danh sách ảnh hiện tại trong UI
       for (String img in recipe.images) {
-        if(img.startsWith('http') || img.startsWith('https')){
-          // Ảnh cũ đã có trên Cloudinary giữ nguyên
+        if (img.startsWith('http')) {
           finalMainImages.add(img);
-        }else {
+        } else {
           newMainImagesToUpload.add(img);
         }
       }
-
       if (newMainImagesToUpload.isNotEmpty) {
         List<String> uploadedUrls = await _recipeService.uploadImages(newMainImagesToUpload);
         finalMainImages.addAll(uploadedUrls);
       }
 
-      //Xử lý ảnh
+      // 2. Xử lý Ảnh các bước (Giữ nguyên code cũ của bạn)
       List<String> finalStepImages = [];
-
-      for (String path in recipe.stepImages){
-        if(path.isEmpty){
+      for (String path in recipe.stepImages) {
+        if (path.isEmpty) {
           finalStepImages.add("");
-        }else if(path.startsWith('http') || path.startsWith('https')){
+        } else if (path.startsWith('http')) {
           finalStepImages.add(path);
-        }else{
+        } else {
           List<String> result = await _recipeService.uploadImages([path]);
-          if(result.isNotEmpty){
-            finalStepImages.add(result.first);
-          }else{
-            finalStepImages.add("");
-          }
+          finalStepImages.add(result.isNotEmpty ? result.first : "");
         }
       }
 
-      //Data update
+      // 3. --- LOGIC MỚI: XỬ LÝ VIDEO ---
+      String? finalVideoUrl = recipe.video;
+
+      // Kiểm tra xem có video không
+      if (finalVideoUrl != null && finalVideoUrl.isNotEmpty) {
+        // Nếu đường dẫn KHÔNG bắt đầu bằng http, tức là file nội bộ mới chọn -> Cần upload
+        if (!finalVideoUrl.startsWith('http')) {
+          // Gọi hàm uploadVideo mới viết ở Bước 1
+          finalVideoUrl = await _recipeService.uploadVideo(finalVideoUrl);
+        }
+        // Nếu đã là http thì giữ nguyên
+      } else {
+        // Nếu user đã xóa video (null hoặc empty)
+        finalVideoUrl = null;
+      }
+      // ---------------------------------
+
       final data = recipe.toFirestore();
 
+      // Cập nhật lại data để đẩy lên Firestore
       data['images'] = finalMainImages;
       data['stepImages'] = finalStepImages;
+      data['video'] = finalVideoUrl; // <--- Lưu URL video đã xử lý
+
       data['name_lowercase'] = recipe.title.toLowerCase();
-      //Remove để tránh không bị ghi đè
+      data['authorId'] = user.uid; // Đảm bảo chính chủ
       data.remove('createdAt');
       data['updatedAt'] = FieldValue.serverTimestamp();
 
-      //Update
       await _firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('published_recipes')
-            .doc(recipe.id)
-            .update(data);
+          .collection('users')
+          .doc(user.uid)
+          .collection('published_recipes')
+          .doc(recipe.id)
+          .update(data);
 
       return true;
     } catch (e) {

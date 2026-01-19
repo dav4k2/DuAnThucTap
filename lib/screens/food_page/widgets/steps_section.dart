@@ -63,9 +63,18 @@ class StepsSection extends ConsumerWidget {
           ...recipeSteps.asMap().entries.map((entry) {
             int index = entry.key;
             String text = entry.value;
+            String? imageUrl;
+            // Kiểm tra xem có ảnh tại index này không
+            if (recipe.stepImages.isNotEmpty &&
+                index < recipe.stepImages.length &&
+                recipe.stepImages[index].isNotEmpty) {
+              imageUrl = recipe.stepImages[index];
+            }
+
             return _StepItem(
               number: index + 1,
               text: text,
+              imageUrl: imageUrl,
               numberColor: stepNumberColor,
               lineColor: stepLineColor,
               textColor: stepTextColor,
@@ -147,6 +156,7 @@ class StepsSection extends ConsumerWidget {
 class _StepItem extends StatelessWidget {
   final int number;
   final String text;
+  final String? imageUrl;
   final Color numberColor;
   final Color lineColor;
   final Color textColor;
@@ -154,6 +164,7 @@ class _StepItem extends StatelessWidget {
   const _StepItem({
     required this.number,
     required this.text,
+    this.imageUrl,
     required this.numberColor,
     required this.lineColor,
     required this.textColor,
@@ -166,7 +177,8 @@ class _StepItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          // Cột bên trái: Số và đường kẻ
+          Column(
             children: [
               Text(
                 '$number',
@@ -176,19 +188,56 @@ class _StepItem extends StatelessWidget {
                   color: numberColor,
                 ),
               ),
-              const SizedBox(width: 8),
-              Container(width: 3, height: 50, color: lineColor),
+              const SizedBox(height: 4),
+              Container(width: 3, height: 60, color: lineColor),
             ],
           ),
           const SizedBox(width: 16),
+
+          // Cột bên phải: Text mô tả + Ảnh
           Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 16,
-                color: textColor,
-                height: 1.35,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: textColor,
+                    height: 1.35,
+                  ),
+                ),
+                // Nếu có ảnh thì hiển thị bên dưới text
+                if (imageUrl != null && imageUrl!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      imageUrl!,
+                      //width: 250,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 150,
+                          width: double.infinity,
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          height: 200,
+                          width: double.infinity,
+                          color: Colors.grey.withOpacity(0.1),
+                          child: const Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ],
             ),
           )
         ],

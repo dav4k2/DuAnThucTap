@@ -61,6 +61,8 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-6.1.0" />
       <root url="file://$PROJECT_DIR$/../src/flutter/packages/integration_test" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/url_launcher_android-6.3.24" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_remote_config_web-1.10.2" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_remote_config-6.1.3" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

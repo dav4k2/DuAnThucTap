@@ -34,6 +34,7 @@ class EditRecipeStepModel {
 /// State riêng cho màn hình Edit
 class EditRecipeState {
   final String? id; // ID của bài viết đang sửa
+  final String? authorId;
   final List<String> images;
   final String? video;
   final String title;
@@ -56,6 +57,7 @@ class EditRecipeState {
 
   EditRecipeState({
     this.id,
+    this.authorId,
     this.images = const [],
     this.video,
     this.title = '',
@@ -78,6 +80,7 @@ class EditRecipeState {
 
   EditRecipeState copyWith({
     String? id,
+    String? authorId,
     List<String>? images,
     String? video,
     String? title,
@@ -98,6 +101,7 @@ class EditRecipeState {
   }) {
     return EditRecipeState(
       id: id ?? this.id,
+      authorId: authorId ?? this.authorId,
       images: images ?? this.images,
       video: video ?? this.video,
       title: title ?? this.title,
@@ -162,6 +166,7 @@ class EditRecipeNotifier extends StateNotifier<EditRecipeState> {
     // Cập nhật State
     state = state.copyWith(
       id: oldRecipe.id,
+      authorId: oldRecipe.authorId,
       title: oldRecipe.title,
       description: oldRecipe.description,
       images: List.from(oldRecipe.images), // Copy list để tránh tham chiếu
@@ -285,7 +290,7 @@ class EditRecipeNotifier extends StateNotifier<EditRecipeState> {
 
   // --- CẬP NHẬT BÀI VIẾT ---
   Future<String?> validateAndUpdate() async {
-    // 1. Validate dữ liệu
+    // 1. Validate
     if (state.title.trim().isEmpty) return 'Vui lòng nhập tên công thức';
     if (state.description.trim().isEmpty) return 'Vui lòng nhập mô tả';
     if (state.ingredients.isEmpty || state.ingredients.every((e) => e.trim().isEmpty)) {
@@ -296,8 +301,7 @@ class EditRecipeNotifier extends StateNotifier<EditRecipeState> {
     }
 
     try {
-      // 2. Chuẩn bị dữ liệu để update
-      // Tách EditRecipeStepModel thành các List riêng lẻ cho Backend
+      // 2. Prepare Data
       List<String> stepsContent = [];
       List<String> stepsDuration = [];
       List<String> stepsImages = [];
@@ -305,18 +309,18 @@ class EditRecipeNotifier extends StateNotifier<EditRecipeState> {
       for (var step in state.steps) {
         stepsContent.add(step.content);
         stepsDuration.add(step.duration ?? "");
-        // Logic hiện tại: Mỗi bước chỉ lưu 1 ảnh trên Backend
         if (step.media.isNotEmpty) {
           stepsImages.add(step.media.first);
         } else {
-          stepsImages.add(""); // Giữ chỗ index nếu không có ảnh
+          stepsImages.add("");
         }
       }
 
-      // Tạo object PublishRecipe mới từ State
+      // Tạo object PublishRecipe mới
+      // FIX: Truyền state.authorId vào đây thay vì null
       final updatedRecipe = PublishRecipe(
-        id: state.id, // ID cũ
-        authorId: null, // Service sẽ tự lấy current user
+        id: state.id,
+        authorId: state.authorId, // <--- FIX QUAN TRỌNG: Giữ nguyên tác giả
         title: state.title,
         description: state.description,
         images: state.images,
@@ -329,14 +333,13 @@ class EditRecipeNotifier extends StateNotifier<EditRecipeState> {
         durations: stepsDuration,
         stepImages: stepsImages,
         tags: state.selectedCategories,
-        // rating giữ nguyên, backend sẽ xử lý logic update
       );
 
-      // 3. Gọi Service (Service đã có logic upload ảnh)
+      // 3. Gọi Service
       final success = await _publishService.updatePublishRecipe(updatedRecipe);
 
       if (success) {
-        return null; // Thành công
+        return null;
       } else {
         return "Cập nhật thất bại. Vui lòng thử lại.";
       }
