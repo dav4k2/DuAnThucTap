@@ -25,9 +25,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // ============================================================
-  // THÊM ĐOẠN NÀY ĐỂ TỰ ĐỘNG TẠO CHAT MỚI KHI MỞ MÀN HÌNH
-  // ============================================================
   @override
   void initState() {
     super.initState();

@@ -76,15 +76,7 @@ class AddRecipeScreen extends ConsumerWidget {
                       ),
                       const ImageGallery(),
 
-                      // Thêm Video minh hoạ
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 12.h),
-                        child: Text(
-                          'Thêm Video minh hoạ',
-                          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color: sectionTitleColor),
-                        ),
-                      ),
-                      const VideoUpload(),
+
 
                       // Các Input Field
                       InputField(

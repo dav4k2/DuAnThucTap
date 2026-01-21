@@ -27,7 +27,7 @@ class RecipeRunTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 100, left: 0, right: 0,
+      top: 50, left: 0, right: 0,
       child: Text("Bước ${stepIndex + 1}", textAlign: TextAlign.center, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, fontFamily: "SF Pro Rounded")),
     );
   }
@@ -39,7 +39,7 @@ class RecipeRunDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 150, left: 24, right: 24,
+      top: 90, left: 24, right: 24,
       child: Text(text, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, height: 1.4, color: Colors.black54)),
     );
   }
@@ -52,9 +52,9 @@ class RecipeRunImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 240, left: 20, right: 20,
+      top: 120, left: 20, right: 20,
       child: Container(
-        height: 200,
+        height: 400,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.grey[200], // Màu nền nhẹ khi ảnh đang load
@@ -80,7 +80,7 @@ class RecipeRunImage extends StatelessWidget {
     if (imagePath.startsWith('http')) {
       return Image.network(
         imagePath,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         // Hiển thị loading khi đang tải ảnh
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
@@ -94,7 +94,7 @@ class RecipeRunImage extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) {
           return Image.asset(
             "image/p1.png", // Đảm bảo bạn có ảnh này hoặc đổi thành p3.png
-            fit: BoxFit.cover,
+            fit: BoxFit.contain,
           );
         },
       );
@@ -104,10 +104,10 @@ class RecipeRunImage extends StatelessWidget {
     else {
       return Image.asset(
         imagePath,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           // Fallback cuối cùng
-          return Image.asset("image/p1.png", fit: BoxFit.cover);
+          return Image.asset("image/p1.png", fit: BoxFit.contain);
         },
       );
     }

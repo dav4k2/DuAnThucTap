@@ -1,6 +1,3 @@
-/// Sơn
-/// Trang Tab ĐN/ĐK
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
