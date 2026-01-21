@@ -6,7 +6,6 @@ let currentPage = 1;
 const rowsPerPage = 5;
 let currentFilteredData = [];
 
-// Danh sách Tags có sẵn
 const AVAILABLE_TAGS = [
     "Bữa sáng", "Bữa trưa", "Bữa tối", "Ăn vặt", 
     "Healthy", "Món Á", "Món Âu", "Món nước", 

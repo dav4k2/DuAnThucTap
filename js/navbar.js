@@ -66,3 +66,7 @@ window.addEventListener('click', function(e) {
         modal.classList.remove('active');
     }
 });
+
+function preventBack(){window.history.forward();}
+setTimeout("preventBack()", 0);
+window.onunload=function(){null};

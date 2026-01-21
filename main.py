@@ -60,7 +60,6 @@ async def read_login(): return FileResponse("login.html")
 @app.get("/signup.html")
 async def read_signup(): return FileResponse("signup.html")
 
-
 #user
 @app.post("/api/upload-image")
 async def upload_image(file: UploadFile = File(...)):
@@ -260,7 +259,7 @@ async def get_dashboard_stats():
             total_recipes += 1
             r_data = doc.to_dict()
             
-            created_at = r_data.get('created_at')
+            created_at = r_data.get('createdAt')
             if created_at:
                 try:
                     if isinstance(created_at, str):

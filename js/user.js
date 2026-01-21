@@ -5,7 +5,6 @@ let currentSortMode = 'default';
 let currentPage = 1;
 const rowsPerPage = 10;
 let currentFilteredData = [];
-
 let editModal, successModal, deleteModal;
 
 document.addEventListener("DOMContentLoaded", async () => {
