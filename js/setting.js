@@ -1,100 +1,141 @@
 document.addEventListener("DOMContentLoaded", () => {
-    firebase.auth().onAuthStateChanged(async (user) => {
+    firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            updateUI(user.displayName, user.email, null);
-            try {
-                const res = await fetch(`/api/check-admin-access/${user.uid}`);
-                const data = await res.json();
-
-                if (data.is_admin) {
-                    updateUI(data.name, data.email, data.avatar);
-                }
-            } catch (error) {
-                console.error("Lỗi lấy thông tin admin", error);
-            }
+            displayAdminInfo(user);
         } else {
             window.location.href = 'login.html';
         }
     });
+
+    setupPasswordToggle('new_password', 'toggle_new_pwd');
+    setupPasswordToggle('confirm_password', 'toggle_confirm_pwd');
+
+    const inputs = [document.getElementById('new_password'), document.getElementById('confirm_password')];
+    inputs.forEach(input => {
+        if (input) {
+            input.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); 
+                    handleChangePassword();
+                }
+            });
+        }
+    });
 });
 
-// hiện thông tin admin
-function updateUI(name, email, avatarUrl) {
-    const nameEl = document.getElementById('admin_name');
-    const emailEl = document.getElementById('admin_email');
+function setupPasswordToggle(inputId, toggleId) {
+    const toggleBtn = document.getElementById(toggleId);
+    const passwordInput = document.getElementById(inputId);
 
-    if (name && nameEl) nameEl.innerText = name;
-    if (email && emailEl) emailEl.innerText = email;
-    
-    if (avatarUrl && avatarEl) {
-        avatarEl.style.backgroundImage = `url('${avatarUrl}')`;
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            if (type === 'text') {
+                this.src = 'images/hide.png'; 
+            } else {
+                this.src = 'images/show.png'; 
+            }
+        });
     }
 }
 
-// modal đổi mk
-const passwordModal = document.getElementById('passwordModal');
+function displayAdminInfo(user) {
+    const nameEl = document.getElementById('admin_name');
+    const emailEl = document.getElementById('admin_email');
+    if (emailEl) emailEl.innerText = user.email;
+    const storedName = localStorage.getItem('admin_name'); 
+    if (nameEl) nameEl.innerText = storedName || user.email.split('@')[0];
+}
 
 function openPasswordModal() {
-    passwordModal.classList.add('active');
-    document.getElementById('pwd_error').style.display = 'none';
+    const modal = document.getElementById('password_modal');
+    if(!modal) return;
+    
     document.getElementById('new_password').value = '';
     document.getElementById('confirm_password').value = '';
+    const errEl = document.getElementById('pwd_error');
+    if(errEl) {
+        errEl.style.display = 'none';
+        errEl.innerText = '';
+    }
+    
+    resetInputState('new_password', 'toggle_new_pwd');
+    resetInputState('confirm_password', 'toggle_confirm_pwd');
+
+    modal.classList.add('active');
+}
+
+function resetInputState(inputId, toggleId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(toggleId);
+    if(input) input.setAttribute('type', 'password');
+    if(icon) icon.src = 'images/show.png';
 }
 
 function closePasswordModal() {
-    passwordModal.classList.remove('active');
+    const modal = document.getElementById('password_modal');
+    if(modal) modal.classList.remove('active');
 }
 
-window.onclick = function(event) {
-    if (event.target == passwordModal) {
-        closePasswordModal();
-    }
-}
-
-// đổi mật khẩu
 async function handleChangePassword() {
     const newPass = document.getElementById('new_password').value;
     const confirmPass = document.getElementById('confirm_password').value;
     const errorMsg = document.getElementById('pwd_error');
-    const btn = document.querySelector('#passwordModal .btn_save');
+    const btn = document.querySelector('#password_modal .btn_save');
+    
+    errorMsg.style.display = 'none';
 
-    // ràng buộc
     if (newPass.length < 6) {
-        showError(errorMsg, "Mật khẩu phải có ít nhất 6 ký tự!");
+        errorMsg.innerText = "Mật khẩu phải có ít nhất 6 ký tự.";
+        errorMsg.style.display = 'block';
         return;
     }
     if (newPass !== confirmPass) {
-        showError(errorMsg, "Mật khẩu xác nhận không khớp!");
+        errorMsg.innerText = "Mật khẩu xác nhận không khớp.";
+        errorMsg.style.display = 'block';
         return;
     }
 
-    errorMsg.style.display = "none";
+    const originalText = btn.innerText;
     btn.disabled = true;
+    btn.innerText = "Đang xử lý...";
 
-    const user = firebase.auth().currentUser;
-    if (user) {
-        try {
+    try {
+        const user = firebase.auth().currentUser;
+        if(user) {
             await user.updatePassword(newPass);
             alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+            closePasswordModal();
             await firebase.auth().signOut();
+            localStorage.removeItem('admin_name'); 
             window.location.href = 'login.html';
-        } catch (error) {
-            console.error(error);
-            if (error.code === 'auth/requires-recent-login') {
-                alert("Để bảo mật, bạn cần đăng xuất và đăng nhập lại trước khi đổi mật khẩu.");
-                await firebase.auth().signOut();
-                window.location.href = 'login.html';
-            } else {
-                showError(errorMsg, "Lỗi: " + error.message);
-            }
-        } finally {
-            btn.innerText = "Cập nhật";
-            btn.disabled = false;
+        } else {
+            alert("Không tìm thấy thông tin người dùng.");
         }
+    } catch (error) {
+        console.error("Lỗi đổi pass:", error);
+        errorMsg.style.display = 'block';
+        
+        if(error.code === 'auth/requires-recent-login') {
+            errorMsg.innerText = "Phiên đăng nhập cũ. Vui lòng đăng xuất và đăng nhập lại.";
+            setTimeout(async () => {
+                 await firebase.auth().signOut();
+                 window.location.href = 'login.html';
+            }, 3000);
+        } else {
+            errorMsg.innerText = "Lỗi: " + error.message;
+        }
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
     }
 }
 
-function showError(el, msg) {
-    el.innerText = msg;
-    el.style.display = "block";
-}
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('password_modal');
+    if (e.target == modal) {
+        closePasswordModal();
+    }
+});

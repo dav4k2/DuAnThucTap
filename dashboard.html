@@ -12,56 +12,55 @@
 </head>
 <body>
 
-  <div id="navbar-placeholder"></div>
+  <div id="navbar_placeholder"></div>
 
   <main class="content">
-    <div class="content-wrapper">
-      
+    <div class="content_wrapper"> 
       <section class="cards">
         <div class="card">
           <img src="images/user.png" alt="user">
-          <div class="card-text">
+          <div class="card_text">
             <p>Tổng số người dùng</p>
-            <strong id="total-users">Đang tải...</strong>
+            <strong id="total_users">Đang tải...</strong>
           </div>
         </div>
         <div class="card">
           <img src="images/recipe.png" alt="recipe">
-          <div class="card-text">
+          <div class="card_text">
             <p>Tổng số công thức</p>
-            <strong id="total-recipes">Đang tải...</strong>
+            <strong id="total_recipes">Đang tải...</strong>
           </div>
         </div>
       </section>
 
       <section class="charts">
-          <div class="chart-container">
+          <div class="chart_container">
             <h4>Phân loại công thức</h4>
-            <div class="chart-wrapper">
+            <div class="chart_wrapper">
                 <canvas id="pieChart"></canvas>
             </div>
           </div>
-          <div class="chart-container">
+          <div class="chart_container">
             <h4>Công thức nổi bật</h4>
-            <div class="chart-wrapper">
+            <div class="chart_wrapper">
                 <canvas id="barChart"></canvas>
             </div>
           </div>
-          <div class="chart-container">
+          <div class="chart_container">
             <h4>Số người dùng theo tháng</h4>
-            <div class="chart-wrapper">
+            <div class="chart_wrapper">
                 <canvas id="lineChart"></canvas>
             </div>
           </div>
       </section>
 
-<section class="bottom-row">
+      <section class="bottom_row">
         
-        <div class="main-tables">
+        <div class="main_tables">
           
-          <div class="table-container">
-            <div class="table-header"><h4>Người dùng mới trong tháng</h4></div>
-            <div class="table-scroll"> 
+          <div class="table_container">
+            <div class="table_header"><h4>Người dùng mới trong tháng</h4></div>
+            <div class="table_scroll"> 
                 <table>
                   <thead>
                     <tr>
@@ -71,16 +70,16 @@
                       <th>Ngày tham gia</th>
                     </tr>
                   </thead>
-                  <tbody id="new-users-table">
+                  <tbody id="new_users_table">
                     <tr><td colspan="4" style="text-align:center">Đang tải...</td></tr>
                   </tbody>
                 </table>
             </div>
           </div>
 
-          <div class="table-container">
-            <div class="table-header"><h4>Công thức mới trong tháng</h4></div>
-            <div class="table-scroll"> 
+          <div class="table_container">
+            <div class="table_header"><h4>Công thức mới trong tháng</h4></div>
+            <div class="table_scroll"> 
                 <table>
                   <thead>
                     <tr>
@@ -90,7 +89,7 @@
                       <th>Ngày đăng</th>
                     </tr>
                   </thead>
-                  <tbody id="new-recipes-table">
+                  <tbody id="new_recipes_table">
                     <tr><td colspan="4" style="text-align:center">Đang tải...</td></tr>
                   </tbody>
                 </table>
@@ -102,15 +101,15 @@
           <h4>Tăng trưởng tháng này</h4>
           <ul>
             <li>
-              <div class="info-item">
+              <div class="info_item">
                   <span class="label">Người dùng mới</span>
-                  <strong class="positive" id="new-users-month">...</strong>
+                  <strong class="positive" id="new_users_month">...</strong>
               </div>
             </li>
             <li>
-              <div class="info-item">
+              <div class="info_item">
                   <span class="label">Công thức mới</span>
-                  <strong class="positive" id="new-recipes-month">...</strong>
+                  <strong class="positive" id="new_recipes_month">...</strong>
               </div>
             </li>
           </ul>

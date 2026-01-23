@@ -16,17 +16,14 @@ from collections import Counter, defaultdict
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
 
-# kết nối firebase
 cred = credentials.Certificate("serviceAccountKey.json")
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 
-# khởi tạo Firestore Client
 db = firestore.client()
 
 app = FastAPI()
 
-# cấu hình cloudinary
 cloudinary.config( 
   cloud_name = "dzysold5b", 
   api_key = "259311985559455", 
@@ -34,7 +31,6 @@ cloudinary.config(
   secure = True
 )
 
-# cấu hình file
 app.mount("/css", StaticFiles(directory="css"), name="css")
 app.mount("/js", StaticFiles(directory="js"), name="js")
 app.mount("/images", StaticFiles(directory="images"), name="images")
@@ -60,7 +56,6 @@ async def read_login(): return FileResponse("login.html")
 @app.get("/signup.html")
 async def read_signup(): return FileResponse("signup.html")
 
-#user
 @app.post("/api/upload-image")
 async def upload_image(file: UploadFile = File(...)):
     try:
@@ -72,7 +67,6 @@ async def upload_image(file: UploadFile = File(...)):
         print(f"Lỗi upload: {e}")
         return {"error": str(e)}
     
-
 @app.get("/api/get_all_users")
 async def get_all_users():
     try:
@@ -99,7 +93,6 @@ class UserUpdate(BaseModel):
     email: str
     disabled: bool
     ban_duration: Optional[str] = None
-
 
 @app.put("/api/update_user/{uid}")
 async def update_user(uid: str, user: UserUpdate):

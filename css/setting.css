@@ -73,6 +73,7 @@ label {
     color: #6B7280; 
 }
 
+/* Style chung cho input thường */
 input {
     padding: 10px 12px;
     border: 1px solid var(--border-color);
@@ -81,6 +82,8 @@ input {
     outline: none;
     transition: 0.2s;
     background-color: #FAFAFA;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 input:focus { 
@@ -107,7 +110,7 @@ input[readonly] {
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    background-image: url('../images/avatar.png'); /* Fix cứng */
+    background-image: url('../images/avatar.png'); 
 }
 
 .admin_details strong { 
@@ -138,6 +141,8 @@ input[readonly] {
     background: #F3F4F6; 
 }
 
+/* --- MODAL STYLES --- */
+
 .modal_overlay {
     position: fixed; 
     top: 0; 
@@ -163,29 +168,97 @@ input[readonly] {
     border-radius: 12px; 
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    
+    /* Ghi đè để tránh xung đột với navbar.css */
+    display: block;        
+    text-align: left;      
 }
 
 .modal_header {
     padding: 15px 20px; 
     border-bottom: 1px solid #eee;
     display: flex; 
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
 }
 
 .modal_header h3 { 
     margin: 0; 
     font-size: 16px; 
+    color: #111; 
 }
 
 .close_btn { 
     cursor: pointer; 
-    font-size: 20px; 
+    font-size: 24px; 
     color: #999; 
+    line-height: 1;
+}
+
+.close_btn:hover {
+    color: #333;
 }
 
 .modal_body { 
     padding: 20px; 
+}
+
+.modal_body .form_group label {
+    font-size: 14px;        
+    font-weight: 700;       
+    color: #374151;         
+    margin-bottom: 8px;     
+    display: block;
+    text-align: left;
+}
+
+.modal_body .form_group {
+    margin-bottom: 20px;
+}
+
+/* --- STYLE SAO CHÉP TỪ LOGIN.CSS & TỐI ƯU CHO MODAL --- */
+
+/* Wrapper giống login */
+.password_field {
+    position: relative;
+    width: 100%;
+}
+
+/* Input trong modal: style giống setting.css nhưng thêm padding cho icon */
+.password_field input {
+    width: 100%;
+    padding: 12px 40px 12px 15px; /* Padding phải chừa chỗ cho icon */
+    background-color: #fff;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #111;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.password_field input:focus {
+    border-color: #9CA3AF;  
+    box-shadow: 0 0 0 4px #F3F4F6; 
+}
+
+.show_password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    z-index: 2; 
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
 }
 
 .error_msg { 
@@ -197,11 +270,41 @@ input[readonly] {
 
 .modal_footer {
     padding: 15px 20px; 
-    background: #f9fafb;
+    background: #fff;
     border-top: 1px solid #eee; 
     display: flex; 
-    justify-content: flex-end; 
+    justify-content: flex-end;
     gap: 10px;
+}
+
+.modal_footer .btn_cancel {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal_footer .btn_cancel:hover {
+    background-color: #f9fafb;
+}
+
+.modal_footer .btn_save {
+    background: #FFC107;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal_footer .btn_save:hover {
+    background-color: #f3b81d;
 }
 
 @media (max-width: 1000px) {

@@ -9,12 +9,11 @@ async function loadDashboardStats() {
         
         const data = await res.json();
 
-        // Cập nhật số liệu tổng & Sidebar
         if (data.summary) {
-            updateText('total-users', data.summary.total_users);
-            updateText('total-recipes', data.summary.total_recipes);
-            updateText('new-users-month', "+" + (data.summary.new_users_month || 0));
-            updateText('new-recipes-month', "+" + (data.summary.new_recipes_month || 0));
+            updateText('total_users', data.summary.total_users);
+            updateText('total_recipes', data.summary.total_recipes);
+            updateText('new_users_month', "+" + (data.summary.new_users_month || 0));
+            updateText('new_recipes_month', "+" + (data.summary.new_recipes_month || 0));
         }
 
         if (data.charts) {
@@ -22,8 +21,8 @@ async function loadDashboardStats() {
         }
 
         if (data.lists) {
-            renderTable('new-users-table', data.lists.new_users, ['id', 'name', 'email', 'date']);
-            renderTable('new-recipes-table', data.lists.new_recipes, ['id', 'title', 'author', 'date']);
+            renderTable('new_users_table', data.lists.new_users, ['id', 'name', 'email', 'date']);
+            renderTable('new_recipes_table', data.lists.new_recipes, ['id', 'title', 'author', 'date']);
         }
 
     } catch (error) {
@@ -36,7 +35,6 @@ function updateText(id, value) {
     if(el) el.innerText = value || 0;
 }
 
-// Render bảng 
 function renderTable(tbodyId, dataList, fields) {
     const tbody = document.getElementById(tbodyId);
     if (!tbody) return;
@@ -69,9 +67,7 @@ function renderTable(tbodyId, dataList, fields) {
     });
 }
 
-// Hàm khởi tạo biểu đồ
 function initCharts(chartData) {
-    // Biểu đồ tròn
     const pieCanvas = document.getElementById('pieChart');
     if (pieCanvas) {
         new Chart(pieCanvas.getContext('2d'), {
@@ -93,7 +89,6 @@ function initCharts(chartData) {
         });
     }
     
-    // Biểu đồ cột
     const barCanvas = document.getElementById('barChart');
     if (barCanvas) {
         new Chart(barCanvas.getContext('2d'), {
@@ -117,7 +112,6 @@ function initCharts(chartData) {
         });
     }
 
-    // Biểu đồ đường
     const lineCanvas = document.getElementById('lineChart');
     if (lineCanvas) {
         new Chart(lineCanvas.getContext('2d'), {

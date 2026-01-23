@@ -5,6 +5,7 @@ let currentSortMode = 'default';
 let currentPage = 1;
 const rowsPerPage = 5;
 let currentFilteredData = [];
+let edit_modal, success_modal, delete_modal;
 
 const AVAILABLE_TAGS = [
     "Bữa sáng", "Bữa trưa", "Bữa tối", "Ăn vặt", 
@@ -13,18 +14,15 @@ const AVAILABLE_TAGS = [
     "Phở", "Bún", "Trà", "Đồ uống", "Bánh ngọt"
 ];
 
-let editModal, successModal, deleteModal;
-
 document.addEventListener("DOMContentLoaded", async () => {
-    editModal = document.getElementById('editModal');
-    successModal = document.getElementById('successModal');
-    deleteModal = document.getElementById('deleteModal');
-
+    editModal = document.getElementById('edit_modal');
+    successModal = document.getElementById('success_modal');
+    deleteModal = document.getElementById('delete_modal');
     await loadRecipes();
 });
 
 async function loadRecipes() {
-    const tableBody = document.getElementById("table-recipes");
+    const tableBody = document.getElementById("table_recipes");
     try {
         const response = await fetch("/api/recipes");
         const data = await response.json();
@@ -41,7 +39,7 @@ async function loadRecipes() {
 }
 
 function handleSearchAndSort() {
-    const keyword = document.getElementById('search-input').value.toLowerCase();
+    const keyword = document.getElementById('search_input').value.toLowerCase();
     const dateValue = document.getElementById('filter_date').value;
     
     let filtered = allRecipesData.filter(item => {
@@ -115,7 +113,7 @@ function updateTableDisplay() {
 }
 
 function renderTable(recipes) {
-    const tableBody = document.getElementById("table-recipes");
+    const tableBody = document.getElementById("table_recipes");
     tableBody.innerHTML = ""; 
 
     if (recipes.length === 0) {

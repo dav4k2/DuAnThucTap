@@ -34,7 +34,7 @@ body {
   margin-right: 20px;
 }
 
-.profile-avatar {
+.profile_avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -54,12 +54,12 @@ body {
   font-weight: 700; 
 }
 
-.nav-main { 
+.nav_main { 
   list-style: none; 
   flex-grow: 1; 
 }
 
-.nav-main li {
+.nav_main li {
   display: flex; 
   align-items: center;
   padding: 12px 10px; 
@@ -71,42 +71,42 @@ body {
   white-space: nowrap;
 }
 
-.nav-main li img { 
+.nav_main li img { 
   width: 25px; 
   height: 28px; 
   margin-right: 15px; 
 }
 
-.nav-text { 
+.nav_text { 
   opacity: 1; 
   visibility: visible; 
 }
 
-.nav-main li.active {
+.nav_main li.active {
   background-color: #ffffff;
   color: #333;
   margin-right: 0;
   border-radius: 20px 0 0 20px;
 }
 
-.nav-main li:hover {
+.nav_main li:hover {
   background-color: rgba(255, 255, 255, 0.5);
   margin-right: 0;
   border-radius: 20px 0 0 20px;
 }
 
-.nav-main li.active:hover { 
+.nav_main li.active:hover { 
   background-color: #ffffff; 
 }
 
-.nav-bottom {
+.nav_bottom {
   list-style: none;
   border-top: 2px solid rgba(255, 255, 255, 0.3);
   padding-top: 10px; 
   margin-right: 20px;
 }
 
-.nav-bottom li {
+.nav_bottom li {
   padding: 10px; 
   display: flex; 
   align-items: center;
@@ -114,16 +114,16 @@ body {
   cursor: pointer;
 }
 
-.nav-bottom li img { 
+.nav_bottom li img { 
   width: 28px; 
   height: 28px; 
 }
 
-.nav-bottom li:hover { 
+.nav_bottom li:hover { 
   background-color: rgba(255, 255, 255, 0.5); 
 }
 
-.modal-logout {
+.modal_logout {
     position: fixed; 
     top: 0; 
     left: 0; 
@@ -136,11 +136,11 @@ body {
     z-index: 9999;
 }
 
-.modal-logout.active { 
+.modal_logout.active { 
   display: flex; 
 }
 
-.modal-box {
+.modal_box {
     background: #fff; 
     width: 420px; 
     padding: 30px;
@@ -153,7 +153,7 @@ body {
     animation: fadeIn 0.2s ease-out;
 }
 
-.icon-warning {
+.icon_warning {
     width: 60px; 
     height: 60px;
     border-radius: 50%;
@@ -162,34 +162,36 @@ body {
     align-items: center;
     margin-bottom: 20px;
 }
-.icon-bg { 
+
+.icon_bg { 
   background-color: #FEE2E2; 
 }
 
-.modal-warning { 
+.modal_warning { 
   width: 30px; height: 30px; 
 }
 
-.modal-box h3 { 
+.modal_box h3 { 
     font-size: 20px; 
     font-weight: 700; 
     color: #333; 
     margin: 0 0 10px 0; 
 }
-.modal-desc { 
+
+.modal_desc { 
     color: #666; 
     font-size: 14px; 
     margin-bottom: 25px; 
     line-height: 1.5;
 }
 
-.modal-footer { 
+.modal_footer { 
     display: flex; 
     gap: 15px; 
     width: 100%; 
 }
 
-.modal-footer button { 
+.modal_footer button { 
     flex: 1;
     padding: 12px; 
     border-radius: 8px; 
@@ -199,25 +201,23 @@ body {
     transition: 0.2s;
 }
 
-/* Nút Hủy */
-.btn-cancel { 
+.btn_cancel { 
     background: #fff; 
     border: 1px solid #E5E7EB; 
     color: #374151; 
 }
 
-.btn-cancel:hover { 
+.btn_cancel:hover { 
   background: #F9FAFB; 
 }
 
-/* Nút Đăng xuất */
-.btn-danger { 
+.btn_danger { 
     background: #DC2626; 
     color: #fff; 
     border: none; 
 }
 
-.btn-danger:hover { 
+.btn_danger:hover { 
   background: #B91C1C; 
 }
 

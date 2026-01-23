@@ -80,7 +80,6 @@ input[type="password"]::-ms-clear {
     display: none;
 }
 
-/* Container chính */
 .login_container {
     display: flex;
     justify-content: center;
@@ -89,8 +88,6 @@ input[type="password"]::-ms-clear {
     height: 100vh;
 }
 
-
-/* Form đăng nhập */
 .login_form {
     width: 380px;
     padding: 35px 40px;

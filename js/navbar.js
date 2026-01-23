@@ -2,14 +2,14 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch("navbar.html")
         .then(response => response.text())
         .then(data => {
-            const placeholder = document.getElementById("navbar-placeholder");
+            const placeholder = document.getElementById("navbar_placeholder");
             if (placeholder) {
                 placeholder.innerHTML = data;
                 highlightCurrentPage();
-                const adminName = localStorage.getItem('admin-name');
+                const adminName = localStorage.getItem('admin_name');
                 if(adminName) {
                     setTimeout(() => {
-                        const nameEl = document.getElementById('name-display');
+                        const nameEl = document.getElementById('name_display');
                         if(nameEl) nameEl.innerText = adminName;
                     }, 0);
                 }
@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(err => console.error("Lỗi tải navbar:", err));
 });
 
-// active tab
 function highlightCurrentPage() {
     const path = window.location.pathname;
     const page = path.split("/").pop(); 
@@ -32,14 +31,13 @@ function highlightCurrentPage() {
     }
 }
 
-// đăng xuất
 function toggleLogoutModal() {
-    const modal = document.getElementById('logoutModal');
+    const modal = document.getElementById('logout_modal');
     modal.classList.toggle('active');
 }
 
 async function confirmLogout() {
-    const btn = document.querySelector('#logoutModal .btn-danger');
+    const btn = document.querySelector('#logout_modal .btn-danger');
     if(btn) {
         btn.disabled = true;
     }
@@ -48,9 +46,9 @@ async function confirmLogout() {
         if (typeof firebase !== 'undefined') {
              await firebase.auth().signOut();
         }
-
-        localStorage.removeItem('admin-name');
-        localStorage.removeItem('admin-info');
+        
+        localStorage.removeItem('admin_name');
+        localStorage.removeItem('admin_info');
 
         window.location.href = 'login.html'; 
 
@@ -61,7 +59,7 @@ async function confirmLogout() {
 }
 
 window.addEventListener('click', function(e) {
-    const modal = document.getElementById('logoutModal');
+    const modal = document.getElementById('logout_modal');
     if (e.target == modal) {
         modal.classList.remove('active');
     }

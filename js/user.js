@@ -5,13 +5,12 @@ let currentSortMode = 'default';
 let currentPage = 1;
 const rowsPerPage = 10;
 let currentFilteredData = [];
-let editModal, successModal, deleteModal;
+let edit_modal, success_modal, delete_modal;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    editModal = document.getElementById('editModal');
-    successModal = document.getElementById('successModal');
-    deleteModal = document.getElementById('deleteModal');
-
+    editModal = document.getElementById('edit_modal');
+    successModal = document.getElementById('success_modal');
+    deleteModal = document.getElementById('delete_modal');
     await loadUsers();
 });
 
@@ -29,7 +28,6 @@ async function loadUsers() {
     }
 }
 
-// sắp xếp 
 function handleSearchAndSort() {
     const keyword = document.getElementById('search_user').value.toLowerCase();
     
@@ -155,7 +153,6 @@ function renderPagination(totalItems, totalPages) {
     controls.appendChild(createBtn('Sau', currentPage + 1, false, currentPage === totalPages));
 }
 
-// dropdown 
 function toggleSortDropdown() {
     const el = document.getElementById('sort_dropdown_content');
     const icon = document.getElementById('sort_dropdown_icon');

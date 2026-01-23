@@ -9,39 +9,35 @@
 
 <body>
 
-<!--Phần header-->
 <header class="navbar">
-    <div class="navbar-left">
+    <div class="navbar_left">
         <img src="images/logo.png" alt="CookHub Logo" class="logo">
         <h1>Cook<span class="highlight">Hub</span></h1>
     </div>
-    <button id="login-btn" class="login-btn">Đăng nhập</button>
+    <button id="login_btn" class="login_btn">Đăng nhập</button>
 </header>
 
-<!--Phần hero-->
 <section class="hero">
-    <img src="images/mainpage.jpg" alt="Món ăn chính" class="hero-bg">
-    <div class="hero-text">
+    <img src="images/mainpage.jpg" alt="Món ăn chính" class="hero_bg">
+    <div class="hero_text">
         <h1>Cook<span class="highlight">Hub</span></h1>
         <h2>Anyone can <span class="highlight">cook</span></h2>
     </div>
 </section>
   
-<!--Phần footer-->
 <footer class="footer">
-    <div class="footer-left">
+    <div class="footer_left">
         <h3>Cook<span class="highlight">Hub</span></h3>
         <p>Theo đuổi ước mơ của bạn</p>
     </div>
 </footer>
 
-<!--Chuyển sang trang đăng nhập-->
 <script>
     window.addEventListener("load", function() {
         document.body.classList.add("loaded");
     });
 
-    const loginButton = document.getElementById("login-btn");
+    const loginButton = document.getElementById("login_btn");
     loginButton.addEventListener("click", function() {
         document.body.style.opacity = 0;
         setTimeout(() => {

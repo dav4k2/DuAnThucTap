@@ -1,25 +1,25 @@
 <nav class="navbar">
   <div class="profile">
-    <img src="images/avatar.png" alt="avatar" class="profile-avatar">
-    <div class="profile-text">
+    <img src="images/avatar.png" alt="avatar" class="profile_avatar">
+    <div class="profile_text">
       <h4>Chào mừng quay lại</h4>
-      <h5 id="name-display">Admin</h5>
+      <h5 id="name_display">Admin</h5>
     </div>
   </div>
   
-  <ul class="nav-main">
+  <ul class="nav_main">
     <a href="dashboard.html" data-page="dashboard.html" style="text-decoration: none;">
-      <li><img src="images/search.png"><span class="nav-text">Tổng quan</span></li>
+      <li><img src="images/search.png"><span class="nav_text">Tổng quan</span></li>
     </a>
     <a href="user.html" data-page="user.html" style="text-decoration: none;">
-      <li><img src="images/qlnd.png"><span class="nav-text">Quản lý người dùng</span></li>
+      <li><img src="images/qlnd.png"><span class="nav_text">Quản lý người dùng</span></li>
     </a>
     <a href="recipe.html" data-page="recipe.html" style="text-decoration: none;">
-      <li><img src="images/qlct.png"><span class="nav-text">Quản lý công thức</span></li>
+      <li><img src="images/qlct.png"><span class="nav_text">Quản lý công thức</span></li>
     </a>
   </ul>
 
-  <ul class="nav-bottom">
+  <ul class="nav_bottom">
     <a href="setting.html" data-page="setting.html" style="text-decoration: none;">
         <li><img src="images/setting.png"></li>
     </a>
@@ -30,19 +30,19 @@
   </ul>
 </nav>
 
-<div class="modal-logout" id="logoutModal" style="z-index: 9999;">
-  <div class="modal-box">
-      <div class="icon-warning icon-bg" style="margin: 0 auto 15px; background: #FEE2E2; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-        <img src="images/warning.png" class="modal-warning" style="width: 24px; height: 24px;">
+<div class="modal_logout" id="logout_modal" style="z-index: 9999;">
+  <div class="modal_box">
+      <div class="icon_warning icon_bg" style="margin: 0 auto 15px; background: #FEE2E2; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <img src="images/warning.png" class="modal_warning" style="width: 24px; height: 24px;">
       </div>
       
       <h3>Đăng xuất khỏi hệ thống?</h3>
-      <p class="modal-desc" style="color: #666; margin-bottom: 20px;">Bạn sẽ cần đăng nhập lại để tiếp tục quản lý.</p>
+      <p class="modal_desc" style="color: #666; margin-bottom: 20px;">Bạn sẽ cần đăng nhập lại để tiếp tục quản lý.</p>
       
-      <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center;">
-          <button class="btn-cancel" onclick="toggleLogoutModal()" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">Hủy</button>
+      <div class="modal_footer" style="display: flex; gap: 10px; justify-content: center;">
+          <button class="btn_cancel" onclick="toggleLogoutModal()" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">Hủy</button>
           
-          <button class="btn-danger" onclick="confirmLogout()" style="padding: 10px 20px; border: none; background: #DC2626; color: white; border-radius: 6px; cursor: pointer;">Đăng xuất</button>
+          <button class="btn_danger" onclick="confirmLogout()" style="padding: 10px 20px; border: none; background: #DC2626; color: white; border-radius: 6px; cursor: pointer;">Đăng xuất</button>
       </div>
   </div>
 </div>

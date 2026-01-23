@@ -5,13 +5,10 @@
   font-family: 'Roboto', sans-serif;
 }
 
-/* nền dashboard */
 body {
   background-color: #ffffff; 
   min-height: 100vh;
 }
-
-/* main content (Phần thông tin và biểu đồ ) */
 
 .content {
   margin-left: 260px;
@@ -19,13 +16,10 @@ body {
   position: relative;
 }
 
-/* bao nội dung bên trong */
-.content-wrapper {
+.content_wrapper {
   will-change: margin-left;
 }
 
-
-/* thẻ thông tin */
 .cards {
   display: flex;
   gap: 20px;
@@ -33,7 +27,7 @@ body {
   margin-bottom: 25px;
 }
 
-.card{
+.card {
   flex: 1;
   min-width: 220px;
   background-color: #fbcf43;
@@ -42,7 +36,7 @@ body {
   display: flex;
   align-items: center;
   gap: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* đổ bóng */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .card img {
@@ -51,18 +45,16 @@ body {
   color: #333;
 }
 
-.card-text p {
+.card_text p {
   color: #000000;
   font-size: 14px;
 }
 
-/* phần số */
-.card-text strong {
+.card_text strong {
   color: #333;
   font-size: 24px;
 }
 
-/* phần biểu đồ */
 .charts {
   display: flex;
   gap: 20px;
@@ -70,7 +62,7 @@ body {
   flex-wrap: wrap;
 }
 
-.chart-container {
+.chart_container {
   flex: 1;
   min-width: 300px;
   background: #fff;
@@ -81,12 +73,12 @@ body {
   flex-direction: column;
 }
 
-.chart-container h4 {
+.chart_container h4 {
   margin-bottom: 15px;
   color: #333;
 }
 
-.chart-wrapper {
+.chart_wrapper {
     position: relative;
     height: 300px;
     width: 100%;
@@ -109,24 +101,20 @@ canvas {
     justify-content: center;
 }
 
-
-/* phần bảng */
-.bottom-row {
+.bottom_row {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
 }
 
-/* bảng user và food */
-.main-tables {
+.main_tables {
   flex: 3;
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
-/* khung chứa bảng */
-.table-container {
+.table_container {
   background: #fff;
   border-radius: 10px;
   padding: 20px;
@@ -135,43 +123,41 @@ canvas {
   flex-direction: column;
 }
 
-.table-scroll {
+.table_scroll {
     width: 100%;
-    /* Chiều cao cố định ~ 180px (Đủ cho header + 2-3 dòng dữ liệu) */
     max-height: 180px; 
-    overflow-y: auto; /* Cuộn dọc khi dữ liệu tràn */
-    overflow-x: auto; /* Cuộn ngang an toàn */
-    border: 1px solid #f9f9f9; /* Viền nhẹ */
+    overflow-y: auto; 
+    overflow-x: auto; 
+    border: 1px solid #f9f9f9; 
 }
 
-.table-scroll::-webkit-scrollbar {
+.table_scroll::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-.table-scroll::-webkit-scrollbar-thumb {
+.table_scroll::-webkit-scrollbar-thumb {
     background-color: #ccc;
     border-radius: 3px;
 }
 
-.table-scroll::-webkit-scrollbar-track {
+.table_scroll::-webkit-scrollbar-track {
     background-color: #f5f5f5;
 }
 
-.table-header {
+.table_header {
   margin-bottom: 10px;
   padding-bottom: 5px;
   border-bottom: 1px solid #eee;
 }
 
-.table-header h4 {
+.table_header h4 {
   margin: 0;
   color: #333;
   font-size: 16px;
 }
 
-/* Cố định Header bảng khi cuộn */
-.table-scroll thead th {
+.table_scroll thead th {
     position: sticky;
     top: 0;
     background: #fff; 
@@ -203,7 +189,6 @@ td {
   color: #333;
 }
 
-/* trạng thái tài khoản */
 .status {
   padding: 4px 10px;
   border-radius: 12px;
@@ -211,17 +196,16 @@ td {
   font-weight: 500;
 }
 
-.status-active {
+.status_active {
   background: #e0f8e9;
   color: #34a853;
 }
 
-.status-ban {
+.status_ban {
   background: #fbe7e7;
   color: #d9534f;
 }
 
-/* bảng thông tin */
 .info {
   flex: 1; 
   background: #fff;
@@ -251,12 +235,11 @@ td {
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* bỏ border bên dưới dòng cuốin*/
 .info li:last-child {
   border-bottom: none;
 }
 
-.info-item {
+.info_item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -268,8 +251,6 @@ td {
     font-weight: 500;
 }
 
-
-/* responsive */
 @media (max-width: 1200px) {
   .bottom_row {
     flex-direction: column;
@@ -284,7 +265,7 @@ td {
 }
 
 @media (max-width: 992px) {
-  .charts_row {
+  .charts {
     flex-direction: column;
   }
   .chart_container {

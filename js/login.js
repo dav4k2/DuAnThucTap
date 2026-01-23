@@ -1,4 +1,3 @@
-// xử lý đăng nhập
 async function handleLogin() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -27,7 +26,7 @@ async function handleLogin() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtn = document.getElementById('showPassword');
+    const toggleBtn = document.getElementById('show_password');
     const passwordInput = document.getElementById('password');
 
     if (toggleBtn && passwordInput) {

@@ -1,16 +1,13 @@
 serviceAccountKey.json
 .env
 
-# --- CÁC FILE RÁC CỦA PYTHON ---
 __pycache__/
 *.pyc
 
-# --- THƯ MỤC MÔI TRƯỜNG ẢO ---
 venv/
 env/
 .venv/
 
-# --- CÁC FILE CẤU HÌNH CỦA IDE/HỆ THỐNG ---
 .vscode/
 .idea/
 .DS_Store

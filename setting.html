@@ -17,7 +17,7 @@
 </head>
 <body>
     
-    <div id="navbar-placeholder"></div>
+    <div id="navbar_placeholder"></div>
 
     <main class="content">
         <div class="page_header">
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <div class="modal_overlay" id="passwordModal">
+        <div class="modal_overlay" id="password_modal">
             <div class="modal_box">
                 <div class="modal_header">
                     <h3>Đổi mật khẩu mới</h3>
@@ -65,11 +65,17 @@
                 <div class="modal_body">
                     <div class="form_group">
                         <label>Mật khẩu mới</label>
-                        <input type="password" id="new_password" placeholder="Tối thiểu 6 ký tự">
+                        <div class="password_field">
+                            <input type="password" id="new_password" placeholder="Tối thiểu 6 ký tự">
+                            <img src="images/show.png" class="show_password" id="toggle_new_pwd" alt="Hiện">
+                        </div>
                     </div>
                     <div class="form_group">
                         <label>Xác nhận mật khẩu</label>
-                        <input type="password" id="confirm_password" placeholder="Nhập lại mật khẩu mới">
+                        <div class="password_field">
+                            <input type="password" id="confirm_password" placeholder="Nhập lại mật khẩu mới">
+                            <img src="images/show.png" class="show_password" id="toggle_confirm_pwd" alt="Hiện">
+                        </div>
                     </div>
                     <p id="pwd_error" class="error_msg"></p>
                 </div>

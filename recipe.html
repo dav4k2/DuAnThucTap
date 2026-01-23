@@ -12,14 +12,14 @@
 </head>
 <body>
 
-  <div id="navbar-placeholder"></div>
+  <div id="navbar_placeholder"></div>
 
   <main class="content">
     <div class="toolbar">
       <div class="toolbar_search">
         <div class="search_box_wrapper">
           <img src="images/search2.png" class="search_icon_img">
-          <input type="text" id="search-input" placeholder="Tìm kiếm món ăn..." onkeyup="handleSearchAndSort()">
+          <input type="text" id="search_input" placeholder="Tìm kiếm món ăn..." onkeyup="handleSearchAndSort()">
         </div>
       </div>
 
@@ -65,7 +65,7 @@
             <th>Hành động</th>
           </tr>
         </thead>
-        <tbody id="table-recipes">
+        <tbody id="table_recipes">
           <tr><td colspan="7" style="text-align:center">Đang tải dữ liệu...</td></tr>
         </tbody>
       </table>
@@ -81,13 +81,12 @@
     </div>
   </main>
 
-  <div class="modal_overlay" id="editModal">
+  <div class="modal_overlay" id="edit_modal">
     <div class="modal_box modal_large"> 
         <div class="modal_header">
             <h3>Chi tiết công thức</h3>
             <span class="close_btn" onclick="closeAllModals()">&times;</span>
         </div>
-
         <div class="modal_body recipe_body_grid">
             <div class="col_left">
                 <div class="form_group">
@@ -164,7 +163,7 @@
     </div>
   </div>
 
-  <div class="modal_overlay" id="successModal">
+  <div class="modal_overlay" id="success_modal">
     <div class="modal_box modal_center_content">
         <div class="icon_circle green_circle"><img src="images/check.png" class="modal_main_icon"></div>
         <h3>Thành công!</h3>
@@ -172,7 +171,7 @@
     </div>
   </div>
 
-  <div class="modal_overlay" id="deleteModal">
+  <div class="modal_overlay" id="delete_modal">
     <div class="modal_box modal_center_content">
         <div class="icon_circle red_circle"><img src="images/warning.png" class="modal_main_icon"></div>
         <h3>Xóa công thức này?</h3>
