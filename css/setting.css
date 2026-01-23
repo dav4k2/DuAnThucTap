@@ -1,12 +1,9 @@
 :root {
     --primary-color: #FFC107;
-    --bg-color: #F9FAFB;
-    --text-color: #333;
-    --border-color: #E5E7EB;
 }
 
 body {
-    background-color: var(--bg-color);
+    background-color: #F9FAFB;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
 }
@@ -23,7 +20,7 @@ body {
 .page_header h2 {
     margin-bottom: 25px;
     font-size: 24px;
-    color: var(--text-color);
+    color: #333;
     font-weight: 700;
 }
 
@@ -39,7 +36,7 @@ body {
     border-radius: 12px;
     padding: 25px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    border: 1px solid var(--border-color);
+    border: 1px solid #E5E7EB;
 }
 
 .card h3 {
@@ -73,10 +70,9 @@ label {
     color: #6B7280; 
 }
 
-/* Style chung cho input thường */
 input {
     padding: 10px 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid #E5E7EB;
     border-radius: 6px;
     font-size: 14px;
     outline: none;
@@ -87,7 +83,7 @@ input {
 }
 
 input:focus { 
-    border-color: var(--primary-color); 
+    border-color: #FFC107; 
     background-color: #fff; 
 }
 
@@ -141,8 +137,6 @@ input[readonly] {
     background: #F3F4F6; 
 }
 
-/* --- MODAL STYLES --- */
-
 .modal_overlay {
     position: fixed; 
     top: 0; 
@@ -168,8 +162,6 @@ input[readonly] {
     border-radius: 12px; 
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    
-    /* Ghi đè để tránh xung đột với navbar.css */
     display: block;        
     text-align: left;      
 }
@@ -216,18 +208,14 @@ input[readonly] {
     margin-bottom: 20px;
 }
 
-/* --- STYLE SAO CHÉP TỪ LOGIN.CSS & TỐI ƯU CHO MODAL --- */
-
-/* Wrapper giống login */
 .password_field {
     position: relative;
     width: 100%;
 }
 
-/* Input trong modal: style giống setting.css nhưng thêm padding cho icon */
 .password_field input {
     width: 100%;
-    padding: 12px 40px 12px 15px; /* Padding phải chừa chỗ cho icon */
+    padding: 12px 40px 12px 15px;
     background-color: #fff;
     border: 1px solid #D1D5DB;
     border-radius: 6px;

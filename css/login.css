@@ -5,7 +5,6 @@
     font-family: "Inter", sans-serif;
 }
 
-/*Body*/
 body {
     height: 100vh;
     display: flex;
@@ -22,14 +21,13 @@ body.loaded {
   opacity: 1;
 }
 
-/*Ảnh nền trang*/
 .background .bg_img {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1; /*Gửi xuống dưới cùng*/
+    z-index: -1;
     object-fit: cover;
     opacity: 0.4;
     filter: blur(3px);
@@ -55,7 +53,7 @@ body.loaded {
 }
 
 .password_field input {
-    padding-right: 45px !important; /* Dùng !important để ghi đè padding mặc định */
+    padding-right: 45px !important; 
 }
 
 .show_password {
@@ -119,7 +117,6 @@ input[type="password"]::-ms-clear {
     font-weight: 700;
 }
 
-/* Label và Input */
 label {
     font-size: 14px;
     color: #333;
@@ -139,13 +136,11 @@ input {
     font-size: 14px;
 }
 
-.password_field 
-{
+.password_field {
     position: relative;
 }
 
-.login_btn 
-{
+.login_btn {
     width: 100%;
     padding: 12px;
     background: #FFC836;
@@ -158,7 +153,6 @@ input {
     transition: 0.3s;
 }
 
-.login_btn:hover 
-{
+.login_btn:hover {
     background: #f3b81d;
 }
