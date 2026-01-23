@@ -5,6 +5,7 @@ import 'package:fontend/screens/Cooking_step/recipe_run_widgets.dart';
 
 
 import 'cooking_timer_service.dart';
+import 'finish.dart';
 
 // 2. MÀN HÌNH CHÍNH
 class RecipeRunScreen extends ConsumerStatefulWidget {
@@ -96,7 +97,10 @@ class _RecipeRunScreenState extends ConsumerState<RecipeRunScreen> with WidgetsB
                       if (nextStep != null) {
                         _nextPage();
                       } else {
-                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => RecipeCompletionScreen())
+                        );
                       }
                     },
                     onPrevPage: () {

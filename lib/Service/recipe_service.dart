@@ -27,7 +27,7 @@ class RecipeService {
     final remoteConfig = FirebaseRemoteConfig.instance;
 
     try {
-      // Cấu hình tần suất fetch (Trong lúc dev thì để 0 để test ngay, khi release nên để 1-12 tiếng)
+      // Cấu hình tần suất fetch
       await remoteConfig.setConfigSettings(RemoteConfigSettings(
         fetchTimeout: const Duration(minutes: 1),
         minimumFetchInterval: const Duration(hours: 1),
@@ -43,7 +43,6 @@ class RecipeService {
       _apiSecret = remoteConfig.getString('cloudinary_api_secret');
 
       // Khởi tạo đối tượng CloudinaryPublic
-      // Lưu ý: Nếu key trên mạng rỗng, fallback về giá trị mặc định hoặc báo lỗi
       if (_cloudName!.isNotEmpty && _uploadPreset!.isNotEmpty) {
         _cloudinary = CloudinaryPublic(_cloudName!, _uploadPreset!, cache: false);
       }

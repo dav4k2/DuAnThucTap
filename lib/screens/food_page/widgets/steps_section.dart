@@ -118,11 +118,11 @@ class StepsSection extends ConsumerWidget {
                 );
               }).toList();
 
-              // 2. Cập nhật provider (Giữ nguyên)
+              // 2. Cập nhật provider
               ref.read(recipeStepsProvider.notifier).state = mappedSteps;
               ref.read(currentStepIndexProvider.notifier).state = 0;
 
-              // 3. Điều hướng (Giữ nguyên)
+              // 3. Điều hướng
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const RecipeRunScreen()),

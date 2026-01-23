@@ -16,7 +16,7 @@ class RatingSection extends StatefulWidget {
 
 class _RatingSectionState extends State<RatingSection> {
   int _currentRating = 0;
-  final user = FirebaseAuth.instance.currentUser; // 👈 Lấy user hiện tại
+  final user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
@@ -62,7 +62,7 @@ class _RatingSectionState extends State<RatingSection> {
                     radius: 30,
                     backgroundImage: avatarUrl.isNotEmpty
                         ? NetworkImage(avatarUrl)
-                        : const AssetImage("image/goldel.png") as ImageProvider,
+                        : const AssetImage("image/empty_user.jpg") as ImageProvider,
                   );
                 },
               ),
