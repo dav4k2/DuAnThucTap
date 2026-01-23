@@ -5,15 +5,15 @@ class DraftRecipe {
   final String id;
   final String title;
   final String description;
-  final List<String> images; // Ảnh đại diện của cả bài
+  final List<String> images;
   final String? video;
   final String? servings;
   final String? cookingTime;
   final String? difficulty;
   final List<String> ingredients;
   final List<String> steps;
-  final List<String?> stepDurations; // [MỚI] Lưu số phút từng bước
-  final List<List<String>> stepMedia; // [MỚI] Lưu danh sách ảnh/video từng bước
+  final List<String?> stepDurations;
+  final List<List<String>> stepMedia;
   final List<String> tags;
   final DateTime savedAt;
 

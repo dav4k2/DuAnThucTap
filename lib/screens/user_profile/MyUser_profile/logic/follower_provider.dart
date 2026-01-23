@@ -24,19 +24,22 @@ class Follower {
 // --- CORE PROVIDERS ---
 
 // 1. Kiểm tra trạng thái: User hiện tại (A) có đang follow Target User (B) không?
-final isFollowingProvider = FutureProvider.family<bool, String>((ref, targetUserId) async {
+final isFollowingProvider = StreamProvider.family.autoDispose<bool, String>((ref, targetUserId) {
   final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-  if (currentUserId == null || targetUserId.isEmpty) return false;
 
-  // Tiết kiệm chi phí đọc: Chỉ kiểm tra document tồn tại hay không
-  final doc = await FirebaseFirestore.instance
+  // Nếu chưa đăng nhập hoặc ID rỗng -> trả về false
+  if (currentUserId == null || targetUserId.isEmpty) {
+    return Stream.value(false);
+  }
+
+  // Lắng nghe thay đổi
+  return FirebaseFirestore.instance
       .collection('users')
       .doc(currentUserId)
       .collection('following')
       .doc(targetUserId)
-      .get();
-
-  return doc.exists;
+      .snapshots()
+      .map((snapshot) => snapshot.exists);
 });
 
 // 2. Lấy danh sách (và số lượng) người đang theo dõi (Followers) của một UserID
@@ -66,7 +69,7 @@ final followersListProvider = FutureProvider.family<List<Follower>, String>((ref
         id: userModel.id,
         name: userModel.displayName ?? "Người dùng",
         avatarUrl: userModel.avatarUrl ?? "",
-        recipeCount: 0, // Có thể update logic đếm recipe sau
+        recipeCount: 0,
         isFollowedByMe: isFollowedBack.exists,
       ));
     }

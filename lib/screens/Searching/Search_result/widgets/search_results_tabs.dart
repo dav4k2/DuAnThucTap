@@ -119,7 +119,6 @@ class SearchResultsTabs extends StatelessWidget {
                     return ChefCard(
                       chefId: userId,
                       name: authorName,
-                      recipeCount: "${countSnapshot.data ?? 0} công thức",
                       avatarPath: avatarUrl,
                       isNetworkImage: true,
                     );

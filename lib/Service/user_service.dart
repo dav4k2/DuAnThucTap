@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloudinary_public/cloudinary_public.dart'; // 1. Import thư viện mới
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:fontend/Service/recipe_model.dart';
 import 'package:fontend/Service/user_model.dart';
 import '../Service/user_model.dart';
@@ -11,8 +12,6 @@ import '../screens/user_profile/MyUser_profile/logic/my_profile_provider.dart';
 class UserService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  final cloudinary = CloudinaryPublic('dzysold5b', 'cookinghub_preset', cache: false);
 
   Future<UserModel?> getUserProfile() async {
     User? user = _auth.currentUser;
@@ -27,6 +26,26 @@ class UserService {
 
   Future<String?> _uploadToCloudinary(File file) async {
     try {
+      final remoteConfig = FirebaseRemoteConfig.instance;
+
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: const Duration(minutes: 1),
+        minimumFetchInterval: const Duration(hours: 1), // Chỉnh thấp xuống khi debug
+      ));
+      await remoteConfig.fetchAndActivate();
+
+      // Lấy giá trị từ Remote Config
+      final String cloudName = remoteConfig.getString('cloudinary_cloud_name');
+      final String uploadPreset = remoteConfig.getString('cloudinary_upload_preset');
+
+      if (cloudName.isEmpty || uploadPreset.isEmpty) {
+        print("Lỗi: Không tìm thấy cấu hình Cloudinary trên Remote Config");
+        return null;
+      }
+
+      // Khởi tạo Cloudinary instance với key động
+      final cloudinary = CloudinaryPublic(cloudName, uploadPreset, cache: false);
+
       CloudinaryResponse response = await cloudinary.uploadFile(
         CloudinaryFile.fromFile(file.path, resourceType: CloudinaryResourceType.Image),
       );
@@ -63,7 +82,7 @@ class UserService {
         coverUrl = await _uploadToCloudinary(coverFile);
       }
 
-      // c. Gom dữ liệu (Giữ nguyên logic cũ)
+      // c. Gom dữ liệu
       Map<String, dynamic> data = {
         'display_name': displayName,
         'bio': bio,
