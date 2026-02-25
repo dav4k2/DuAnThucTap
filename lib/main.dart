@@ -51,7 +51,7 @@ Future<void> main() async {
   // if (kDebugMode) {
   //   String host = Platform.isAndroid ? '10.0.2.2' : 'localhost';
   //   await FirebaseAuth.instance.useAuthEmulator(host, 9099);
-  //   FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
+  //   FirebaseFirre.instance.useFirestoreEmulator(host, 8080);
   //   FirebaseDatabase.instance.useDatabaseEmulator(host, 9000);
   //   print('--- Đã kết nối với Firebase Emulator Suite ---');
   // }
